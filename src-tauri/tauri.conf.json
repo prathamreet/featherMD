@@ -51,9 +51,11 @@
         "description": "Markdown file"
       }
     ],
-    "nsis": {
-      "installerIcon": "icons/icon.ico",
-      "installMode": "perUser"
+    "windows": {
+      "nsis": {
+        "installerIcon": "icons/icon.ico",
+        "installMode": "currentUser"
+      }
     }
   }
 }
