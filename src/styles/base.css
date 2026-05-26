@@ -536,6 +536,81 @@ kbd {
   box-shadow: 0 1px 0 var(--border);
 }
 
+/* ---- Unsaved Changes Dialog ---- */
+.unsaved-dialog-content {
+  min-width: 420px;
+  max-width: 480px;
+}
+
+.unsaved-dialog-content .modal-header {
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.unsaved-dialog-content .modal-body p {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.dialog-btn {
+  padding: 6px 16px;
+  font-size: 13px;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  outline: none;
+}
+
+.dialog-btn:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.dialog-btn-secondary {
+  background: var(--bg);
+  color: var(--text-muted);
+  border-color: var(--border);
+}
+
+.dialog-btn-secondary:hover {
+  background: var(--bg-secondary);
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+
+.dialog-btn-danger {
+  background: transparent;
+  color: #e53e3e;
+  border-color: #e53e3e55;
+}
+
+.dialog-btn-danger:hover {
+  background: #e53e3e15;
+  border-color: #e53e3e;
+}
+
+.dialog-btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.dialog-btn-primary:hover {
+  filter: brightness(1.1);
+}
+
 /* ---- Selection ---- */
 ::selection {
   background: color-mix(in srgb, var(--accent) 30%, transparent);
