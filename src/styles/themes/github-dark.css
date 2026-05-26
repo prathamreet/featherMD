@@ -1,0 +1,17 @@
+/* GitHub Dark — GitHub dark mode */
+[data-theme="github-dark"] {
+  --bg: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-editor: #0d1117;
+  --text: #c9d1d9;
+  --text-muted: #8b949e;
+  --border: #30363d;
+  --accent: #58a6ff;
+  --code-bg: #161b22;
+  --heading: #f0f6fc;
+  --link: #58a6ff;
+  --cm-keyword: #ff7b72;
+  --cm-string: #a5d6ff;
+  --cm-comment: #8b949e;
+  --cm-heading: #79c0ff;
+}

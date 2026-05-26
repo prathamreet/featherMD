@@ -1,0 +1,17 @@
+/* Gruvbox Dark — Retro warm dark palette */
+[data-theme="gruvbox-dark"] {
+  --bg: #282828;
+  --bg-secondary: #1d2021;
+  --bg-editor: #282828;
+  --text: #ebdbb2;
+  --text-muted: #a89984;
+  --border: #3c3836;
+  --accent: #fabd2f;
+  --code-bg: #1d2021;
+  --heading: #fbf1c7;
+  --link: #83a598;
+  --cm-keyword: #fb4934;
+  --cm-string: #b8bb26;
+  --cm-comment: #928374;
+  --cm-heading: #fabd2f;
+}

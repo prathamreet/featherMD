@@ -1,0 +1,17 @@
+/* Gruvbox Light — Retro warm light palette */
+[data-theme="gruvbox-light"] {
+  --bg: #fbf1c7;
+  --bg-secondary: #ebdbb2;
+  --bg-editor: #fbf1c7;
+  --text: #3c3836;
+  --text-muted: #7c6f64;
+  --border: #d5c4a1;
+  --accent: #b57614;
+  --code-bg: #ebdbb2;
+  --heading: #282828;
+  --link: #076678;
+  --cm-keyword: #9d0006;
+  --cm-string: #79740e;
+  --cm-comment: #928374;
+  --cm-heading: #076678;
+}

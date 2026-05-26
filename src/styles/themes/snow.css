@@ -1,0 +1,17 @@
+/* Snow — Pure white, black text (default light) */
+[data-theme="snow"] {
+  --bg: #ffffff;
+  --bg-secondary: #f6f8fa;
+  --bg-editor: #ffffff;
+  --text: #1a1a1a;
+  --text-muted: #6e7781;
+  --border: #d0d7de;
+  --accent: #0969da;
+  --code-bg: #f6f8fa;
+  --heading: #1a1a1a;
+  --link: #0969da;
+  --cm-keyword: #cf222e;
+  --cm-string: #0a3069;
+  --cm-comment: #6e7781;
+  --cm-heading: #0550ae;
+}

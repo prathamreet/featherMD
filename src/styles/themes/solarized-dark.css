@@ -1,0 +1,17 @@
+/* Solarized Dark — Classic Solarized Dark */
+[data-theme="solarized-dark"] {
+  --bg: #002b36;
+  --bg-secondary: #073642;
+  --bg-editor: #002b36;
+  --text: #839496;
+  --text-muted: #586e75;
+  --border: #0a4a5a;
+  --accent: #268bd2;
+  --code-bg: #073642;
+  --heading: #93a1a1;
+  --link: #268bd2;
+  --cm-keyword: #cb4b16;
+  --cm-string: #2aa198;
+  --cm-comment: #586e75;
+  --cm-heading: #268bd2;
+}
