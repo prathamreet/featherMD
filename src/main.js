@@ -153,12 +153,12 @@ window.addEventListener('DOMContentLoaded', async () => {
               }
             );
 
-            if (response === 'Save') {
+            if (response === 'yes') {
               await saveFile();
               if (!isDirty) {
                 await appWindow.destroy();
               }
-            } else if (response === "Don't Save") {
+            } else if (response === 'no') {
               isDirty = false;
               await appWindow.destroy();
             } else {
@@ -191,20 +191,20 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   // Set initial content (welcome text) if no file was loaded
   if (!currentFilePath) {
-    const welcomeText = `# Welcome to Feather MD ✨
+    const welcomeText = `# Welcome to Feather MD
 
-A lightweight, blazing-fast markdown editor.
+A lightweight markdown editor designed for speed and simplicity.
 
 ## Features
 
-- **Live Preview** — See your markdown rendered in real-time
-- **Synchronized Scrolling** — Editor and preview scroll together
-- **10 Themes** — Switch themes instantly from the toolbar
-- **Keyboard Shortcuts** — Press \`Ctrl+?\` to see all shortcuts
+- **Live Preview** - Real-time visual rendering of your writing
+- **Synchronized Scrolling** - Dynamic split-pane scroll alignment
+- **Premium Themes** - Clean aesthetic color palettes
+- **Hotkeys** - Complete keyboard control via shortcuts
 
 ## Getting Started
 
-Start typing here, or open a file with \`Ctrl+O\`.
+Type here to start, or load a document using \`Ctrl+O\`.
 
 ### Code Blocks
 
@@ -218,19 +218,18 @@ function hello() {
 
 | Feature | Status |
 |---------|--------|
-| Editor | ✅ Ready |
-| Preview | ✅ Ready |
-| Sync Scroll | ✅ Ready |
-| Themes | ✅ 10 themes |
+| Editor | Ready |
+| Preview | Ready |
+| Sync Scroll | Ready |
+| Themes | Ready |
 
 ### Task List
 
-- [x] Set up editor
-- [x] Set up preview
-- [x] Add themes
-- [ ] Open a real \`.md\` file
+- [x] Create initial draft
+- [x] Review markdown syntax
+- [ ] Export to final document
 
-> **Tip:** Use the toolbar above or keyboard shortcuts to explore all features.
+> **Tip:** Press \`Ctrl+?\` at any time to view all available keyboard shortcuts.
 `;
 
     editorAPI.setValue(welcomeText);
@@ -272,10 +271,10 @@ async function openFile() {
           }
         );
 
-        if (response === 'Save') {
+        if (response === 'yes') {
           await saveFile();
           if (isDirty) return; // Aborted or failed to save
-        } else if (response === "Don't Save") {
+        } else if (response === 'no') {
           // Proceed without saving
         } else {
           return; // Cancel
@@ -389,10 +388,10 @@ async function newFile() {
           }
         );
 
-        if (response === 'Save') {
+        if (response === 'yes') {
           await saveFile();
           if (isDirty) return; // Aborted or failed to save
-        } else if (response === "Don't Save") {
+        } else if (response === 'no') {
           // Proceed without saving
         } else {
           return; // Cancel
