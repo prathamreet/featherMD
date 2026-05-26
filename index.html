@@ -239,6 +239,28 @@
       </div>
     </div>
 
+    <!-- Unsaved Changes Dialog -->
+    <div id="unsaved-dialog" class="modal-overlay" hidden>
+      <div class="modal-content unsaved-dialog-content">
+        <div class="modal-header">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <h3>Unsaved Changes</h3>
+        </div>
+        <div class="modal-body">
+          <p id="unsaved-dialog-message">You have unsaved changes. What would you like to do?</p>
+        </div>
+        <div class="modal-footer">
+          <button id="unsaved-btn-cancel" class="dialog-btn dialog-btn-secondary">Cancel</button>
+          <button id="unsaved-btn-discard" class="dialog-btn dialog-btn-danger">Don't Save</button>
+          <button id="unsaved-btn-save" class="dialog-btn dialog-btn-primary">Save</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Status Bar -->
     <div id="status-bar">
       <span id="status-filepath" title="">Untitled</span>
