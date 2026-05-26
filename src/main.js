@@ -138,44 +138,19 @@ window.addEventListener('DOMContentLoaded', async () => {
         event.preventDefault();
 
         if (isDirty) {
-          try {
-            const { message } = await import('@tauri-apps/plugin-dialog');
-            const response = await message(
-              'You have unsaved changes. Do you want to save your changes first?',
-              {
-                title: 'Unsaved Changes',
-                kind: 'warning',
-                buttons: {
-                  yes: 'Save',
-                  no: "Don't Save",
-                  cancel: 'Cancel',
-                },
-              }
-            );
+          const response = await showUnsavedDialog();
 
-            if (response === 'yes') {
-              await saveFile();
-              if (!isDirty) {
-                await appWindow.destroy();
-              }
-            } else if (response === 'no') {
-              isDirty = false;
-              await appWindow.destroy();
-            } else {
-              // Cancel - keep window open
-            }
-          } catch (e) {
-            console.error('Failed to show close confirmation:', e);
-            const { confirm } = await import('@tauri-apps/plugin-dialog');
-            const confirmed = await confirm(
-              'You have unsaved changes. Do you want to close without saving?',
-              { title: 'Unsaved Changes', kind: 'warning' }
-            );
-            if (confirmed) {
-              isDirty = false;
+          if (response === 'save') {
+            await saveFile();
+            if (!isDirty) {
               await appWindow.destroy();
             }
+            // If still dirty (user cancelled save-as dialog), keep window open
+          } else if (response === 'discard') {
+            isDirty = false;
+            await appWindow.destroy();
           }
+          // 'cancel' → keep window open (do nothing)
         } else {
           // If not dirty, destroy the window cleanly
           await appWindow.destroy();
@@ -255,42 +230,15 @@ function onContentChange(text, isProgrammatic) {
 // ---- File Operations ----
 async function openFile() {
   if (isDirty) {
-    if (isTauri) {
-      try {
-        const { message } = await import('@tauri-apps/plugin-dialog');
-        const response = await message(
-          'You have unsaved changes. Do you want to save your changes first?',
-          {
-            title: 'Unsaved Changes',
-            kind: 'warning',
-            buttons: {
-              yes: 'Save',
-              no: "Don't Save",
-              cancel: 'Cancel',
-            },
-          }
-        );
+    const response = await showUnsavedDialog();
 
-        if (response === 'yes') {
-          await saveFile();
-          if (isDirty) return; // Aborted or failed to save
-        } else if (response === 'no') {
-          // Proceed without saving
-        } else {
-          return; // Cancel
-        }
-      } catch (e) {
-        console.error('Failed to show confirm dialog:', e);
-        if (!confirm('You have unsaved changes. Open another file anyway?')) {
-          return;
-        }
-      }
+    if (response === 'save') {
+      await saveFile();
+      if (isDirty) return; // Save was cancelled or failed
+    } else if (response === 'discard') {
+      // Proceed without saving
     } else {
-      const res = confirm('You have unsaved changes. Save them before opening a file? (Ok to save, Cancel to discard/abort)');
-      if (res) {
-        await saveFile();
-        if (isDirty) return;
-      }
+      return; // Cancel
     }
   }
 
@@ -372,42 +320,15 @@ async function saveFileAs() {
 
 async function newFile() {
   if (isDirty) {
-    if (isTauri) {
-      try {
-        const { message } = await import('@tauri-apps/plugin-dialog');
-        const response = await message(
-          'You have unsaved changes. Do you want to save your changes first?',
-          {
-            title: 'Unsaved Changes',
-            kind: 'warning',
-            buttons: {
-              yes: 'Save',
-              no: "Don't Save",
-              cancel: 'Cancel',
-            },
-          }
-        );
+    const response = await showUnsavedDialog();
 
-        if (response === 'yes') {
-          await saveFile();
-          if (isDirty) return; // Aborted or failed to save
-        } else if (response === 'no') {
-          // Proceed without saving
-        } else {
-          return; // Cancel
-        }
-      } catch (e) {
-        console.error('Failed to show confirm dialog:', e);
-        if (!confirm('You have unsaved changes. Create a new file anyway?')) {
-          return;
-        }
-      }
+    if (response === 'save') {
+      await saveFile();
+      if (isDirty) return; // Save was cancelled or failed
+    } else if (response === 'discard') {
+      // Proceed without saving
     } else {
-      const res = confirm('You have unsaved changes. Save them before creating a new file? (Ok to save, Cancel to discard/abort)');
-      if (res) {
-        await saveFile();
-        if (isDirty) return;
-      }
+      return; // Cancel
     }
   }
   currentFilePath = null;
@@ -605,6 +526,52 @@ function initKeyboardShortcuts() {
   setInterval(() => {
     updateCursorPosition();
   }, 250);
+}
+
+// ---- Unsaved Changes Dialog ----
+// Custom 3-button dialog: Save / Don't Save / Cancel
+// Returns a Promise that resolves to 'save', 'discard', or 'cancel'
+function showUnsavedDialog() {
+  return new Promise((resolve) => {
+    const dialog = document.getElementById('unsaved-dialog');
+    const btnSave = document.getElementById('unsaved-btn-save');
+    const btnDiscard = document.getElementById('unsaved-btn-discard');
+    const btnCancel = document.getElementById('unsaved-btn-cancel');
+
+    dialog.hidden = false;
+
+    // Focus the Save button by default for keyboard accessibility
+    setTimeout(() => btnSave.focus(), 50);
+
+    function cleanup(result) {
+      dialog.hidden = true;
+      btnSave.removeEventListener('click', onSave);
+      btnDiscard.removeEventListener('click', onDiscard);
+      btnCancel.removeEventListener('click', onCancel);
+      dialog.removeEventListener('click', onOverlayClick);
+      document.removeEventListener('keydown', onKeydown);
+      resolve(result);
+    }
+
+    function onSave() { cleanup('save'); }
+    function onDiscard() { cleanup('discard'); }
+    function onCancel() { cleanup('cancel'); }
+    function onOverlayClick(e) {
+      if (e.target === dialog) cleanup('cancel');
+    }
+    function onKeydown(e) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        cleanup('cancel');
+      }
+    }
+
+    btnSave.addEventListener('click', onSave);
+    btnDiscard.addEventListener('click', onDiscard);
+    btnCancel.addEventListener('click', onCancel);
+    dialog.addEventListener('click', onOverlayClick);
+    document.addEventListener('keydown', onKeydown);
+  });
 }
 
 // ---- Shortcuts Modal ----
