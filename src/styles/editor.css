@@ -1,0 +1,161 @@
+/* ========================================
+   Feather MD — CodeMirror 6 Overrides
+   ======================================== */
+
+.cm-editor {
+  height: 100%;
+  font-family: var(--font-mono);
+  font-size: var(--font-size);
+  background: var(--bg-editor, var(--bg));
+  color: var(--text);
+}
+
+.cm-editor .cm-scroller {
+  overflow: auto;
+  font-family: var(--font-mono);
+  line-height: 1.6;
+}
+
+.cm-editor .cm-content {
+  padding: 16px 8px;
+  caret-color: var(--accent);
+}
+
+.cm-editor .cm-cursor {
+  border-left-color: var(--accent);
+  border-left-width: 2px;
+}
+
+.cm-editor .cm-gutters {
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.cm-editor .cm-gutter.cm-lineNumbers .cm-gutterElement {
+  padding: 0 8px 0 12px;
+  min-width: 40px;
+}
+
+.cm-editor .cm-activeLineGutter {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--text);
+}
+
+.cm-editor .cm-activeLine {
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+
+.cm-editor .cm-selectionBackground {
+  background: color-mix(in srgb, var(--accent) 20%, transparent) !important;
+}
+
+.cm-editor.cm-focused .cm-selectionBackground {
+  background: color-mix(in srgb, var(--accent) 25%, transparent) !important;
+}
+
+.cm-editor .cm-matchingBracket {
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  outline: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.cm-editor .cm-searchMatch {
+  background: color-mix(in srgb, var(--cm-string, #0a3069) 20%, transparent);
+  outline: 1px solid color-mix(in srgb, var(--cm-string, #0a3069) 40%, transparent);
+}
+
+.cm-editor .cm-searchMatch.cm-searchMatch-selected {
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+/* Foldable lines */
+.cm-editor .cm-foldPlaceholder {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 3px;
+  padding: 0 4px;
+  font-size: 12px;
+}
+
+/* Find/Replace panel */
+.cm-editor .cm-panel {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  padding: 4px 8px;
+}
+
+.cm-editor .cm-panel input,
+.cm-editor .cm-panel button {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text);
+}
+
+.cm-editor .cm-panel input {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 2px 6px;
+  outline: none;
+}
+
+.cm-editor .cm-panel input:focus {
+  border-color: var(--accent);
+}
+
+.cm-editor .cm-panel button {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+
+.cm-editor .cm-panel button:hover {
+  background: var(--border);
+}
+
+/* Markdown syntax highlighting via CSS vars */
+.cm-editor .tok-heading { color: var(--cm-heading, #0550ae); font-weight: 600; }
+.cm-editor .tok-heading1 { font-size: 1.3em; }
+.cm-editor .tok-heading2 { font-size: 1.15em; }
+.cm-editor .tok-emphasis { font-style: italic; }
+.cm-editor .tok-strong { font-weight: 700; }
+.cm-editor .tok-link { color: var(--link, #0969da); text-decoration: underline; }
+.cm-editor .tok-url { color: var(--link, #0969da); text-decoration: underline; opacity: 0.7; }
+.cm-editor .tok-keyword { color: var(--cm-keyword, #cf222e); }
+.cm-editor .tok-string { color: var(--cm-string, #0a3069); }
+.cm-editor .tok-comment { color: var(--cm-comment, #6e7781); font-style: italic; }
+.cm-editor .tok-meta { color: var(--cm-comment, #6e7781); }
+.cm-editor .tok-atom { color: var(--cm-keyword, #cf222e); }
+.cm-editor .tok-number { color: var(--cm-string, #0a3069); }
+.cm-editor .tok-processingInstruction { color: var(--cm-keyword, #cf222e); }
+
+/* Code span / inline code */
+.cm-editor .tok-monospace {
+  font-family: var(--font-mono);
+  background: var(--code-bg, #f6f8fa);
+  border-radius: 3px;
+  padding: 1px 3px;
+}
+
+/* Blockquote markers */
+.cm-editor .tok-quote {
+  color: var(--cm-comment, #6e7781);
+}
+
+/* Focus state */
+.cm-editor.cm-focused {
+  outline: none;
+}
+
+.cm-editor .cm-tooltip {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  color: var(--text);
+}
