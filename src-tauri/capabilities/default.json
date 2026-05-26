@@ -23,6 +23,7 @@
     "core:window:allow-maximize",
     "core:window:allow-unmaximize",
     "core:window:allow-close",
+    "core:window:allow-destroy",
     "core:window:allow-is-maximized",
     "core:event:default",
     "core:event:allow-listen",
