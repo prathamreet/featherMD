@@ -96,6 +96,11 @@ html, body {
   color: var(--text);
 }
 
+.title-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
 .title-btn-close:hover {
   background: #e81123;
   color: #fff;
@@ -131,6 +136,11 @@ html, body {
 .toolbar-btn:hover {
   background: var(--border);
   color: var(--text);
+}
+
+.toolbar-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
 .toolbar-btn.active {
@@ -201,6 +211,11 @@ html, body {
 
 .dropdown-item:hover {
   background: var(--border);
+}
+
+.dropdown-item:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
 .dropdown-item.active {
@@ -353,6 +368,11 @@ html, body {
   color: var(--text);
 }
 
+.settings-close:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
 .settings-body {
   padding: 16px 20px;
   display: flex;
@@ -420,6 +440,10 @@ html, body {
   opacity: 0;
   width: 0;
   height: 0;
+}
+
+.toggle-switch input:focus-visible + .toggle-slider {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
 .toggle-slider {
