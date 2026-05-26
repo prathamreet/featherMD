@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*' # Triggers the build whenever you push a tag starting with v (e.g. v1.0.0)
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
 jobs:
   publish-tauri:
     permissions:
