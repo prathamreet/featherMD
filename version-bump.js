@@ -17,3 +17,12 @@ let cargo = fs.readFileSync(cargoPath, 'utf8');
 cargo = cargo.replace(/^version = "[^"]*"/m, `version = "${version}"`);
 fs.writeFileSync(cargoPath, cargo, 'utf8');
 console.log(`Synced Cargo.toml version to ${version}`);
+
+// 3. Update Cargo.lock
+const lockPath = 'src-tauri/Cargo.lock';
+if (fs.existsSync(lockPath)) {
+  let lock = fs.readFileSync(lockPath, 'utf8');
+  lock = lock.replace(/(name = "feathermd"\s*\n\s*version = ")[^"]*"/g, `$1${version}"`);
+  fs.writeFileSync(lockPath, lock, 'utf8');
+  console.log(`Synced Cargo.lock version to ${version}`);
+}
