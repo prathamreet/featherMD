@@ -16,10 +16,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: 'macos-latest'
-            args: '--target aarch64-apple-darwin' # Build for Apple Silicon
-          - platform: 'macos-latest'
-            args: '--target x86_64-apple-darwin'  # Build for Intel Mac
           - platform: 'windows-latest'
             args: ''
           - platform: 'ubuntu-22.04'
@@ -43,9 +39,6 @@ jobs:
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
-        with:
-          # targets are required for cross-compiling Mac builds
-          targets: "${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}"
 
       - name: Install dependencies
         run: npm install
