@@ -1,7 +1,7 @@
 {
   "name": "feathermd",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,8 @@
     "tauri": "tauri",
     "test": "vitest run",
     "bench": "vitest bench",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "version": "node version-bump.js && git add src-tauri/tauri.conf.json src-tauri/Cargo.toml"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.20.2",
