@@ -42,6 +42,10 @@
         "name": "Markdown",
         "description": "Markdown file"
       }
-    ]
+    ],
+    "nsis": {
+      "installerIcon": "icons/icon.ico",
+      "installMode": "perUser"
+    }
   }
 }
