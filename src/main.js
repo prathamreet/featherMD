@@ -119,6 +119,17 @@ window.addEventListener('DOMContentLoaded', async () => {
         loadFileContent(path, content);
       });
 
+      // Request initial file from backend if loaded via CLI / OS file association
+      try {
+        const { invoke } = await import('@tauri-apps/api/core');
+        const initialFile = await invoke('get_initial_file');
+        if (initialFile) {
+          loadFileContent(initialFile.path, initialFile.content);
+        }
+      } catch (err) {
+        console.error('Failed to retrieve initial file:', err);
+      }
+
       // Handle close request (unsaved changes guard)
       const { getCurrentWindow } = await import('@tauri-apps/api/window');
       const appWindow = getCurrentWindow();
@@ -127,16 +138,43 @@ window.addEventListener('DOMContentLoaded', async () => {
         event.preventDefault();
 
         if (isDirty) {
-          const { confirm } = await import('@tauri-apps/plugin-dialog');
-          const confirmed = await confirm(
-            'You have unsaved changes. Do you want to close without saving?',
-            { title: 'Unsaved Changes', kind: 'warning' }
-          );
-          if (confirmed) {
-            // Reset dirty flag to bypass any recursive close prevention
-            isDirty = false;
-            // If user clicked OK, destroy the window programmatically
-            await appWindow.destroy();
+          try {
+            const { message } = await import('@tauri-apps/plugin-dialog');
+            const response = await message(
+              'You have unsaved changes. Do you want to save your changes first?',
+              {
+                title: 'Unsaved Changes',
+                kind: 'warning',
+                buttons: {
+                  yes: 'Save',
+                  no: "Don't Save",
+                  cancel: 'Cancel',
+                },
+              }
+            );
+
+            if (response === 'Save') {
+              await saveFile();
+              if (!isDirty) {
+                await appWindow.destroy();
+              }
+            } else if (response === "Don't Save") {
+              isDirty = false;
+              await appWindow.destroy();
+            } else {
+              // Cancel - keep window open
+            }
+          } catch (e) {
+            console.error('Failed to show close confirmation:', e);
+            const { confirm } = await import('@tauri-apps/plugin-dialog');
+            const confirmed = await confirm(
+              'You have unsaved changes. Do you want to close without saving?',
+              { title: 'Unsaved Changes', kind: 'warning' }
+            );
+            if (confirmed) {
+              isDirty = false;
+              await appWindow.destroy();
+            }
           }
         } else {
           // If not dirty, destroy the window cleanly
@@ -151,8 +189,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   // Apply font settings
   applyFontSettings();
 
-  // Set initial content (welcome text)
-  const welcomeText = `# Welcome to Feather MD ✨
+  // Set initial content (welcome text) if no file was loaded
+  if (!currentFilePath) {
+    const welcomeText = `# Welcome to Feather MD ✨
 
 A lightweight, blazing-fast markdown editor.
 
@@ -194,22 +233,68 @@ function hello() {
 > **Tip:** Use the toolbar above or keyboard shortcuts to explore all features.
 `;
 
-  editorAPI.setValue(welcomeText);
-  editorAPI.focus();
+    editorAPI.setValue(welcomeText);
+    editorAPI.focus();
+  }
 });
 
 // ---- Content Change Handler ----
-function onContentChange(text) {
+function onContentChange(text, isProgrammatic) {
   previewAPI.renderMarkdown(text);
   updateStatusBar(text);
-  if (!isDirty) {
-    isDirty = true;
+  if (isProgrammatic) {
+    isDirty = false;
     updateTitleBar();
+  } else {
+    if (!isDirty) {
+      isDirty = true;
+      updateTitleBar();
+    }
   }
 }
 
 // ---- File Operations ----
 async function openFile() {
+  if (isDirty) {
+    if (isTauri) {
+      try {
+        const { message } = await import('@tauri-apps/plugin-dialog');
+        const response = await message(
+          'You have unsaved changes. Do you want to save your changes first?',
+          {
+            title: 'Unsaved Changes',
+            kind: 'warning',
+            buttons: {
+              yes: 'Save',
+              no: "Don't Save",
+              cancel: 'Cancel',
+            },
+          }
+        );
+
+        if (response === 'Save') {
+          await saveFile();
+          if (isDirty) return; // Aborted or failed to save
+        } else if (response === "Don't Save") {
+          // Proceed without saving
+        } else {
+          return; // Cancel
+        }
+      } catch (e) {
+        console.error('Failed to show confirm dialog:', e);
+        if (!confirm('You have unsaved changes. Open another file anyway?')) {
+          return;
+        }
+      }
+    } else {
+      const res = confirm('You have unsaved changes. Save them before opening a file? (Ok to save, Cancel to discard/abort)');
+      if (res) {
+        await saveFile();
+        if (isDirty) return;
+      }
+    }
+  }
+
   if (isTauri) {
     try {
       const { open } = await import('@tauri-apps/plugin-dialog');
@@ -286,10 +371,44 @@ async function saveFileAs() {
   }
 }
 
-function newFile() {
+async function newFile() {
   if (isDirty) {
-    if (!confirm('You have unsaved changes. Create a new file anyway?')) {
-      return;
+    if (isTauri) {
+      try {
+        const { message } = await import('@tauri-apps/plugin-dialog');
+        const response = await message(
+          'You have unsaved changes. Do you want to save your changes first?',
+          {
+            title: 'Unsaved Changes',
+            kind: 'warning',
+            buttons: {
+              yes: 'Save',
+              no: "Don't Save",
+              cancel: 'Cancel',
+            },
+          }
+        );
+
+        if (response === 'Save') {
+          await saveFile();
+          if (isDirty) return; // Aborted or failed to save
+        } else if (response === "Don't Save") {
+          // Proceed without saving
+        } else {
+          return; // Cancel
+        }
+      } catch (e) {
+        console.error('Failed to show confirm dialog:', e);
+        if (!confirm('You have unsaved changes. Create a new file anyway?')) {
+          return;
+        }
+      }
+    } else {
+      const res = confirm('You have unsaved changes. Save them before creating a new file? (Ok to save, Cancel to discard/abort)');
+      if (res) {
+        await saveFile();
+        if (isDirty) return;
+      }
     }
   }
   currentFilePath = null;
