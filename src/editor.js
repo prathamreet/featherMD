@@ -22,6 +22,8 @@ let editorView = null;
 let onChangeCallback = null;
 let debounceTimer = null;
 
+let isProgrammaticSetting = false;
+
 /**
  * Initialize the CodeMirror 6 editor
  * @param {HTMLElement} domEl - Container element
@@ -33,10 +35,11 @@ export function initEditor(domEl, onChange) {
 
   const updateListener = EditorView.updateListener.of((update) => {
     if (update.docChanged) {
+      const isProgrammatic = isProgrammaticSetting;
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => {
         if (onChangeCallback) {
-          onChangeCallback(update.state.doc.toString());
+          onChangeCallback(update.state.doc.toString(), isProgrammatic);
         }
       }, 150);
     }
@@ -107,6 +110,7 @@ export function initEditor(domEl, onChange) {
  */
 function setValue(text) {
   if (!editorView) return;
+  isProgrammaticSetting = true;
   const transaction = editorView.state.update({
     changes: {
       from: 0,
@@ -115,6 +119,7 @@ function setValue(text) {
     },
   });
   editorView.dispatch(transaction);
+  isProgrammaticSetting = false;
 }
 
 /**
