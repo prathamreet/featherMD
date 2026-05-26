@@ -10,12 +10,25 @@ import { initThemes, setTheme, getCurrentTheme } from './themes.js';
 import { initSettings, toggleSettings } from './settings.js';
 import { initToolbar, setToolbarButtonActive } from './toolbar.js';
 
-// ---- State ----
+// ---- HMR-Resistant Persistent State ----
+// Preserves editor path, dirty state, and line endings across hot-reloads
 let editorAPI = null;
 let previewAPI = null;
-let currentFilePath = null;
-let isDirty = false;
-let lineEnding = 'LF';
+Object.defineProperty(window, 'currentFilePath', {
+  get: () => window.__FEATHER_PATH__ || null,
+  set: (val) => { window.__FEATHER_PATH__ = val; },
+  configurable: true
+});
+Object.defineProperty(window, 'isDirty', {
+  get: () => window.__FEATHER_DIRTY__ || false,
+  set: (val) => { window.__FEATHER_DIRTY__ = val; },
+  configurable: true
+});
+Object.defineProperty(window, 'lineEnding', {
+  get: () => window.__FEATHER_LINE_ENDING__ || 'LF',
+  set: (val) => { window.__FEATHER_LINE_ENDING__ = val; },
+  configurable: true
+});
 let config = {
   theme: null,
   fontSize: 14,
