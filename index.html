@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="snow">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feather MD</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/styles/base.css" />
+    <link rel="stylesheet" href="/src/styles/editor.css" />
+    <link rel="stylesheet" href="/src/styles/preview.css" />
+    <link rel="stylesheet" href="/src/styles/toolbar.css" />
+    <link rel="stylesheet" href="/src/styles/themes/snow.css" />
+    <link rel="stylesheet" href="/src/styles/themes/solarized-light.css" />
+    <link rel="stylesheet" href="/src/styles/themes/github-light.css" />
+    <link rel="stylesheet" href="/src/styles/themes/sepia.css" />
+    <link rel="stylesheet" href="/src/styles/themes/gruvbox-light.css" />
+    <link rel="stylesheet" href="/src/styles/themes/onyx.css" />
+    <link rel="stylesheet" href="/src/styles/themes/solarized-dark.css" />
+    <link rel="stylesheet" href="/src/styles/themes/github-dark.css" />
+    <link rel="stylesheet" href="/src/styles/themes/monokai.css" />
+    <link rel="stylesheet" href="/src/styles/themes/gruvbox-dark.css" />
+    <script type="module" src="/src/main.js"></script>
+  </head>
+  <body>
+    <!-- Custom Title Bar -->
+    <div id="title-bar" data-tauri-drag-region>
+      <div id="title-bar-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
+          <line x1="16" y1="8" x2="2" y2="22"></line>
+          <line x1="17.5" y1="15" x2="9" y2="15"></line>
+        </svg>
+      </div>
+      <div id="title-bar-text" data-tauri-drag-region>Feather MD</div>
+      <div id="title-bar-controls">
+        <button id="btn-minimize" class="title-btn" aria-label="Minimize">
+          <svg width="12" height="12" viewBox="0 0 12 12"><line x1="2" y1="6" x2="10" y2="6" stroke="currentColor" stroke-width="1.5"/></svg>
+        </button>
+        <button id="btn-maximize" class="title-btn" aria-label="Maximize">
+          <svg width="12" height="12" viewBox="0 0 12 12"><rect x="2" y="2" width="8" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        </button>
+        <button id="btn-close" class="title-btn title-btn-close" aria-label="Close">
+          <svg width="12" height="12" viewBox="0 0 12 12"><line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.5"/><line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div id="toolbar">
+      <button id="btn-open" class="toolbar-btn" title="Open file (Ctrl+O)" aria-label="Open file">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 19a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4l2 2h4a2 2 0 0 1 2 2v1"></path>
+          <path d="M20 13H9a2 2 0 0 0-2 2v0a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-3z"></path>
+        </svg>
+      </button>
+      <button id="btn-save" class="toolbar-btn" title="Save (Ctrl+S)" aria-label="Save">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+          <polyline points="17 21 17 13 7 13 7 21"></polyline>
+          <polyline points="7 3 7 8 15 8"></polyline>
+        </svg>
+      </button>
+      <button id="btn-new" class="toolbar-btn" title="New file (Ctrl+N)" aria-label="New file">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="12" y1="18" x2="12" y2="12"></line>
+          <line x1="9" y1="15" x2="15" y2="15"></line>
+        </svg>
+      </button>
+
+      <div class="toolbar-separator"></div>
+
+      <button id="btn-sync-scroll" class="toolbar-btn active" title="Toggle sync scroll (Alt+S)" aria-label="Toggle sync scroll">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="17 1 21 5 17 9"></polyline>
+          <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+          <polyline points="7 23 3 19 7 15"></polyline>
+          <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+        </svg>
+      </button>
+
+      <div class="toolbar-separator"></div>
+
+      <!-- Theme Dropdown -->
+      <div id="theme-dropdown" class="toolbar-dropdown">
+        <button id="btn-theme" class="toolbar-btn" title="Change theme" aria-label="Change theme">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+        <div id="theme-menu" class="dropdown-menu" hidden>
+          <div class="dropdown-group-label">Light</div>
+          <button class="dropdown-item" data-theme="snow">Snow</button>
+          <button class="dropdown-item" data-theme="solarized-light">Solarized Light</button>
+          <button class="dropdown-item" data-theme="github-light">GitHub Light</button>
+          <button class="dropdown-item" data-theme="sepia">Sepia</button>
+          <button class="dropdown-item" data-theme="gruvbox-light">Gruvbox Light</button>
+          <div class="dropdown-group-label">Dark</div>
+          <button class="dropdown-item" data-theme="onyx">Onyx</button>
+          <button class="dropdown-item" data-theme="solarized-dark">Solarized Dark</button>
+          <button class="dropdown-item" data-theme="github-dark">GitHub Dark</button>
+          <button class="dropdown-item" data-theme="monokai">Monokai</button>
+          <button class="dropdown-item" data-theme="gruvbox-dark">Gruvbox Dark</button>
+        </div>
+      </div>
+
+      <div class="toolbar-separator"></div>
+
+      <button id="btn-line-numbers" class="toolbar-btn active" title="Toggle line numbers (Ctrl+L)" aria-label="Toggle line numbers">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="4" y1="6" x2="4" y2="6.01"></line>
+          <line x1="4" y1="12" x2="4" y2="12.01"></line>
+          <line x1="4" y1="18" x2="4" y2="18.01"></line>
+          <line x1="8" y1="6" x2="20" y2="6"></line>
+          <line x1="8" y1="12" x2="20" y2="12"></line>
+          <line x1="8" y1="18" x2="20" y2="18"></line>
+        </svg>
+      </button>
+      <button id="btn-word-wrap" class="toolbar-btn active" title="Toggle word wrap (Alt+Z)" aria-label="Toggle word wrap">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <path d="M3 12h15a3 3 0 1 1 0 6h-4"></path>
+          <polyline points="16 16 14 18 16 20"></polyline>
+          <line x1="3" y1="18" x2="10" y2="18"></line>
+        </svg>
+      </button>
+      <button id="btn-vim" class="toolbar-btn" title="Toggle Vim mode" aria-label="Toggle Vim mode">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="4 17 10 11 4 5"></polyline>
+          <line x1="12" y1="19" x2="20" y2="19"></line>
+        </svg>
+      </button>
+
+      <div class="toolbar-separator"></div>
+
+      <button id="btn-settings" class="toolbar-btn" title="Settings (Ctrl+,)" aria-label="Settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Main Split Container -->
+    <div id="split-container">
+      <div id="editor-pane"></div>
+      <div id="divider"></div>
+      <div id="preview-pane">
+        <div id="preview-content"></div>
+      </div>
+    </div>
+
+    <!-- Settings Panel (hidden by default) -->
+    <div id="settings-panel" class="settings-panel" hidden>
+      <div class="settings-header">
+        <h3>Settings</h3>
+        <button id="btn-close-settings" class="settings-close" aria-label="Close settings">
+          <svg width="16" height="16" viewBox="0 0 12 12"><line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.5"/><line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.5"/></svg>
+        </button>
+      </div>
+      <div class="settings-body">
+        <div class="settings-group">
+          <label for="setting-font-size">Font Size</label>
+          <div class="settings-range-group">
+            <input type="range" id="setting-font-size" min="12" max="20" value="14" />
+            <span id="setting-font-size-value">14px</span>
+          </div>
+        </div>
+        <div class="settings-group">
+          <label for="setting-font-family">Font Family</label>
+          <select id="setting-font-family">
+            <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+            <option value="'Fira Code', monospace">Fira Code</option>
+            <option value="'Cascadia Code', monospace">Cascadia Code</option>
+            <option value="monospace">System Monospace</option>
+          </select>
+        </div>
+        <div class="settings-group">
+          <label for="setting-tab-size">Tab Size</label>
+          <select id="setting-tab-size">
+            <option value="2">2 spaces</option>
+            <option value="4" selected>4 spaces</option>
+          </select>
+        </div>
+        <div class="settings-group">
+          <label for="setting-word-wrap">Word Wrap</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="setting-word-wrap" checked />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="settings-group">
+          <label for="setting-vim-mode">Vim Mode</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="setting-vim-mode" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Modal -->
+    <div id="shortcuts-modal" class="modal-overlay" hidden>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Keyboard Shortcuts</h3>
+          <button id="btn-close-shortcuts" class="settings-close" aria-label="Close shortcuts">
+            <svg width="16" height="16" viewBox="0 0 12 12"><line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.5"/><line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.5"/></svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <table class="shortcuts-table">
+            <tbody>
+              <tr><td><kbd>Ctrl</kbd>+<kbd>N</kbd></td><td>New file</td></tr>
+              <tr><td><kbd>Ctrl</kbd>+<kbd>O</kbd></td><td>Open file</td></tr>
+              <tr><td><kbd>Ctrl</kbd>+<kbd>S</kbd></td><td>Save</td></tr>
+              <tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd></td><td>Save As</td></tr>
+              <tr><td><kbd>Ctrl</kbd>+<kbd>F</kbd></td><td>Find</td></tr>
+              <tr><td><kbd>Ctrl</kbd>+<kbd>H</kbd></td><td>Find & Replace</td></tr>
+              <tr><td><kbd>Ctrl</kbd>+<kbd>L</kbd></td><td>Toggle line numbers</td></tr>
+              <tr><td><kbd>Alt</kbd>+<kbd>Z</kbd></td><td>Toggle word wrap</td></tr>
+              <tr><td><kbd>Alt</kbd>+<kbd>S</kbd></td><td>Toggle sync scroll</td></tr>
+              <tr><td><kbd>Ctrl</kbd>+<kbd>,</kbd></td><td>Settings</td></tr>
+              <tr><td><kbd>Ctrl</kbd>+<kbd>?</kbd></td><td>This dialog</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div id="status-bar">
+      <span id="status-filepath" title="">Untitled</span>
+      <div id="status-right">
+        <span id="status-wordcount">0 words</span>
+        <span class="status-separator">│</span>
+        <span id="status-cursor">Ln 1, Col 1</span>
+        <span class="status-separator">│</span>
+        <span id="status-encoding">UTF-8</span>
+        <span class="status-separator">│</span>
+        <span id="status-line-ending">LF</span>
+      </div>
+    </div>
+  </body>
+</html>
