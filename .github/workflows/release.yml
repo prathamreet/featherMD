@@ -25,7 +25,7 @@ jobs:
           - platform: 'ubuntu-22.04'
             args: ''
 
-    runs-on: ${{ matrix.platform }}
+    runs-on: "${{ matrix.platform }}"
     steps:
       - uses: actions/checkout@v4
 
@@ -45,7 +45,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           # targets are required for cross-compiling Mac builds
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+          targets: "${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}"
 
       - name: Install dependencies
         run: npm install
@@ -61,9 +61,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: ${{ github.ref_name }} # Uses the pushed version tag name
+          tagName: "${{ github.ref_name }}" # Uses the pushed version tag name
           releaseName: 'Feather MD v__VERSION__'
           releaseBody: 'See the files below to download and install this release.'
           releaseDraft: true # Sets as a draft first so you can edit before publishing
           prerelease: false
-          args: ${{ matrix.args }}
+          args: "${{ matrix.args }}"
