@@ -28,9 +28,10 @@ let isProgrammaticSetting = false;
  * Initialize the CodeMirror 6 editor
  * @param {HTMLElement} domEl - Container element
  * @param {Function} onChange - Callback fired with doc string after 150ms debounce
+ * @param {Function} onSelectionChange - Callback fired on selection change
  * @returns {Object} Editor API
  */
-export function initEditor(domEl, onChange) {
+export function initEditor(domEl, onChange, onSelectionChange) {
   onChangeCallback = onChange;
 
   const updateListener = EditorView.updateListener.of((update) => {
@@ -42,6 +43,13 @@ export function initEditor(domEl, onChange) {
           onChangeCallback(update.state.doc.toString(), isProgrammatic);
         }
       }, 150);
+    }
+
+    // Bolt Optimization: Call onSelectionChange to avoid UI polling
+    if (update.selectionSet || update.docChanged) {
+      if (onSelectionChange) {
+        onSelectionChange();
+      }
     }
   });
 

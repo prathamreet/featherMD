@@ -48,7 +48,7 @@ const isTauri = typeof window !== 'undefined' && !!(window.__TAURI__ || window._
 // ---- Initialize ----
 window.addEventListener('DOMContentLoaded', async () => {
   // Initialize editor
-  editorAPI = initEditor(document.getElementById('editor-pane'), onContentChange);
+  editorAPI = initEditor(document.getElementById('editor-pane'), onContentChange, updateCursorPosition);
 
   // Initialize preview
   previewAPI = initPreview(document.getElementById('preview-content'));
@@ -521,11 +521,6 @@ function initKeyboardShortcuts() {
       toggleShortcutsModal();
     }
   });
-
-  // Update cursor position on editor selection change
-  setInterval(() => {
-    updateCursorPosition();
-  }, 250);
 }
 
 // ---- Unsaved Changes Dialog ----
