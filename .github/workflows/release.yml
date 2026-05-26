@@ -57,7 +57,7 @@ jobs:
         run: npx vitest bench --run
 
       - name: Build & Publish App
-        uses: tauri-apps/tauri-action@v0
+        uses: tauri-apps/tauri-action@v0.5.12
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
