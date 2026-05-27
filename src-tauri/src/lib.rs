@@ -2,14 +2,13 @@ use tauri::{Manager, Emitter};
 use std::fs;
 use std::path::PathBuf;
 use std::sync::Mutex;
-use std::time::SystemTime;
+use std::time::Duration;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
 struct InitialFileState(Mutex<Option<String>>);
 
 struct FileWatcher {
-    active_path: Mutex<Option<String>>,
     stop_signal: Mutex<Arc<AtomicBool>>,
 }
 
@@ -44,11 +43,7 @@ async fn watch_file(
     let new_signal = Arc::new(AtomicBool::new(false));
     let new_signal_clone = new_signal.clone();
     
-    // 3. Store new active path
-    {
-        let mut active_path = state.active_path.lock().map_err(|e| e.to_string())?;
-        *active_path = Some(path.clone());
-    }
+    // 3. (active_path storage removed to eliminate dead state)
     
     // 4. Get initial modified time
     let metadata = fs::metadata(&path).map_err(|e| e.to_string())?;
@@ -65,7 +60,7 @@ async fn watch_file(
         let mut last_time = modified_time;
         let mut failure_count = 0;
         while !new_signal_clone.load(Ordering::Relaxed) {
-            tokio::time::sleep(tokio::time::Duration::from_millis(1500)).await;
+            tokio::time::sleep(Duration::from_millis(1500)).await;
             
             if new_signal_clone.load(Ordering::Relaxed) {
                 break;
@@ -100,8 +95,6 @@ async fn watch_file(
 async fn unwatch_file(state: tauri::State<'_, FileWatcher>) -> Result<(), String> {
     let signal = state.stop_signal.lock().map_err(|e| e.to_string())?;
     signal.store(true, Ordering::Relaxed);
-    let mut active_path = state.active_path.lock().map_err(|e| e.to_string())?;
-    *active_path = None;
     Ok(())
 }
 
@@ -115,7 +108,6 @@ pub fn run() {
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(InitialFileState(Mutex::new(None)))
         .manage(FileWatcher {
-            active_path: Mutex::new(None),
             stop_signal: Mutex::new(Arc::new(AtomicBool::new(false))),
         })
         .invoke_handler(tauri::generate_handler![get_initial_file, watch_file, unwatch_file])
