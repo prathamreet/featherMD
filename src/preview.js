@@ -37,8 +37,6 @@ export function initPreview(domEl) {
 function renderMarkdown(mdString) {
   if (!previewEl) return;
 
-  // Save scroll position
-  const scrollEl = previewEl.parentElement;
   const prevScrollRatio = getScrollRatio();
 
   // Parse and sanitize

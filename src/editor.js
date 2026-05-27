@@ -20,6 +20,7 @@ const vimCompartment = new Compartment();
 
 let editorView = null;
 let onChangeCallback = null;
+let onCursorActivityCallback = null;
 let debounceTimer = null;
 
 let isProgrammaticSetting = false;
@@ -28,10 +29,12 @@ let isProgrammaticSetting = false;
  * Initialize the CodeMirror 6 editor
  * @param {HTMLElement} domEl - Container element
  * @param {Function} onChange - Callback fired with doc string after 150ms debounce
+ * @param {Function} [onCursorActivity] - Callback fired on selection/cursor changes (event-driven, no polling)
  * @returns {Object} Editor API
  */
-export function initEditor(domEl, onChange) {
+export function initEditor(domEl, onChange, onCursorActivity) {
   onChangeCallback = onChange;
+  onCursorActivityCallback = onCursorActivity || null;
 
   const updateListener = EditorView.updateListener.of((update) => {
     if (update.docChanged) {
@@ -77,6 +80,12 @@ export function initEditor(domEl, onChange) {
         indentWithTab,
       ]),
       updateListener,
+      // PERF-01: Event-driven cursor position updates (replaces setInterval polling)
+      EditorView.updateListener.of((update) => {
+        if (update.selectionSet && onCursorActivityCallback) {
+          onCursorActivityCallback();
+        }
+      }),
       EditorView.theme({
         '&': { height: '100%' },
         '.cm-scroller': { overflow: 'auto' },
