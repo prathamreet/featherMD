@@ -202,3 +202,42 @@
   font-size: 0.875em;
   color: var(--text-muted);
 }
+
+/* ========================================
+   Highlight.js Theme Variable Mappings
+   ======================================== */
+#preview-content pre code .hljs-keyword,
+#preview-content pre code .hljs-selector-tag,
+#preview-content pre code .hljs-built_in,
+#preview-content pre code .hljs-name {
+  color: var(--cm-keyword);
+  font-weight: 500;
+}
+
+#preview-content pre code .hljs-string,
+#preview-content pre code .hljs-number,
+#preview-content pre code .hljs-regexp,
+#preview-content pre code .hljs-symbol,
+#preview-content pre code .hljs-bullet,
+#preview-content pre code .hljs-link {
+  color: var(--cm-string);
+}
+
+#preview-content pre code .hljs-comment,
+#preview-content pre code .hljs-quote {
+  color: var(--cm-comment);
+  font-style: italic;
+}
+
+#preview-content pre code .hljs-title,
+#preview-content pre code .hljs-section,
+#preview-content pre code .hljs-meta,
+#preview-content pre code .hljs-doctag,
+#preview-content pre code .hljs-type,
+#preview-content pre code .hljs-attr,
+#preview-content pre code .hljs-variable,
+#preview-content pre code .hljs-template-variable {
+  color: var(--cm-heading);
+  font-weight: 500;
+}
+

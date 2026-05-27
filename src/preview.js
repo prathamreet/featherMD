@@ -4,6 +4,7 @@
 
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
+import hljs from 'highlight.js';
 
 let previewEl = null;
 
@@ -31,6 +32,17 @@ export function initPreview(domEl) {
 }
 
 /**
+ * Extract the parent directory from a file path
+ */
+function getParentDirectory(filePath) {
+  if (!filePath) return '';
+  const normalized = filePath.replace(/\\/g, '/');
+  const parts = normalized.split('/');
+  parts.pop();
+  return parts.join('/') + '/';
+}
+
+/**
  * Render markdown string to preview pane
  * @param {string} mdString - Raw markdown text
  */
@@ -47,6 +59,59 @@ function renderMarkdown(mdString) {
   });
 
   previewEl.innerHTML = clean;
+
+  // Highlight code blocks
+  const codeBlocks = previewEl.querySelectorAll('pre code');
+  codeBlocks.forEach((block) => {
+    try {
+      hljs.highlightElement(block);
+    } catch (err) {
+      console.warn('Highlight.js failed to highlight block:', err);
+    }
+  });
+
+  // Resolve relative image paths
+  const images = previewEl.querySelectorAll('img[src]');
+  images.forEach((img) => {
+    const src = img.getAttribute('src');
+    if (src && !src.startsWith('http://') && !src.startsWith('https://') && !src.startsWith('data:') && !src.startsWith('asset:') && !src.startsWith('https://asset.localhost')) {
+      if (window.currentFilePath) {
+        const parentDir = getParentDirectory(window.currentFilePath);
+        let absolutePath = '';
+        if (src.startsWith('./')) {
+          absolutePath = parentDir + src.substring(2);
+        } else if (src.startsWith('../')) {
+          let currentDir = parentDir;
+          let tempSrc = src;
+          while (tempSrc.startsWith('../')) {
+            const dirParts = currentDir.replace(/\/$/, '').split('/');
+            dirParts.pop();
+            currentDir = dirParts.join('/') + '/';
+            tempSrc = tempSrc.substring(3);
+          }
+          absolutePath = currentDir + tempSrc;
+        } else {
+          absolutePath = parentDir + src;
+        }
+
+        try {
+          let normalisedPath = absolutePath;
+          if (normalisedPath.match(/^[A-Za-z]:/)) {
+            normalisedPath = normalisedPath.replace(/\//g, '\\');
+          }
+          
+          import('@tauri-apps/api/core').then(({ convertFileSrc }) => {
+            const assetUrl = convertFileSrc(normalisedPath);
+            img.setAttribute('src', assetUrl);
+          }).catch(err => {
+            console.warn('Failed to import convertFileSrc:', err);
+          });
+        } catch (err) {
+          console.warn('Failed to resolve relative image path:', err);
+        }
+      }
+    }
+  });
 
   // Make external links open in new tab/browser
   const links = previewEl.querySelectorAll('a[href]');
