@@ -96,7 +96,6 @@ export function closeSettings() {
     panel.hidden = true;
   }, 200);
 }
-
 export function isSettingsOpen() {
   return settingsOpen;
 }
