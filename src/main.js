@@ -6,7 +6,7 @@
 import { initEditor } from './editor.js';
 import { initPreview } from './preview.js';
 import { initScrollSync, setSyncEnabled } from './sync.js';
-import { initThemes, setTheme, getCurrentTheme } from './themes.js';
+import { initThemes, setTheme } from './themes.js';
 import { initSettings, toggleSettings } from './settings.js';
 import { initToolbar, setToolbarButtonActive } from './toolbar.js';
 import { initUpdater } from './updater.js';
@@ -43,13 +43,18 @@ let config = {
   splitRatio: 0.5,
 };
 
-// ---- Detect Tauri environment ----
-const isTauri = typeof window !== 'undefined' && !!(window.__TAURI__ || window.__TAURI_INTERNALS__);
+let isTauri = false;
 
 // ---- Initialize ----
 window.addEventListener('DOMContentLoaded', async () => {
+  try {
+    await import('@tauri-apps/api/core');
+    isTauri = true;
+  } catch {
+    // Not running inside Tauri — browser mode
+  }
   // Initialize editor
-  editorAPI = initEditor(document.getElementById('editor-pane'), onContentChange);
+  editorAPI = initEditor(document.getElementById('editor-pane'), onContentChange, updateCursorPosition);
 
   // Initialize preview
   previewAPI = initPreview(document.getElementById('preview-content'));
@@ -157,7 +162,7 @@ window.addEventListener('DOMContentLoaded', async () => {
           await appWindow.destroy();
         }
       });
-    } catch (e) {
+    } catch {
       console.log('Tauri API not available — running in browser mode');
     }
   }
@@ -237,18 +242,7 @@ function onContentChange(text, isProgrammatic) {
 
 // ---- File Operations ----
 async function openFile() {
-  if (isDirty) {
-    const response = await showUnsavedDialog();
-
-    if (response === 'save') {
-      await saveFile();
-      if (isDirty) return; // Save was cancelled or failed
-    } else if (response === 'discard') {
-      // Proceed without saving
-    } else {
-      return; // Cancel
-    }
-  }
+  if (!await confirmDiscardChanges()) return;
 
   if (isTauri) {
     try {
@@ -327,18 +321,7 @@ async function saveFileAs() {
 }
 
 async function newFile() {
-  if (isDirty) {
-    const response = await showUnsavedDialog();
-
-    if (response === 'save') {
-      await saveFile();
-      if (isDirty) return; // Save was cancelled or failed
-    } else if (response === 'discard') {
-      // Proceed without saving
-    } else {
-      return; // Cancel
-    }
-  }
+  if (!await confirmDiscardChanges()) return;
   currentFilePath = null;
   editorAPI.setValue('');
   isDirty = false;
@@ -452,7 +435,7 @@ async function initWindowControls() {
       isMaximized ? appWindow.unmaximize() : appWindow.maximize();
     });
     document.getElementById('btn-close').addEventListener('click', () => appWindow.close());
-  } catch (e) {
+  } catch {
     console.log('Window controls not available in browser mode');
   }
 }
@@ -530,10 +513,18 @@ function initKeyboardShortcuts() {
     }
   });
 
-  // Update cursor position on editor selection change
-  setInterval(() => {
-    updateCursorPosition();
-  }, 250);
+}
+
+// ---- Unsaved Changes Guard (CODE-01: consolidated from openFile + newFile) ----
+// Returns true if it is safe to proceed (user saved or discarded), false to abort.
+async function confirmDiscardChanges() {
+  if (!isDirty) return true;
+  const response = await showUnsavedDialog();
+  if (response === 'save') {
+    await saveFile();
+    return !isDirty; // true if save succeeded, false if cancelled
+  }
+  return response === 'discard';
 }
 
 // ---- Unsaved Changes Dialog ----
@@ -641,7 +632,7 @@ function saveConfig() {
   // For now, save to localStorage (Tauri will use fs in Phase 3)
   try {
     localStorage.setItem('feathermd-config', JSON.stringify(config));
-  } catch (e) {
+  } catch {
     // Ignore storage errors
   }
 }
@@ -652,7 +643,7 @@ function loadConfig() {
     if (stored) {
       Object.assign(config, JSON.parse(stored));
     }
-  } catch (e) {
+  } catch {
     // Ignore storage errors
   }
 }
