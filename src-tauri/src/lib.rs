@@ -5,18 +5,6 @@ use std::sync::Mutex;
 
 struct InitialFileState(Mutex<Option<String>>);
 
-/// Read a file and return its content as a string
-#[tauri::command]
-async fn read_file(path: String) -> Result<String, String> {
-    fs::read_to_string(&path).map_err(|e| format!("Failed to read file '{}': {}", path, e))
-}
-
-/// Write content to a file
-#[tauri::command]
-async fn write_file(path: String, content: String) -> Result<(), String> {
-    fs::write(&path, &content).map_err(|e| format!("Failed to write file '{}': {}", path, e))
-}
-
 /// Get the initial file path and content if loaded via CLI argument
 #[tauri::command]
 async fn get_initial_file(state: tauri::State<'_, InitialFileState>) -> Result<Option<serde_json::Value>, String> {
@@ -41,7 +29,7 @@ pub fn run() {
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(InitialFileState(Mutex::new(None)))
-        .invoke_handler(tauri::generate_handler![read_file, write_file, get_initial_file])
+        .invoke_handler(tauri::generate_handler![get_initial_file])
         .setup(|app| {
             // Check for CLI file argument
             let args: Vec<String> = std::env::args().collect();
