@@ -1,18 +1,104 @@
 // ========================================
-// Feather MD — Preview Module (marked.js + DOMPurify)
+// Feather MD — Preview Module (marked.js + DOMPurify + lazy highlight.js)
 // ========================================
 
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
-import hljs from 'highlight.js';
+import hljs from 'highlight.js/lib/core';
 
 let previewEl = null;
 
-// Dynamic import hoisting to prevent loop allocations and race conditions
-let convertFileSrc = null;
-import('@tauri-apps/api/core').then((m) => {
-  convertFileSrc = m.convertFileSrc;
-}).catch(() => {});
+// ---- @tauri-apps/api/core lazy-load (single-flight) ----
+let coreModule = null;
+let coreModulePromise = null;
+function loadCore() {
+  if (coreModule) return Promise.resolve(coreModule);
+  if (coreModulePromise) return coreModulePromise;
+  coreModulePromise = import('@tauri-apps/api/core')
+    .then((m) => { coreModule = m; return m; })
+    .catch(() => null);
+  return coreModulePromise;
+}
+// Warm the cache on module load
+loadCore();
+
+// ---- Lazy language loading for highlight.js ----
+// import.meta.glob lets Vite statically analyze every language file at build
+// time and emit a separate chunk per language — satisfying PRD §3.8 < 450KB.
+// The eager:false option keeps them out of the initial bundle.
+const HLJS_LANG_MODULES = import.meta.glob(
+  '/node_modules/highlight.js/lib/languages/*.js',
+  { eager: false }
+);
+
+const loadedLangs = new Set();
+const pendingLangs = new Map();
+const failedLangs = new Set();
+
+const LANG_ALIASES = {
+  js: 'javascript',
+  ts: 'typescript',
+  py: 'python',
+  rb: 'ruby',
+  sh: 'bash',
+  shell: 'bash',
+  zsh: 'bash',
+  yml: 'yaml',
+  md: 'markdown',
+  rs: 'rust',
+  kt: 'kotlin',
+  cs: 'csharp',
+  htm: 'xml',
+  html: 'xml',
+  svg: 'xml',
+  'c++': 'cpp',
+  'c#': 'csharp',
+  'objective-c': 'objectivec',
+  'objc': 'objectivec',
+  ps1: 'powershell',
+  ps: 'powershell',
+};
+
+function resolveLangName(name) {
+  if (!name) return null;
+  const lower = name.toLowerCase();
+  return LANG_ALIASES[lower] || lower;
+}
+
+function loadLanguage(name) {
+  const resolved = resolveLangName(name);
+  if (!resolved) return Promise.resolve(false);
+  if (loadedLangs.has(resolved)) return Promise.resolve(true);
+  if (failedLangs.has(resolved)) return Promise.resolve(false);
+  if (pendingLangs.has(resolved)) return pendingLangs.get(resolved);
+
+  const key = `/node_modules/highlight.js/lib/languages/${resolved}.js`;
+  const loader = HLJS_LANG_MODULES[key];
+  if (!loader) {
+    failedLangs.add(resolved);
+    return Promise.resolve(false);
+  }
+  const p = loader()
+    .then((mod) => {
+      if (mod && mod.default) {
+        hljs.registerLanguage(resolved, mod.default);
+        loadedLangs.add(resolved);
+        return true;
+      }
+      failedLangs.add(resolved);
+      return false;
+    })
+    .catch(() => {
+      failedLangs.add(resolved);
+      return false;
+    })
+    .finally(() => {
+      pendingLangs.delete(resolved);
+    });
+
+  pendingLangs.set(resolved, p);
+  return p;
+}
 
 /**
  * Initialize the preview pane
@@ -57,7 +143,6 @@ function renderMarkdown(mdString) {
 
   const prevScrollRatio = getScrollRatio();
 
-  // Parse and sanitize
   const rawHtml = marked.parse(mdString);
   const clean = DOMPurify.sanitize(rawHtml, {
     USE_PROFILES: { html: true },
@@ -66,77 +151,102 @@ function renderMarkdown(mdString) {
 
   previewEl.innerHTML = clean;
 
-  // Highlight code blocks
+  // Asynchronously highlight code blocks via lazy language loading.
+  // We don't await — the preview shows unstyled code briefly, then
+  // re-paints once the per-language chunk arrives.
   const codeBlocks = previewEl.querySelectorAll('pre code');
   codeBlocks.forEach((block) => {
-    try {
-      hljs.highlightElement(block);
-    } catch (err) {
-      console.warn('Highlight.js failed to highlight block:', err);
-    }
-  });
-
-  // Resolve relative image paths
-  const images = previewEl.querySelectorAll('img[src]');
-  images.forEach((img) => {
-    const src = img.getAttribute('src');
-    if (src && !src.startsWith('http://') && !src.startsWith('https://') && !src.startsWith('data:') && !src.startsWith('asset:') && !src.startsWith('https://asset.localhost')) {
-      if (window.currentFilePath) {
-        const parentDir = getParentDirectory(window.currentFilePath);
-        let absolutePath = '';
-        if (src.startsWith('./')) {
-          absolutePath = parentDir + src.substring(2);
-        } else if (src.startsWith('../')) {
-          let currentDir = parentDir;
-          let tempSrc = src;
-          while (tempSrc.startsWith('../')) {
-            const dirParts = currentDir.replace(/\/$/, '').split('/');
-            dirParts.pop();
-            currentDir = dirParts.join('/') + '/';
-            tempSrc = tempSrc.substring(3);
-          }
-          absolutePath = currentDir + tempSrc;
-        } else {
-          absolutePath = parentDir + src;
-        }
-
-        try {
-          let normalisedPath = absolutePath;
-          if (normalisedPath.match(/^[A-Za-z]:/)) {
-            normalisedPath = normalisedPath.replace(/\//g, '\\');
-          }
-          
-          if (convertFileSrc) {
-            img.setAttribute('src', convertFileSrc(normalisedPath));
-          } else {
-            import('@tauri-apps/api/core').then((m) => {
-              convertFileSrc = m.convertFileSrc;
-              if (img.isConnected) {
-                img.setAttribute('src', convertFileSrc(normalisedPath));
-              }
-            }).catch(err => {
-              console.warn('Failed to import convertFileSrc dynamically:', err);
-            });
-          }
-        } catch (err) {
-          console.warn('Failed to resolve relative image path:', err);
-        }
+    const cls = block.className || '';
+    const match = cls.match(/language-([\w+-]+)/);
+    if (!match) return;
+    const lang = match[1];
+    loadLanguage(lang).then((ok) => {
+      if (!ok || !block.isConnected) return;
+      try {
+        hljs.highlightElement(block);
+      } catch (err) {
+        console.warn('Highlight.js failed to highlight block:', err);
       }
-    }
+    });
   });
 
-  // Make external links open in new tab/browser
-  const links = previewEl.querySelectorAll('a[href]');
-  links.forEach((link) => {
-    const href = link.getAttribute('href');
-    if (href && (href.startsWith('http://') || href.startsWith('https://'))) {
-      link.setAttribute('target', '_blank');
-      link.setAttribute('rel', 'noopener noreferrer');
-    }
-  });
+  // Resolve relative image paths via Tauri's asset protocol
+  resolveImagePaths(previewEl);
+
+  // Re-route external links through the OS browser (Tauri plugin-opener)
+  attachExternalLinkHandlers(previewEl);
 
   // Restore approximate scroll position
   setScrollRatio(prevScrollRatio);
+}
+
+function resolveImagePaths(container) {
+  const images = container.querySelectorAll('img[src]');
+  if (images.length === 0) return;
+  loadCore().then((core) => {
+    if (!core || !core.convertFileSrc) return;
+    images.forEach((img) => {
+      const src = img.getAttribute('src');
+      if (!src) return;
+      if (src.startsWith('http://') || src.startsWith('https://')
+        || src.startsWith('data:') || src.startsWith('asset:')) return;
+      if (!window.currentFilePath) return;
+
+      const parentDir = getParentDirectory(window.currentFilePath);
+      let absolutePath = '';
+      if (src.startsWith('./')) {
+        absolutePath = parentDir + src.substring(2);
+      } else if (src.startsWith('../')) {
+        let currentDir = parentDir;
+        let tempSrc = src;
+        while (tempSrc.startsWith('../')) {
+          const dirParts = currentDir.replace(/\/$/, '').split('/');
+          dirParts.pop();
+          currentDir = dirParts.join('/') + '/';
+          tempSrc = tempSrc.substring(3);
+        }
+        absolutePath = currentDir + tempSrc;
+      } else {
+        absolutePath = parentDir + src;
+      }
+
+      try {
+        let normalisedPath = absolutePath;
+        if (normalisedPath.match(/^[A-Za-z]:/)) {
+          normalisedPath = normalisedPath.replace(/\//g, '\\');
+        }
+        if (img.isConnected) {
+          img.setAttribute('src', core.convertFileSrc(normalisedPath));
+        }
+      } catch (err) {
+        console.warn('Failed to resolve relative image path:', err);
+      }
+    });
+  });
+}
+
+function attachExternalLinkHandlers(container) {
+  const links = container.querySelectorAll('a[href]');
+  links.forEach((link) => {
+    const href = link.getAttribute('href');
+    if (!href) return;
+    if (!(href.startsWith('http://') || href.startsWith('https://'))) return;
+
+    link.setAttribute('target', '_blank');
+    link.setAttribute('rel', 'noopener noreferrer');
+
+    link.addEventListener('click', (e) => {
+      // In Tauri, target="_blank" navigates inside the webview rather than
+      // launching the OS browser. Route through plugin-opener instead.
+      if (coreModule && coreModule.invoke) {
+        e.preventDefault();
+        coreModule.invoke('plugin:opener|open_url', { url: href }).catch((err) => {
+          console.warn('Failed to open URL via opener plugin:', err);
+        });
+      }
+      // Outside Tauri (browser dev mode), let the default handler run.
+    });
+  });
 }
 
 /**
