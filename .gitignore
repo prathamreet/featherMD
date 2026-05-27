@@ -27,3 +27,5 @@ dist-ssr
 ~/.tauri/
 *.key
 *.key.pub
+
+.agent
