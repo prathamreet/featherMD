@@ -334,10 +334,15 @@ async function openFile() {
 async function saveFile() {
   if ( isTauri && currentFilePath ) {
     try {
+      const { invoke } = await import( '@tauri-apps/api/core' );
+      await invoke( 'unwatch_file' );
+      
       const { writeTextFile } = await import( '@tauri-apps/plugin-fs' );
       await writeTextFile( currentFilePath, editorAPI.getValue() );
       isDirty = false;
       updateTitleBar();
+      
+      await invoke( 'watch_file', { path: currentFilePath } );
     } catch ( e ) {
       console.error( 'Failed to save file:', e );
     }
@@ -355,10 +360,15 @@ async function saveFileAs() {
         filters: [ { name: 'Markdown', extensions: [ 'md', 'markdown' ] } ],
       } );
       if ( path ) {
+        const { invoke } = await import( '@tauri-apps/api/core' );
+        await invoke( 'unwatch_file' );
+        
         await writeTextFile( path, editorAPI.getValue() );
         currentFilePath = path;
         isDirty = false;
         updateTitleBar();
+        
+        await invoke( 'watch_file', { path } );
       }
     } catch ( e ) {
       console.error( 'Failed to save file:', e );
