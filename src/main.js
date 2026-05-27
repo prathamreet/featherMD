@@ -263,9 +263,28 @@ function hello() {
   }
 } );
 
+let renderPending = false;
+let nextRenderText = null;
+
 // ---- Content Change Handler ----
 function onContentChange( text, isProgrammatic ) {
-  previewAPI.renderMarkdown( text );
+  if ( isProgrammatic ) {
+    renderPending = false;
+    nextRenderText = null;
+    previewAPI.renderMarkdown( text );
+  } else {
+    nextRenderText = text;
+    if ( !renderPending ) {
+      renderPending = true;
+      requestAnimationFrame( () => {
+        if ( nextRenderText !== null ) {
+          previewAPI.renderMarkdown( nextRenderText );
+          nextRenderText = null;
+        }
+        renderPending = false;
+      } );
+    }
+  }
   updateStatusBar( text );
   if ( isProgrammatic ) {
     isDirty = false;
