@@ -4,7 +4,7 @@
 // Covers: rendering, sanitization, GFM elements, link handling, scroll API, edge cases
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { initPreview } from '../src/preview.js';
+import { initPreview } from '../../src/preview/preview.js';
 
 /**
  * Helper: create a parent+child mock DOM pair with scrollable dimensions.

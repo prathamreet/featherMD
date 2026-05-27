@@ -5,7 +5,7 @@
 //         visibility, click-outside dismiss, setToolbarButtonActive utility
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { initToolbar, setToolbarButtonActive } from '../src/toolbar.js';
+import { initToolbar, setToolbarButtonActive } from '../../src/ui/toolbar.js';
 
 /**
  * Helper: create the full toolbar DOM structure required by toolbar.js
