@@ -97,7 +97,6 @@ export function initEditor(domEl, onChange, onCursorActivity) {
   });
 
   return {
-    getView: () => editorView,
     getValue: () => editorView.state.doc.toString(),
     setValue,
     getScrollRatio,

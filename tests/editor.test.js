@@ -36,7 +36,7 @@ describe('Editor -- Initialization', () => {
     expect(typeof api.setVimMode).toBe('function');
     expect(typeof api.focus).toBe('function');
     expect(typeof api.getScrollDOM).toBe('function');
-    expect(typeof api.getView).toBe('function');
+
   });
 
   it('should mount a CodeMirror editor inside the container', () => {
@@ -48,11 +48,7 @@ describe('Editor -- Initialization', () => {
     expect(api.getValue()).toBe('');
   });
 
-  it('should return a valid EditorView from getView()', () => {
-    const view = api.getView();
-    expect(view).toBeTruthy();
-    expect(view.state).toBeTruthy();
-  });
+
 
   it('should return a valid scrollDOM element', () => {
     const scrollDOM = api.getScrollDOM();
