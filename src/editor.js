@@ -7,7 +7,7 @@ import { EditorState, Compartment } from '@codemirror/state';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { languages } from '@codemirror/language-data';
 import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands';
-import { syntaxHighlighting, defaultHighlightStyle, indentOnInput, bracketMatching, foldGutter, foldKeymap } from '@codemirror/language';
+import { syntaxHighlighting, defaultHighlightStyle, indentOnInput, bracketMatching, foldGutter, foldKeymap, indentUnit } from '@codemirror/language';
 import { searchKeymap, highlightSelectionMatches } from '@codemirror/search';
 import { closeBrackets, closeBracketsKeymap, autocompletion } from '@codemirror/autocomplete';
 
@@ -53,7 +53,7 @@ export function initEditor(domEl, onChange, onCursorActivity) {
       vimCompartment.of([]),
       lineNumbersCompartment.of(lineNumbers()),
       lineWrappingCompartment.of(EditorView.lineWrapping),
-      tabSizeCompartment.of(EditorState.tabSize.of(4)),
+      tabSizeCompartment.of([EditorState.tabSize.of(4), indentUnit.of('    ')]),
       history(),
       foldGutter(),
       drawSelection(),
@@ -184,7 +184,10 @@ function setLineWrapping(wrap) {
 function setTabSize(size) {
   if (!editorView) return;
   editorView.dispatch({
-    effects: tabSizeCompartment.reconfigure(EditorState.tabSize.of(size)),
+    effects: tabSizeCompartment.reconfigure([
+      EditorState.tabSize.of(size),
+      indentUnit.of(' '.repeat(size)),
+    ]),
   });
 }
 
