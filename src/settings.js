@@ -15,7 +15,6 @@ export function initSettings(initialConfig, onConfigChange) {
   config = { ...initialConfig };
   onConfigChangeCallback = onConfigChange;
 
-  const panel = document.getElementById('settings-panel');
   const btnSettings = document.getElementById('btn-settings');
   const btnClose = document.getElementById('btn-close-settings');
 

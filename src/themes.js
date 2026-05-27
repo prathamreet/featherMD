@@ -15,9 +15,6 @@ const THEMES = [
   'gruvbox-dark',
 ];
 
-const LIGHT_THEMES = THEMES.slice(0, 5);
-const DARK_THEMES = THEMES.slice(5);
-
 let currentTheme = 'snow';
 let userPickedTheme = false;
 let onThemeChangeCallback = null;
