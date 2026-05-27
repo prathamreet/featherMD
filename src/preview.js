@@ -8,6 +8,12 @@ import hljs from 'highlight.js';
 
 let previewEl = null;
 
+// Dynamic import hoisting to prevent loop allocations and race conditions
+let convertFileSrc = null;
+import('@tauri-apps/api/core').then((m) => {
+  convertFileSrc = m.convertFileSrc;
+}).catch(() => {});
+
 /**
  * Initialize the preview pane
  * @param {HTMLElement} domEl - The preview content container
@@ -100,12 +106,18 @@ function renderMarkdown(mdString) {
             normalisedPath = normalisedPath.replace(/\//g, '\\');
           }
           
-          import('@tauri-apps/api/core').then(({ convertFileSrc }) => {
-            const assetUrl = convertFileSrc(normalisedPath);
-            img.setAttribute('src', assetUrl);
-          }).catch(err => {
-            console.warn('Failed to import convertFileSrc:', err);
-          });
+          if (convertFileSrc) {
+            img.setAttribute('src', convertFileSrc(normalisedPath));
+          } else {
+            import('@tauri-apps/api/core').then((m) => {
+              convertFileSrc = m.convertFileSrc;
+              if (img.isConnected) {
+                img.setAttribute('src', convertFileSrc(normalisedPath));
+              }
+            }).catch(err => {
+              console.warn('Failed to import convertFileSrc dynamically:', err);
+            });
+          }
         } catch (err) {
           console.warn('Failed to resolve relative image path:', err);
         }
