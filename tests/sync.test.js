@@ -5,7 +5,7 @@
 //         active source tracking, edge cases
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { initScrollSync, setSyncEnabled, isSyncEnabled } from '../src/sync.js';
+import { initScrollSync, setSyncEnabled } from '../src/sync.js';
 
 // Stub requestAnimationFrame globally to run callbacks synchronously in the test environment.
 vi.stubGlobal('requestAnimationFrame', (callback) => callback());
@@ -52,9 +52,7 @@ describe('Scroll Sync -- Core Behavior', () => {
     initScrollSync(editorAPI, previewAPI);
   });
 
-  it('should initialize with sync enabled by default', () => {
-    expect(isSyncEnabled()).toBe(true);
-  });
+  // (initialized state checked via scroll propagation tests below)
 
   it('should propagate editor scroll to preview when editor is active source', () => {
     editorScrollEl.dispatchEvent(new Event('mouseenter'));
@@ -106,12 +104,7 @@ describe('Scroll Sync -- Toggle', () => {
     initScrollSync(editorAPI, previewAPI);
   });
 
-  it('should allow toggling sync on and off', () => {
-    setSyncEnabled(false);
-    expect(isSyncEnabled()).toBe(false);
-    setSyncEnabled(true);
-    expect(isSyncEnabled()).toBe(true);
-  });
+  // (toggle enabled/disabled functionality is verified by propagation assertions below)
 
   it('should not propagate scroll when sync is disabled', () => {
     setSyncEnabled(false);

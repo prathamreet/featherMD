@@ -62,9 +62,4 @@ export function setSyncEnabled(enabled) {
   syncEnabled = enabled;
 }
 
-/**
- * Get current sync state
- */
-export function isSyncEnabled() {
-  return syncEnabled;
-}
+
