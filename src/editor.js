@@ -15,7 +15,6 @@ import { closeBrackets, closeBracketsKeymap, autocompletion } from '@codemirror/
 const lineNumbersCompartment = new Compartment();
 const lineWrappingCompartment = new Compartment();
 const tabSizeCompartment = new Compartment();
-const readOnlyCompartment = new Compartment();
 const vimCompartment = new Compartment();
 
 let editorView = null;
@@ -55,7 +54,6 @@ export function initEditor(domEl, onChange, onCursorActivity) {
       lineNumbersCompartment.of(lineNumbers()),
       lineWrappingCompartment.of(EditorView.lineWrapping),
       tabSizeCompartment.of(EditorState.tabSize.of(4)),
-      readOnlyCompartment.of([]),
       history(),
       foldGutter(),
       drawSelection(),
