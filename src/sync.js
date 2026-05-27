@@ -2,8 +2,6 @@
 // Feather MD — Synchronized Scrolling
 // ========================================
 
-let editorAPI = null;
-let previewAPI = null;
 let activeSource = null;
 let syncEnabled = true;
 let syncing = false;
@@ -14,9 +12,6 @@ let syncing = false;
  * @param {Object} preview - Preview API with getScrollRatio/setScrollRatio/getScrollDOM
  */
 export function initScrollSync(editor, preview) {
-  editorAPI = editor;
-  previewAPI = preview;
-
   const editorScrollEl = editor.getScrollDOM();
   const previewScrollEl = preview.getScrollDOM();
 
