@@ -3,7 +3,7 @@ name: 'publish'
 on:
   push:
     tags:
-      - 'v*' # Triggers the build whenever you push a tag starting with v (e.g. v1.0.0)
+      - 'v*' # Triggers the build whenever you push a tag starting with v (e.g. v1.3.0)
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
@@ -53,6 +53,8 @@ jobs:
         uses: tauri-apps/tauri-action@v0.5.12
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           tagName: "${{ github.ref_name }}" # Uses the pushed version tag name
           releaseName: 'Feather MD v__VERSION__'
@@ -60,3 +62,4 @@ jobs:
           releaseDraft: true # Sets as a draft first so you can edit before publishing
           prerelease: false
           args: "${{ matrix.args }}"
+          updaterJsonKeepUniversal: true # Ensures latest.json includes all platforms

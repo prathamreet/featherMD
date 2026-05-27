@@ -23,11 +23,12 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' asset: https: data:"
+      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' asset: https: data:; connect-src 'self' https://github.com https://objects.githubusercontent.com https://*.github.com"
     }
   },
   "bundle": {
     "active": true,
+    "createUpdaterArtifacts": true,
     "targets": [
       "nsis",
       "deb",
@@ -56,6 +57,14 @@
         "installerIcon": "icons/icon.ico",
         "installMode": "currentUser"
       }
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDFFRTIyOTRBRjBBNTVBODkKUldTSldxWHdTaW5pSG5vS0J5b0JLcmtQaHRMNE1xUW5xSUpjZS85b2dubnozaFNkMmtVeUFaWjUK",
+      "endpoints": [
+        "https://github.com/prathamreet/featherMD/releases/latest/download/latest.json"
+      ]
     }
   }
 }

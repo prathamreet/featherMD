@@ -9,6 +9,7 @@ import { initScrollSync, setSyncEnabled } from './sync.js';
 import { initThemes, setTheme, getCurrentTheme } from './themes.js';
 import { initSettings, toggleSettings } from './settings.js';
 import { initToolbar, setToolbarButtonActive } from './toolbar.js';
+import { initUpdater } from './updater.js';
 
 // ---- HMR-Resistant Persistent State ----
 // Preserves editor path, dirty state, and line endings across hot-reloads
@@ -160,6 +161,9 @@ window.addEventListener('DOMContentLoaded', async () => {
       console.log('Tauri API not available — running in browser mode');
     }
   }
+
+  // Check for app updates (Tauri only, non-blocking)
+  initUpdater();
 
   // Apply font settings
   applyFontSettings();
