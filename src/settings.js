@@ -96,9 +96,7 @@ export function closeSettings() {
     panel.hidden = true;
   }, 200);
 }
-export function isSettingsOpen() {
-  return settingsOpen;
-}
+
 
 /**
  * Update the settings panel UI to match a new configuration state

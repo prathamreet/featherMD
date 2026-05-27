@@ -5,7 +5,7 @@
 //         panel open/close toggle, close button, edge cases
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { initSettings, toggleSettings, closeSettings, isSettingsOpen } from '../src/settings.js';
+import { initSettings, toggleSettings, closeSettings } from '../src/settings.js';
 
 /**
  * Helper: create the settings panel DOM structure.
@@ -176,12 +176,12 @@ describe('Settings -- Panel Toggle', () => {
   });
 
   it('should start with panel closed', () => {
-    expect(isSettingsOpen()).toBe(false);
+    expect(document.getElementById('settings-panel').classList.contains('open')).toBe(false);
   });
 
   it('should open panel on first toggle', () => {
     toggleSettings();
-    expect(isSettingsOpen()).toBe(true);
+    expect(document.getElementById('settings-panel').classList.contains('open')).toBe(true);
     expect(document.getElementById('settings-panel').hidden).toBe(false);
   });
 
@@ -198,7 +198,7 @@ describe('Settings -- Panel Toggle', () => {
   it('should close panel on closeSettings()', () => {
     toggleSettings(); // open
     closeSettings();
-    expect(isSettingsOpen()).toBe(false);
+    expect(document.getElementById('settings-panel').classList.contains('open')).toBe(false);
   });
 
   it('should remove "active" class from settings button on close', () => {
@@ -210,7 +210,7 @@ describe('Settings -- Panel Toggle', () => {
   it('should close panel on second toggle (open then close)', () => {
     toggleSettings(); // open
     toggleSettings(); // close
-    expect(isSettingsOpen()).toBe(false);
+    expect(document.getElementById('settings-panel').classList.contains('open')).toBe(false);
   });
 });
 
@@ -226,6 +226,6 @@ describe('Settings -- Close Button', () => {
   it('should close settings when close button is clicked', () => {
     toggleSettings(); // open
     document.getElementById('btn-close-settings').click();
-    expect(isSettingsOpen()).toBe(false);
+    expect(document.getElementById('settings-panel').classList.contains('open')).toBe(false);
   });
 });
