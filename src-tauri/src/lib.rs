@@ -42,14 +42,12 @@ async fn watch_file(
     // 2. Create new signal
     let new_signal = Arc::new(AtomicBool::new(false));
     let new_signal_clone = new_signal.clone();
-    
-    // 3. (active_path storage removed to eliminate dead state)
-    
-    // 4. Get initial modified time
+
+    // 3. Get initial modified time
     let metadata = fs::metadata(&path).map_err(|e| e.to_string())?;
     let modified_time = metadata.modified().map_err(|e| e.to_string())?;
-    
-    // 5. Set new stop signal in state
+
+    // 4. Set new stop signal in state
     {
         let mut signal = state.stop_signal.lock().map_err(|e| e.to_string())?;
         *signal = new_signal;
