@@ -7,7 +7,7 @@ import { initEditor } from './editor.js';
 import { initPreview } from './preview.js';
 import { initScrollSync, setSyncEnabled } from './sync.js';
 import { initThemes, setTheme } from './themes.js';
-import { initSettings, toggleSettings } from './settings.js';
+import { initSettings, toggleSettings, updateRecentFiles, updateSettingsUI } from './settings.js';
 import { initToolbar, setToolbarButtonActive } from './toolbar.js';
 import { initUpdater } from './updater.js';
 
@@ -53,6 +53,10 @@ window.addEventListener( 'DOMContentLoaded', async () => {
   } catch {
     // Not running inside Tauri — browser mode
   }
+
+  // Load config natively or via localStorage before initializing UI
+  await loadConfig();
+
   // Initialize editor
   editorAPI = initEditor( document.getElementById( 'editor-pane' ), onContentChange, updateCursorPosition );
 
@@ -70,6 +74,9 @@ window.addEventListener( 'DOMContentLoaded', async () => {
 
   // Initialize settings
   initSettings( config, onSettingChange );
+
+  // Initialize recent files rendering
+  updateRecentFiles( config.recentFiles || [], onRecentFileSelect );
 
   // Initialize toolbar
   initToolbar( {
@@ -95,11 +102,13 @@ window.addEventListener( 'DOMContentLoaded', async () => {
       editorAPI.setLineWrapping( wrap );
       config.wordWrap = wrap;
       saveConfig();
+      updateSettingsUI( config );
     },
     onVimToggle: async ( enabled ) => {
       await editorAPI.setVimMode( enabled );
       config.vimMode = enabled;
       saveConfig();
+      updateSettingsUI( config );
     },
     onSettings: toggleSettings,
   } );
@@ -164,6 +173,35 @@ window.addEventListener( 'DOMContentLoaded', async () => {
       } );
     } catch {
       console.log( 'Tauri API not available — running in browser mode' );
+    }
+
+    // Listen for file-changed-on-disk event from Rust
+    try {
+      const { listen } = await import( '@tauri-apps/api/event' );
+      await listen( 'file-changed-on-disk', async ( event ) => {
+        const { path } = event.payload;
+        const { ask } = await import( '@tauri-apps/plugin-dialog' );
+        const reload = await ask(
+          `The file "${path}" has been modified on disk by another program.\n\nWould you like to reload it from disk? Unsaved editor changes will be overwritten.`,
+          {
+            title: 'File Modified Externally',
+            kind: 'warning',
+            okLabel: 'Reload File',
+            cancelLabel: 'Keep Editor Version',
+          }
+        );
+        if ( reload ) {
+          try {
+            const { readTextFile } = await import( '@tauri-apps/plugin-fs' );
+            const content = await readTextFile( path );
+            loadFileContent( path, content );
+          } catch ( e ) {
+            console.error( 'Failed to reload file after disk change:', e );
+          }
+        }
+      } );
+    } catch ( err ) {
+      console.error( 'Failed to set up disk file watcher listener:', err );
     }
   }
 
@@ -329,6 +367,15 @@ async function newFile() {
   updateTitleBar();
   updateStatusBar( '' );
   editorAPI.focus();
+
+  if ( isTauri ) {
+    try {
+      const { invoke } = await import( '@tauri-apps/api/core' );
+      await invoke( 'unwatch_file' );
+    } catch ( e ) {
+      console.error( 'Failed to unwatch file on newFile:', e );
+    }
+  }
 }
 
 function loadFileContent( path, content ) {
@@ -339,6 +386,44 @@ function loadFileContent( path, content ) {
   updateTitleBar();
   updateStatusBar( content );
   editorAPI.focus();
+
+  if ( path ) {
+    addToRecentFiles( path );
+    if ( isTauri ) {
+      import( '@tauri-apps/api/core' ).then( ( { invoke } ) => {
+        invoke( 'watch_file', { path } ).catch( e => console.error( 'Failed to watch file:', e ) );
+      } ).catch( e => console.error( 'Failed to load invoke module:', e ) );
+    }
+  }
+}
+
+async function onRecentFileSelect( filePath ) {
+  if ( !await confirmDiscardChanges() ) return;
+
+  if ( isTauri ) {
+    try {
+      const { readTextFile } = await import( '@tauri-apps/plugin-fs' );
+      const content = await readTextFile( filePath );
+      loadFileContent( filePath, content );
+    } catch ( e ) {
+      console.error( 'Failed to open recent file natively:', e );
+    }
+  } else {
+    console.warn( 'Browser mode cannot read local paths from disk.' );
+  }
+}
+
+function addToRecentFiles( path ) {
+  if ( !config.recentFiles ) {
+    config.recentFiles = [];
+  }
+  config.recentFiles = config.recentFiles.filter( p => p !== path );
+  config.recentFiles.unshift( path );
+  if ( config.recentFiles.length > 10 ) {
+    config.recentFiles.pop();
+  }
+  saveConfig();
+  updateRecentFiles( config.recentFiles, onRecentFileSelect );
 }
 
 // ---- UI Updates ----
@@ -488,6 +573,7 @@ function initKeyboardShortcuts() {
       editorAPI.setLineWrapping( isActive );
       config.wordWrap = isActive;
       saveConfig();
+      updateSettingsUI( config );
     }
 
     // Alt+S — Toggle sync scroll
@@ -628,25 +714,61 @@ function applyFontSettings() {
 }
 
 // ---- Config Persistence ----
-function saveConfig() {
-  // For now, save to localStorage (Tauri will use fs in Phase 3)
+async function saveConfig() {
   try {
     localStorage.setItem( 'feathermd-config', JSON.stringify( config ) );
-  } catch {
-    // Ignore storage errors
+  } catch ( err ) {
+    console.warn( 'Failed to save to localStorage:', err );
+  }
+
+  if ( isTauri ) {
+    try {
+      const { appConfigDir, join } = await import( '@tauri-apps/api/path' );
+      const { exists, writeTextFile, mkdir } = await import( '@tauri-apps/plugin-fs' );
+      
+      const configDir = await appConfigDir();
+      const feathermdDir = await join( configDir, 'feathermd' );
+      
+      const dirExists = await exists( feathermdDir );
+      if ( !dirExists ) {
+        await mkdir( feathermdDir, { recursive: true } );
+      }
+      
+      const configPath = await join( feathermdDir, 'config.json' );
+      await writeTextFile( configPath, JSON.stringify( config, null, 2 ) );
+    } catch ( err ) {
+      console.error( 'Failed to save config file natively:', err );
+    }
   }
 }
 
-function loadConfig() {
+async function loadConfig() {
+  if ( isTauri ) {
+    try {
+      const { appConfigDir, join } = await import( '@tauri-apps/api/path' );
+      const { exists, readTextFile } = await import( '@tauri-apps/plugin-fs' );
+      
+      const configDir = await appConfigDir();
+      const configPath = await join( configDir, 'feathermd', 'config.json' );
+      
+      const fileExists = await exists( configPath );
+      if ( fileExists ) {
+        const content = await readTextFile( configPath );
+        const parsed = JSON.parse( content );
+        Object.assign( config, parsed );
+        return;
+      }
+    } catch ( err ) {
+      console.warn( 'Failed to load native config, falling back to localStorage:', err );
+    }
+  }
+
   try {
     const stored = localStorage.getItem( 'feathermd-config' );
     if ( stored ) {
       Object.assign( config, JSON.parse( stored ) );
     }
-  } catch {
-    // Ignore storage errors
+  } catch ( err ) {
+    console.warn( 'Failed to load config from localStorage:', err );
   }
 }
-
-// Load config on module init
-loadConfig();
