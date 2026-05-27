@@ -9,8 +9,10 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "bench": "vitest bench",
     "lint": "eslint .",
+    "report": "node scripts/generate-report.js",
     "version": "node version-bump.js && git add src-tauri/tauri.conf.json src-tauri/Cargo.toml src-tauri/Cargo.lock"
   },
   "dependencies": {
