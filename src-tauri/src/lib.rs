@@ -10,7 +10,6 @@ struct InitialFileState(Mutex<Option<String>>);
 
 struct FileWatcher {
     active_path: Mutex<Option<String>>,
-    last_modified: Mutex<Option<SystemTime>>,
     stop_signal: Mutex<Arc<AtomicBool>>,
 }
 
@@ -54,10 +53,6 @@ async fn watch_file(
     // 4. Get initial modified time
     let metadata = fs::metadata(&path).map_err(|e| e.to_string())?;
     let modified_time = metadata.modified().map_err(|e| e.to_string())?;
-    {
-        let mut last_modified = state.last_modified.lock().map_err(|e| e.to_string())?;
-        *last_modified = Some(modified_time);
-    }
     
     // 5. Set new stop signal in state
     {
@@ -68,6 +63,7 @@ async fn watch_file(
     let path_clone = path.clone();
     tauri::async_runtime::spawn(async move {
         let mut last_time = modified_time;
+        let mut failure_count = 0;
         while !new_signal_clone.load(Ordering::Relaxed) {
             tokio::time::sleep(tokio::time::Duration::from_millis(1500)).await;
             
@@ -75,13 +71,22 @@ async fn watch_file(
                 break;
             }
             
-            if let Ok(metadata) = fs::metadata(&path_clone) {
-                if let Ok(current_time) = metadata.modified() {
-                    if current_time > last_time {
-                        last_time = current_time;
-                        let _ = window.emit("file-changed-on-disk", serde_json::json!({
-                            "path": path_clone
-                        }));
+            match fs::metadata(&path_clone) {
+                Ok(metadata) => {
+                    failure_count = 0;
+                    if let Ok(current_time) = metadata.modified() {
+                        if current_time > last_time {
+                            last_time = current_time;
+                            let _ = window.emit("file-changed-on-disk", serde_json::json!({
+                                "path": path_clone
+                            }));
+                        }
+                    }
+                }
+                Err(_) => {
+                    failure_count += 1;
+                    if failure_count >= 5 {
+                        break;
                     }
                 }
             }
@@ -111,7 +116,6 @@ pub fn run() {
         .manage(InitialFileState(Mutex::new(None)))
         .manage(FileWatcher {
             active_path: Mutex::new(None),
-            last_modified: Mutex::new(None),
             stop_signal: Mutex::new(Arc::new(AtomicBool::new(false))),
         })
         .invoke_handler(tauri::generate_handler![get_initial_file, watch_file, unwatch_file])
