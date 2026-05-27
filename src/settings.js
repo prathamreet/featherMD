@@ -2,6 +2,8 @@
 // Feather MD — Settings Panel Logic
 // ========================================
 
+import { escapeHtml } from './utils.js';
+
 let settingsOpen = false;
 let config = {};
 let onConfigChangeCallback = null;
@@ -15,11 +17,10 @@ export function initSettings(initialConfig, onConfigChange) {
   config = { ...initialConfig };
   onConfigChangeCallback = onConfigChange;
 
-  const btnSettings = document.getElementById('btn-settings');
+  // Note: the toolbar (toolbar.js) owns the click binding for #btn-settings via
+  // the onSettings callback. Binding it here too would call toggleSettings twice
+  // per click and immediately re-close the panel.
   const btnClose = document.getElementById('btn-close-settings');
-
-  // Open/close settings
-  btnSettings.addEventListener('click', toggleSettings);
   btnClose.addEventListener('click', closeSettings);
 
   // Font size
@@ -151,9 +152,4 @@ export function updateRecentFiles(recentFiles, onFileSelect) {
   });
 }
 
-function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
 

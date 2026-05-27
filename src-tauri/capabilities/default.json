@@ -9,10 +9,11 @@
     "dialog:default",
     "dialog:allow-open",
     "dialog:allow-save",
-    "dialog:allow-confirm",
     "fs:default",
     "fs:allow-read-text-file",
     "fs:allow-write-text-file",
+    "fs:allow-mkdir",
+    "core:window:allow-set-size",
     {
       "identifier": "fs:scope",
       "allow": [

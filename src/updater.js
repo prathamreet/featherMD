@@ -5,6 +5,8 @@
 // Shows an unobtrusive banner when a new version is available.
 // User can choose to download+install immediately, which relaunches the app.
 
+import { escapeHtml } from './utils.js';
+
 /**
  * Initialize the auto-update checker.
  * Call this once during app startup, after DOMContentLoaded.
@@ -96,11 +98,3 @@ function showUpdateBanner(update, relaunch) {
   });
 }
 
-/**
- * Minimal HTML escaper for version strings.
- */
-function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}

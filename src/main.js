@@ -41,6 +41,8 @@ let config = {
   syncScroll: true,
   recentFiles: [],
   splitRatio: 0.5,
+  windowWidth: 1200,
+  windowHeight: 800,
 };
 
 let isTauri = false;
@@ -113,6 +115,11 @@ window.addEventListener( 'DOMContentLoaded', async () => {
     onSettings: toggleSettings,
   } );
 
+  // Restore persisted user preferences (editor toggles, split ratio, toolbar
+  // button states). loadConfig() reads them, but until now nothing actually
+  // applied them on startup.
+  applyPersistedConfig();
+
   // Initialize divider drag
   initDividerDrag();
 
@@ -128,12 +135,6 @@ window.addEventListener( 'DOMContentLoaded', async () => {
   // Listen for Tauri file-opened event
   if ( isTauri ) {
     try {
-      const { listen } = await import( '@tauri-apps/api/event' );
-      listen( 'file-opened', ( event ) => {
-        const { path, content } = event.payload;
-        loadFileContent( path, content );
-      } );
-
       // Request initial file from backend if loaded via CLI / OS file association
       try {
         const { invoke } = await import( '@tauri-apps/api/core' );
@@ -180,6 +181,21 @@ window.addEventListener( 'DOMContentLoaded', async () => {
       const { listen } = await import( '@tauri-apps/api/event' );
       await listen( 'file-changed-on-disk', async ( event ) => {
         const { path } = event.payload;
+        // Ignore stale events for files we're no longer viewing.
+        if ( path !== currentFilePath ) return;
+
+        // PRD §3.1: clean buffer → auto-reload silently; dirty buffer → prompt.
+        if ( !isDirty ) {
+          try {
+            const { readTextFile } = await import( '@tauri-apps/plugin-fs' );
+            const content = await readTextFile( path );
+            loadFileContent( path, content );
+          } catch ( e ) {
+            console.error( 'Failed to auto-reload file after disk change:', e );
+          }
+          return;
+        }
+
         const { ask } = await import( '@tauri-apps/plugin-dialog' );
         const reload = await ask(
           `The file "${path}" has been modified on disk by another program.\n\nWould you like to reload it from disk? Unsaved editor changes will be overwritten.`,
@@ -203,10 +219,13 @@ window.addEventListener( 'DOMContentLoaded', async () => {
     } catch ( err ) {
       console.error( 'Failed to set up disk file watcher listener:', err );
     }
+
+    // Restore + persist window size (PRD §9 windowWidth/windowHeight)
+    await initWindowSize();
   }
 
-  // Check for app updates (Tauri only, non-blocking)
-  initUpdater();
+  // Check for app updates (Tauri only, non-blocking; errors caught internally)
+  initUpdater().catch(() => {});
 
   // Apply font settings
   applyFontSettings();
@@ -734,7 +753,9 @@ function onSettingChange( key, value ) {
       setToolbarButtonActive( 'btn-word-wrap', value );
       break;
     case 'vimMode':
-      editorAPI.setVimMode( value );
+      editorAPI.setVimMode( value ).catch( ( err ) => {
+        console.warn( 'Failed to toggle Vim mode:', err );
+      } );
       setToolbarButtonActive( 'btn-vim', value );
       break;
   }
@@ -749,6 +770,87 @@ function applyFontSettings() {
   }
   if ( config.fontFamily ) {
     document.documentElement.style.setProperty( '--font-mono', config.fontFamily );
+  }
+}
+
+// ---- Apply persisted preferences on startup ----
+// Editor defaults are line-numbers ON, line-wrapping ON, tab-size 4, vim OFF.
+// Sync defaults to enabled. Toolbar HTML hardcodes the .active class. None of
+// that respects saved user state until this runs.
+function applyPersistedConfig() {
+  if ( !editorAPI ) return;
+
+  const lineNumbers = config.lineNumbers !== false;
+  const wordWrap = config.wordWrap !== false;
+  const syncScroll = config.syncScroll !== false;
+  const vimMode = config.vimMode === true;
+  const tabSize = config.tabSize || 4;
+
+  editorAPI.setLineNumbers( lineNumbers );
+  editorAPI.setLineWrapping( wordWrap );
+  editorAPI.setTabSize( tabSize );
+  if ( vimMode ) {
+    // setVimMode is async (lazy import of @replit/codemirror-vim); fire-and-forget
+    editorAPI.setVimMode( true ).catch( ( err ) => {
+      console.warn( 'Failed to apply persisted vim mode:', err );
+    } );
+  }
+
+  setSyncEnabled( syncScroll );
+
+  reflectToolbarState( 'btn-line-numbers', lineNumbers );
+  reflectToolbarState( 'btn-word-wrap', wordWrap );
+  reflectToolbarState( 'btn-sync-scroll', syncScroll );
+  reflectToolbarState( 'btn-vim', vimMode );
+
+  // Split ratio
+  const ratio = typeof config.splitRatio === 'number' ? config.splitRatio : 0.5;
+  if ( Math.abs( ratio - 0.5 ) > 0.001 ) {
+    const editorPane = document.getElementById( 'editor-pane' );
+    const previewPane = document.getElementById( 'preview-pane' );
+    if ( editorPane && previewPane ) {
+      const clamped = Math.max( 0.2, Math.min( 0.8, ratio ) );
+      editorPane.style.width = `${ clamped * 100 }%`;
+      previewPane.style.width = `${ ( 1 - clamped ) * 100 }%`;
+    }
+  }
+}
+
+function reflectToolbarState( id, active ) {
+  const btn = document.getElementById( id );
+  if ( btn ) btn.classList.toggle( 'active', active );
+}
+
+// ---- Window size restore + persist (PRD §9) ----
+let windowResizeSaveTimer = null;
+let windowResizeUnlisten = null;
+async function initWindowSize() {
+  try {
+    const { getCurrentWindow, LogicalSize } = await import( '@tauri-apps/api/window' );
+    const appWindow = getCurrentWindow();
+
+    const w = Number( config.windowWidth );
+    const h = Number( config.windowHeight );
+    if ( Number.isFinite( w ) && Number.isFinite( h ) && w >= 600 && h >= 400
+      && ( w !== 1200 || h !== 800 ) ) {
+      try {
+        await appWindow.setSize( new LogicalSize( w, h ) );
+      } catch ( err ) {
+        console.warn( 'Failed to restore window size:', err );
+      }
+    }
+
+    // Store unlisten so the listener is not orphaned if called again
+    if ( windowResizeUnlisten ) windowResizeUnlisten();
+    windowResizeUnlisten = await appWindow.onResized( ( { payload: size } ) => {
+      if ( !size ) return;
+      config.windowWidth = size.width;
+      config.windowHeight = size.height;
+      clearTimeout( windowResizeSaveTimer );
+      windowResizeSaveTimer = setTimeout( saveConfig, 500 );
+    } );
+  } catch ( err ) {
+    console.warn( 'Failed to initialize window size persistence:', err );
   }
 }
 
