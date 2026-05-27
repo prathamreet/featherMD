@@ -170,12 +170,15 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   // Set initial content (welcome text) if no file was loaded
   if (!currentFilePath) {
-    const welcomeText = `# Welcome to Feather MD
+    const welcomeText = `# Welcome to Feather MD v1.3.1
 
 A lightweight markdown editor designed for speed and simplicity.
 
+> **Update Successful!** You are now running **v1.3.1**, successfully delivered via the newly integrated over-the-air (OTA) auto-updater pipeline.
+
 ## Features
 
+- **Auto-Updater** - Secure, instant OTA updates with cryptographic verification
 - **Live Preview** - Real-time visual rendering of your writing
 - **Synchronized Scrolling** - Dynamic split-pane scroll alignment
 - **Premium Themes** - Clean aesthetic color palettes
@@ -189,7 +192,7 @@ Type here to start, or load a document using \`Ctrl+O\`.
 
 \`\`\`javascript
 function hello() {
-  console.log("Hello from Feather MD!");
+  console.log("Hello from Feather MD v1.3.1!");
 }
 \`\`\`
 
@@ -200,13 +203,14 @@ function hello() {
 | Editor | Ready |
 | Preview | Ready |
 | Sync Scroll | Ready |
-| Themes | Ready |
+| Auto-Updater | Running |
 
 ### Task List
 
 - [x] Create initial draft
-- [x] Review markdown syntax
-- [ ] Export to final document
+- [x] Integrate auto-updater
+- [x] Release to production
+- [ ] Write new articles
 
 > **Tip:** Press \`Ctrl+?\` at any time to view all available keyboard shortcuts.
 `;
