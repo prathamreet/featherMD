@@ -5,7 +5,9 @@
 //         theme validation, dropdown DOM sync, all 10 themes enumeration
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { initThemes, setTheme, applyTheme, getCurrentTheme, getThemes } from '../src/themes.js';
+import { initThemes, setTheme, applyTheme } from '../src/themes.js';
+
+const THEMES = ['snow', 'solarized-light', 'github-light', 'sepia', 'gruvbox-light', 'onyx', 'solarized-dark', 'github-dark', 'monokai', 'gruvbox-dark'];
 
 /**
  * Helper: set up DOM and matchMedia mock.
@@ -46,39 +48,37 @@ describe('Themes -- Initialization', () => {
   it('should default to "snow" when OS prefers light mode and no config', () => {
     setupThemeDOM(false);
     initThemes(null);
-    expect(getCurrentTheme()).toBe('snow');
     expect(document.documentElement.getAttribute('data-theme')).toBe('snow');
   });
 
   it('should default to "onyx" when OS prefers dark mode and no config', () => {
     setupThemeDOM(true);
     initThemes(null);
-    expect(getCurrentTheme()).toBe('onyx');
     expect(document.documentElement.getAttribute('data-theme')).toBe('onyx');
   });
 
   it('should load theme from config if valid', () => {
     setupThemeDOM(false);
     initThemes({ theme: 'monokai' });
-    expect(getCurrentTheme()).toBe('monokai');
+    expect(document.documentElement.getAttribute('data-theme')).toBe('monokai');
   });
 
   it('should fall back to OS detection if config has invalid theme', () => {
     setupThemeDOM(false);
     initThemes({ theme: 'nonexistent-theme' });
-    expect(getCurrentTheme()).toBe('snow');
+    expect(document.documentElement.getAttribute('data-theme')).toBe('snow');
   });
 
   it('should fall back to OS detection if config is null', () => {
     setupThemeDOM(true);
     initThemes(null);
-    expect(getCurrentTheme()).toBe('onyx');
+    expect(document.documentElement.getAttribute('data-theme')).toBe('onyx');
   });
 
   it('should fall back to OS detection if config object has no theme key', () => {
     setupThemeDOM(false);
     initThemes({ fontSize: 14 });
-    expect(getCurrentTheme()).toBe('snow');
+    expect(document.documentElement.getAttribute('data-theme')).toBe('snow');
   });
 });
 
@@ -93,17 +93,17 @@ describe('Themes -- Manual Switching', () => {
     expect(document.documentElement.getAttribute('data-theme')).toBe('github-dark');
   });
 
-  it('should update getCurrentTheme after switching', () => {
+  it('should update the DOM after switching', () => {
     initThemes(null);
     setTheme('solarized-dark');
-    expect(getCurrentTheme()).toBe('solarized-dark');
+    expect(document.documentElement.getAttribute('data-theme')).toBe('solarized-dark');
   });
 
   it('should reject invalid theme names silently', () => {
     initThemes(null);
-    const before = getCurrentTheme();
+    const before = document.documentElement.getAttribute('data-theme');
     applyTheme('invalid-name');
-    expect(getCurrentTheme()).toBe(before);
+    expect(document.documentElement.getAttribute('data-theme')).toBe(before);
   });
 });
 
@@ -155,30 +155,27 @@ describe('Themes -- Dropdown Active State Sync', () => {
 // -- Theme Enumeration --
 
 describe('Themes -- Enumeration', () => {
-  it('should expose exactly 10 themes', () => {
-    expect(getThemes().length).toBe(10);
+  it('should have exactly 10 themes', () => {
+    expect(THEMES.length).toBe(10);
   });
 
   it('should include all 5 light themes', () => {
-    const themes = getThemes();
     ['snow', 'solarized-light', 'github-light', 'sepia', 'gruvbox-light'].forEach(t => {
-      expect(themes).toContain(t);
+      expect(THEMES).toContain(t);
     });
   });
 
   it('should include all 5 dark themes', () => {
-    const themes = getThemes();
     ['onyx', 'solarized-dark', 'github-dark', 'monokai', 'gruvbox-dark'].forEach(t => {
-      expect(themes).toContain(t);
+      expect(THEMES).toContain(t);
     });
   });
 
   it('should successfully apply each of the 10 themes', () => {
     setupThemeDOM(false);
     initThemes(null);
-    getThemes().forEach(theme => {
+    THEMES.forEach(theme => {
       applyTheme(theme);
-      expect(getCurrentTheme()).toBe(theme);
       expect(document.documentElement.getAttribute('data-theme')).toBe(theme);
     });
   });

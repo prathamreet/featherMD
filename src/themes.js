@@ -77,19 +77,7 @@ export function setTheme(name) {
   applyTheme(name);
 }
 
-/**
- * Get current theme name
- */
-export function getCurrentTheme() {
-  return currentTheme;
-}
 
-/**
- * Get all theme names
- */
-export function getThemes() {
-  return THEMES;
-}
 
 /**
  * Update theme dropdown menu active state
