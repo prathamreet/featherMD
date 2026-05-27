@@ -58,7 +58,7 @@ console.log( 'Step 2/5: Running ESLint Quality Check (npm run lint)' );
 console.log( '======================================================================' );
 let lintPassed = true;
 try {
-  execSync( 'npm run lint', { stdio: 'inherit', cwd: WORKSPACE_DIR } );
+  execSync( 'npm run lint -- --max-warnings=0', { stdio: 'inherit', cwd: WORKSPACE_DIR } );
   console.log( 'ESLint quality check passed cleanly with 0 errors and 0 warnings.\n' );
 } catch {
   lintPassed = false;
@@ -166,13 +166,13 @@ console.log( '=======================================================' );
 const testsPassed = testTotalCount > 0 && testPassedCount === testTotalCount;
 
 console.log( '\nSummary of Compliance:' );
-console.log( `- JS Bundle (Gzip): ${ jsGzipKB } KB (Target: < 450 KB) [${ parseFloat( jsGzipKB ) < 450 ? 'PASS' : 'WARN' }]` );
-console.log( `- CSS Bundle (Gzip): ${ cssGzipKB } KB (Target: < 30 KB) [PASS]` );
-console.log( `- Keystroke Render Latency: ${ fmtMean( keypressLatency ) } (Target: < 200 ms) [PASS]` );
-console.log( `- Theme Swap Duration: ${ fmtMean( themeSwitchSpeed ) } (Target: < 16 ms) [PASS]` );
-console.log( `- CPU Idle Constraint: ${ hasPollingLoops ? `Failed (polling in ${ pollingFiles.join( ', ' ) })` : 'Compliant (0 active timers)' } [${ hasPollingLoops ? 'FAIL' : 'PASS' }]` );
-console.log( `- Linter Quality: ${ lintPassed ? 'Clean (0 errors, 0 warnings)' : 'Errors/warnings present' } [${ lintPassed ? 'PASS' : 'FAIL' }]` );
-console.log( `- Test Suite: ${ testPassedCount }/${ testTotalCount } Passed [${ testsPassed ? 'PASS' : 'FAIL' }]\n` );
+console.log( `- JS Bundle (Gzip): ${ jsGzipKB } KB (Target: < 450 KB) [${ parseFloat( jsGzipKB ) < 450 ? '\x1b[32mPASS\x1b[0m' : '\x1b[33mWARN\x1b[0m' }]` );
+console.log( `- CSS Bundle (Gzip): ${ cssGzipKB } KB (Target: < 30 KB) [\x1b[32mPASS\x1b[0m]` );
+console.log( `- Keystroke Render Latency: ${ fmtMean( keypressLatency ) } (Target: < 200 ms) [\x1b[32mPASS\x1b[0m]` );
+console.log( `- Theme Swap Duration: ${ fmtMean( themeSwitchSpeed ) } (Target: < 16 ms) [\x1b[32mPASS\x1b[0m]` );
+console.log( `- CPU Idle Constraint: ${ hasPollingLoops ? `Failed (polling in ${ pollingFiles.join( ', ' ) })` : 'Compliant (0 active timers)' } [${ hasPollingLoops ? '\x1b[31mFAIL\x1b[0m' : '\x1b[32mPASS\x1b[0m' }]` );
+console.log( `- Linter Quality: ${ lintPassed ? 'Clean (0 errors, 0 warnings)' : 'Errors/warnings present' } [${ lintPassed ? '\x1b[32mPASS\x1b[0m' : '\x1b[31mFAIL\x1b[0m' }]` );
+console.log( `- Test Suite: ${ testPassedCount }/${ testTotalCount } Passed [${ testsPassed ? '\x1b[32mPASS\x1b[0m' : '\x1b[31mFAIL\x1b[0m' }]\n` );
 
 console.log( 'Performance Insights:' );
 console.log( `- Keystroke Render Latency: ${ fmtMean( keypressLatency ) } (${ fmtHz( benchmarkResults.find( b => b.name.includes( 'keystroke latency' ) )?.hz ) })` );
@@ -180,17 +180,17 @@ console.log( `- 5,000-line Stress Render: ${ fmtMean( complexDocLatency ) } (${ 
 console.log( `- Live Word Count Speed: ${ fmtMean( wordCountSpeed ) } (${ fmtHz( benchmarkResults.find( b => b.name.includes( 'word count' ) )?.hz ) })` );
 console.log( `- Theme Switch Latency: ${ fmtMean( themeSwitchSpeed ) } (${ fmtHz( benchmarkResults.find( b => b.name.includes( 'Switch themes' ) )?.hz ) })\n` );
 
-console.log('Polling Audit:');
-console.log(`- Result: ${hasPollingLoops ? 'NON-COMPLIANT' : 'Compliant. All background setInterval timers have been purged.'}`);
+console.log( 'Polling Audit:' );
+console.log( `- Result: ${ hasPollingLoops ? '\x1b[31mNON-COMPLIANT\x1b[0m' : '\x1b[32mCompliant\x1b[0m. All background setInterval timers have been purged.' }` );
 
 console.log( '\n=======================================================\n' );
 
 const hasFailed = !lintPassed || !testsPassed || hasPollingLoops;
 if ( hasFailed ) {
-  console.error( 'Audit failed: One or more critical compliance checks did not pass.' );
-  if ( !lintPassed ) console.error( '- Linter quality check failed.' );
-  if ( !testsPassed ) console.error( `- Unit tests failed (${ testTotalCount - testPassedCount } failing tests).` );
-  if ( hasPollingLoops ) console.error( `- CPU idle constraint violated (active polling found in: ${ pollingFiles.join( ', ' ) }).` );
+  console.error( '\x1b[1m\x1b[31mAudit failed: One or more critical compliance checks did not pass.\x1b[0m' );
+  if ( !lintPassed ) console.error( '\x1b[31m- Linter quality check failed.\x1b[0m' );
+  if ( !testsPassed ) console.error( `\x1b[31m- Unit tests failed (${ testTotalCount - testPassedCount } failing tests).\x1b[0m` );
+  if ( hasPollingLoops ) console.error( `\x1b[31m- CPU idle constraint violated (active polling found in: ${ pollingFiles.join( ', ' ) }).\x1b[0m` );
   console.log();
   process.exit( 1 );
 }
