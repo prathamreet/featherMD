@@ -15,9 +15,6 @@ const THEMES = [
   'gruvbox-dark',
 ];
 
-const LIGHT_THEMES = THEMES.slice(0, 5);
-const DARK_THEMES = THEMES.slice(5);
-
 let currentTheme = 'snow';
 let userPickedTheme = false;
 let onThemeChangeCallback = null;
@@ -80,19 +77,7 @@ export function setTheme(name) {
   applyTheme(name);
 }
 
-/**
- * Get current theme name
- */
-export function getCurrentTheme() {
-  return currentTheme;
-}
 
-/**
- * Get all theme names
- */
-export function getThemes() {
-  return THEMES;
-}
 
 /**
  * Update theme dropdown menu active state

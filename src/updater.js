@@ -11,8 +11,14 @@
  * Safe to call in browser mode — it silently no-ops.
  */
 export async function initUpdater() {
-  // Only run inside Tauri desktop context
-  const isTauri = '__TAURI_INTERNALS__' in window;
+  // Only run inside Tauri desktop context (probe via ESM import, not globals)
+  let isTauri = false;
+  try {
+    await import('@tauri-apps/api/core');
+    isTauri = true;
+  } catch {
+    // Not in Tauri
+  }
   if (!isTauri) return;
 
   try {

@@ -2,7 +2,7 @@ name: 'CI'
 
 on:
   push:
-    branches: [ 'main' ]
+    branches: [ '**' ]
   pull_request:
     branches: [ 'main' ]
 
@@ -10,8 +10,8 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
 jobs:
-  test-and-build:
-    name: 'Test and Build'
+  audit:
+    name: 'PRD Compliance & Performance Audit'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,31 +23,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Run Linter
-        run: npm run lint
-
-      - name: Run Unit Tests
-        run: npm run test
-
-      - name: Build Frontend Production Bundle
-        run: npm run build
-
-  benchmark:
-    name: 'Performance Benchmarks'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run Performance Benchmarks
-        run: npx vitest bench --run
+      - name: Run Unified PRD Audit
+        run: npm run report

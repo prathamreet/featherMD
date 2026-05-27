@@ -2,19 +2,14 @@ use tauri::{Manager, Emitter};
 use std::fs;
 use std::path::PathBuf;
 use std::sync::Mutex;
+use std::time::Duration;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
 
 struct InitialFileState(Mutex<Option<String>>);
 
-/// Read a file and return its content as a string
-#[tauri::command]
-async fn read_file(path: String) -> Result<String, String> {
-    fs::read_to_string(&path).map_err(|e| format!("Failed to read file '{}': {}", path, e))
-}
-
-/// Write content to a file
-#[tauri::command]
-async fn write_file(path: String, content: String) -> Result<(), String> {
-    fs::write(&path, &content).map_err(|e| format!("Failed to write file '{}': {}", path, e))
+struct FileWatcher {
+    stop_signal: Mutex<Arc<AtomicBool>>,
 }
 
 /// Get the initial file path and content if loaded via CLI argument
@@ -32,6 +27,77 @@ async fn get_initial_file(state: tauri::State<'_, InitialFileState>) -> Result<O
     Ok(None)
 }
 
+#[tauri::command]
+async fn watch_file(
+    window: tauri::Window,
+    path: String,
+    state: tauri::State<'_, FileWatcher>,
+) -> Result<(), String> {
+    // 1. Stop any existing watch thread
+    {
+        let signal = state.stop_signal.lock().map_err(|e| e.to_string())?;
+        signal.store(true, Ordering::Relaxed);
+    }
+    
+    // 2. Create new signal
+    let new_signal = Arc::new(AtomicBool::new(false));
+    let new_signal_clone = new_signal.clone();
+    
+    // 3. (active_path storage removed to eliminate dead state)
+    
+    // 4. Get initial modified time
+    let metadata = fs::metadata(&path).map_err(|e| e.to_string())?;
+    let modified_time = metadata.modified().map_err(|e| e.to_string())?;
+    
+    // 5. Set new stop signal in state
+    {
+        let mut signal = state.stop_signal.lock().map_err(|e| e.to_string())?;
+        *signal = new_signal;
+    }
+    
+    let path_clone = path.clone();
+    tauri::async_runtime::spawn(async move {
+        let mut last_time = modified_time;
+        let mut failure_count = 0;
+        while !new_signal_clone.load(Ordering::Relaxed) {
+            tokio::time::sleep(Duration::from_millis(1500)).await;
+            
+            if new_signal_clone.load(Ordering::Relaxed) {
+                break;
+            }
+            
+            match fs::metadata(&path_clone) {
+                Ok(metadata) => {
+                    failure_count = 0;
+                    if let Ok(current_time) = metadata.modified() {
+                        if current_time > last_time {
+                            last_time = current_time;
+                            let _ = window.emit("file-changed-on-disk", serde_json::json!({
+                                "path": path_clone
+                            }));
+                        }
+                    }
+                }
+                Err(_) => {
+                    failure_count += 1;
+                    if failure_count >= 5 {
+                        break;
+                    }
+                }
+            }
+        }
+    });
+    
+    Ok(())
+}
+
+#[tauri::command]
+async fn unwatch_file(state: tauri::State<'_, FileWatcher>) -> Result<(), String> {
+    let signal = state.stop_signal.lock().map_err(|e| e.to_string())?;
+    signal.store(true, Ordering::Relaxed);
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -41,7 +107,10 @@ pub fn run() {
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(InitialFileState(Mutex::new(None)))
-        .invoke_handler(tauri::generate_handler![read_file, write_file, get_initial_file])
+        .manage(FileWatcher {
+            stop_signal: Mutex::new(Arc::new(AtomicBool::new(false))),
+        })
+        .invoke_handler(tauri::generate_handler![get_initial_file, watch_file, unwatch_file])
         .setup(|app| {
             // Check for CLI file argument
             let args: Vec<String> = std::env::args().collect();

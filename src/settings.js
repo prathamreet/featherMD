@@ -15,7 +15,6 @@ export function initSettings(initialConfig, onConfigChange) {
   config = { ...initialConfig };
   onConfigChangeCallback = onConfigChange;
 
-  const panel = document.getElementById('settings-panel');
   const btnSettings = document.getElementById('btn-settings');
   const btnClose = document.getElementById('btn-close-settings');
 
@@ -98,6 +97,63 @@ export function closeSettings() {
   }, 200);
 }
 
-export function isSettingsOpen() {
-  return settingsOpen;
+
+/**
+ * Update the settings panel UI to match a new configuration state
+ */
+export function updateSettingsUI(newConfig) {
+  Object.assign(config, newConfig);
+
+  const wordWrapToggle = document.getElementById('setting-word-wrap');
+  if (wordWrapToggle) {
+    wordWrapToggle.checked = config.wordWrap !== false;
+  }
+
+  const vimToggle = document.getElementById('setting-vim-mode');
+  if (vimToggle) {
+    vimToggle.checked = config.vimMode === true;
+  }
 }
+
+/**
+ * Dynamically rebuild the Recent Files UI container
+ */
+export function updateRecentFiles(recentFiles, onFileSelect) {
+  const container = document.getElementById('settings-recent-files');
+  if (!container) return;
+
+  if (!recentFiles || recentFiles.length === 0) {
+    container.innerHTML = '<div class="recent-files-empty">No recent files</div>';
+    return;
+  }
+
+  container.innerHTML = '';
+  recentFiles.forEach((filePath) => {
+    const item = document.createElement('div');
+    item.className = 'recent-file-item';
+    
+    // Extract filename
+    const parts = filePath.replace(/\\/g, '/').split('/');
+    const name = parts.pop() || 'Untitled';
+    
+    item.innerHTML = `
+      <span class="recent-file-name" title="${escapeHtml(name)}">${escapeHtml(name)}</span>
+      <span class="recent-file-path" title="${escapeHtml(filePath)}">${escapeHtml(filePath)}</span>
+    `;
+    
+    item.addEventListener('click', () => {
+      if (onFileSelect) {
+        onFileSelect(filePath);
+      }
+    });
+    
+    container.appendChild(item);
+  });
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
