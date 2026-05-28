@@ -1,33 +1,36 @@
 # Security Policy
 
-## Supported Versions
+## Supported versions
 
-Only the latest active versions of Feather MD are supported with security updates. We strongly encourage all users to upgrade to the latest stable release to receive security patches automatically.
+Only the active stable release line receives security fixes. Upgrade to the latest version to keep receiving patches automatically through the in-app updater.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 1.3.x   | :white_check_mark: |
-| < 1.3   | :x:                |
+| Version | Supported |
+| ------- | --------- |
+| 1.3.x   | Yes       |
+| < 1.3   | No        |
 
-## Cryptographic Release Signing
+## Cryptographic release signing
 
-To ensure the integrity of the application, all official releases and updates are cryptographically signed using an Ed25519 keypair. The public key is embedded within the application binary. 
+Every official release and update is signed with an Ed25519 keypair. The public key is embedded in the application binary at build time.
 
-* **Public Key:** `dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDFFRTIyOTRBRjBBNTVBODkKUldTSldxWHdTaW5pSG5vS0J5b0JLcmtQaHRMNE1xUW5xSUpjZS85b2dubnozaFNkMmtVeUFaWjUK`
+Public key:
 
-During update checks, the auto-updater automatically downloads the signature files (`.sig`) and verifies them before performing any installations. If the signatures do not match, the update will be aborted immediately.
+```
+dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDFFRTIyOTRBRjBBNTVBODkKUldTSldxWHdTaW5pSG5vS0J5b0JLcmtQaHRMNE1xUW5xSUpjZS85b2dubnozaFNkMmtVeUFaWjUK
+```
 
-## Reporting a Vulnerability
+During an update check, the in-app updater downloads the matching signature (`.sig`) alongside the installer and verifies it before any file is written. If the signature does not match the embedded key, the update is aborted and the installed version is left untouched.
 
-If you discover a security vulnerability within Feather MD, please **do not** open a public issue. Instead, report it privately to the maintainers to protect our users.
+## Reporting a vulnerability
 
-Please report all security vulnerabilities to:
-* **prathamreet@gmail.com**
+Do not file public GitHub issues for security problems. Send a private report to:
 
-Please include the following information in your report:
-* A detailed description of the vulnerability.
-* Steps to reproduce the issue (and any proof-of-concept code).
-* The potential impact of the vulnerability.
+`prathamreet@gmail.com`
 
-We will acknowledge receipt of your report within 48 hours and work with you to resolve the issue as quickly as possible.
+Please include:
 
+* A clear description of the issue and the affected version.
+* Reproduction steps, ideally with a minimal proof of concept.
+* The impact you believe it has (data exposure, code execution, denial of service, and so on).
+
+We acknowledge reports within 48 hours, work with you on a fix, and credit you in the release notes if you want the credit.
