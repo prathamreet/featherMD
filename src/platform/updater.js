@@ -5,7 +5,7 @@
 // Shows an unobtrusive banner when a new version is available.
 // User can choose to download+install immediately, which relaunches the app.
 
-import { escapeHtml } from './utils.js';
+import { escapeHtml } from '../core/utils.js';
 
 /**
  * Initialize the auto-update checker.

@@ -1,38 +1,52 @@
 # Contributing to Feather MD
 
-Thank you for your interest in contributing to Feather MD! We welcome and appreciate contributions of all kinds, including bug fixes, feature suggestions, documentation updates, and UI styling improvements.
+Thanks for the interest. Bug fixes, feature work, documentation, theme additions, and accessibility improvements are all welcome.
 
-Please take a moment to review this document to ensure a smooth contribution process.
+## Reporting bugs and requesting features
 
-## How to Contribute
+1. Search [existing issues](https://github.com/prathamreet/featherMD/issues) first to avoid duplicates.
+2. Open a new issue using the relevant template.
+3. Include a clear description, reproduction steps, your OS and app version, and a screenshot or short clip if it helps.
 
-### 1. Reporting Bugs & Feature Requests
-* Search the existing issues to ensure it hasn't already been reported or requested.
-* If it is a new bug or feature, please open an issue using the appropriate template.
-* Provide a clear description, reproduction steps, and screenshots if applicable.
+## Local development
 
-### 2. Development Setup
-To set up the project locally:
-1. Clone the repository: `git clone https://github.com/prathamreet/featherMD.git`
-2. Install dependencies: `npm install`
-3. Run the development server: `npm run dev`
-4. Start unit tests: `npm run test`
+```bash
+git clone https://github.com/prathamreet/featherMD.git
+cd featherMD
+npm install
+npm run tauri dev
+```
 
-### 3. Creating a Pull Request
-1. Fork the repository and create your branch from `main`.
-2. Keep your changes focused. If you are fixing multiple unrelated bugs, please open separate branches/PRs.
-3. Make sure tests pass and linting succeeds:
-   ```bash
-   npm run lint
-   npm run test
-   ```
-4. Commit your changes using descriptive, conventional commit messages:
-   * Format: `type(scope): description` (e.g., `feat(editor): add autosave feature`)
-5. Open your pull request against the `main` branch of `featherMD`.
+Run the test and lint suites before pushing:
 
-## Coding Standards
-* We use **ESLint** for frontend formatting and coding standards. Please run the linter to ensure your code matches the existing style guide.
-* Write unit tests for new features where possible.
-* Keep style adjustments modern, clean, and responsive.
+```bash
+npm run lint
+npm test
+```
 
-Thank you again for contributing to make Feather MD better!
+A full audit (build, tests, benchmarks, bundle sizes) is available via:
+
+```bash
+npm run report
+```
+
+## Pull requests
+
+1. Fork the repo and branch from `main`.
+2. Keep each branch and PR focused on one logical change. Unrelated fixes go into separate PRs.
+3. Use Conventional Commits for the commit message: `type(scope): description`. Examples:
+   * `feat(editor): add autosave on focus loss`
+   * `fix(preview): escape attribute values inside code blocks`
+   * `refactor(ui): collapse status-bar updates into a single render pass`
+4. Make sure `npm run lint` and `npm test` pass.
+5. Open the PR against `main`. Link the issue it closes.
+
+## Coding standards
+
+* ESLint is the source of truth for JS style. Run `npm run lint` before committing.
+* Add or update tests for new behavior. Tests live under `tests/` and mirror `src/`.
+* Keep functions small and module boundaries clean. New top-level modules go under `src/core/`, `src/ui/`, `src/editor/`, `src/preview/`, or `src/platform/` depending on responsibility.
+* Tauri-specific code stays inside `src/platform/` or `src-tauri/`. Avoid leaking Tauri imports into the editor, preview, or UI modules.
+* No new runtime dependencies without a clear justification. Bundle size is a feature.
+
+Thanks for helping make Feather MD better.

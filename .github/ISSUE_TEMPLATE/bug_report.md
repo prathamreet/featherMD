@@ -1,31 +1,35 @@
 ---
 name: Bug report
-about: Create a report to help us improve Feather MD
+about: Something is wrong or behaving unexpectedly in Feather MD
 title: 'bug: '
 labels: bug
 assignees: ''
-
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+## What happened
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '...'
-3. Scroll down to '...'
-4. See error
+A clear description of the bug.
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+## Steps to reproduce
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+1. ...
+2. ...
+3. ...
 
-**Environment (please complete the following information):**
-- OS: [e.g. Windows 11, macOS Sequoia, Ubuntu 24.04]
-- Feather MD Version: [e.g. v1.2.7]
+## Expected behavior
 
-**Additional context**
-Add any other context about the problem here.
+What you thought would happen.
+
+## Screenshots or recording
+
+If the bug is visual, drop a screenshot or a short clip here.
+
+## Environment
+
+- OS: [Windows 11, Ubuntu 24.04, etc.]
+- Feather MD version: [v1.3.4]
+- Installed via: [release installer / built from source]
+
+## Logs or extra context
+
+Console output, stack traces, or anything else that might help.

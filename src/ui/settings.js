@@ -2,7 +2,7 @@
 // Feather MD — Settings Panel Logic
 // ========================================
 
-import { escapeHtml } from './utils.js';
+import { escapeHtml } from '../core/utils.js';
 
 let settingsOpen = false;
 let config = {};

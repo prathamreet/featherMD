@@ -5,7 +5,7 @@
 //         panel open/close toggle, close button, edge cases
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { initSettings, toggleSettings, closeSettings } from '../src/settings.js';
+import { initSettings, toggleSettings, closeSettings } from '../../src/ui/settings.js';
 
 /**
  * Helper: create the settings panel DOM structure.

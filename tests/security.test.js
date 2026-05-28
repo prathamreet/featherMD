@@ -11,8 +11,9 @@ import { resolve } from 'path';
 const LIB_RS_PATH = resolve(__dirname, '../src-tauri/src/lib.rs');
 const TAURI_CONF_PATH = resolve(__dirname, '../src-tauri/tauri.conf.json');
 const MAIN_JS_PATH = resolve(__dirname, '../src/main.js');
-const EDITOR_JS_PATH = resolve(__dirname, '../src/editor.js');
-const UPDATER_JS_PATH = resolve(__dirname, '../src/updater.js');
+const EDITOR_JS_PATH = resolve(__dirname, '../src/editor/editor.js');
+const UPDATER_JS_PATH = resolve(__dirname, '../src/platform/updater.js');
+const FILE_IO_JS_PATH = resolve(__dirname, '../src/core/file-io.js');
 
 // -- SEC-01 / SEC-02: No unsandboxed file commands --
 
@@ -102,21 +103,21 @@ describe('Security -- PERF-01: No setInterval Polling Loops', () => {
 
 describe('Security -- CODE-01: Consolidated Unsaved Changes Guard', () => {
   it('should have a single confirmDiscardChanges function', () => {
-    const mainJs = readFileSync(MAIN_JS_PATH, 'utf-8');
-    const matches = mainJs.match(/function\s+confirmDiscardChanges/g);
+    const fileIo = readFileSync(FILE_IO_JS_PATH, 'utf-8');
+    const matches = fileIo.match(/function\s+confirmDiscardChanges/g);
     expect(matches).toBeTruthy();
     expect(matches.length).toBe(1);
   });
 
   it('should use confirmDiscardChanges in openFile', () => {
-    const mainJs = readFileSync(MAIN_JS_PATH, 'utf-8');
-    const openFileFn = mainJs.substring(mainJs.indexOf('async function openFile'));
+    const fileIo = readFileSync(FILE_IO_JS_PATH, 'utf-8');
+    const openFileFn = fileIo.substring(fileIo.indexOf('async function openFile'));
     expect(openFileFn).toContain('confirmDiscardChanges');
   });
 
   it('should use confirmDiscardChanges in newFile', () => {
-    const mainJs = readFileSync(MAIN_JS_PATH, 'utf-8');
-    const newFileFn = mainJs.substring(mainJs.indexOf('async function newFile'));
+    const fileIo = readFileSync(FILE_IO_JS_PATH, 'utf-8');
+    const newFileFn = fileIo.substring(fileIo.indexOf('async function newFile'));
     expect(newFileFn).toContain('confirmDiscardChanges');
   });
 });

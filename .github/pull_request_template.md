@@ -1,22 +1,33 @@
-## Description
+## Summary
 
-Please include a summary of the changes and which issue is fixed. Please also include relevant motivation and context.
+What changes, and why. One short paragraph.
 
-Fixes # (issue)
+Closes #
 
-## Type of Change
+## Type of change
 
-Please delete options that are not relevant.
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Refactor (no behavior change)
+- [ ] Breaking change
+- [ ] Documentation only
+- [ ] Build, CI, or tooling
 
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] Documentation update
+## How I tested
+
+- [ ] `npm run lint` is clean
+- [ ] `npm test` passes locally
+- [ ] `npm run tauri dev` runs without regressions on my OS
+- [ ] (If perf-sensitive) `npm run bench` shows no regression
+
+## Screenshots
+
+Required for any UI change. Before / after side by side helps.
 
 ## Checklist
 
-- [ ] My code follows the style guidelines of this project
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] My changes generate no new warnings
-- [ ] Unit tests pass locally with my changes
+- [ ] My change keeps the bundle and binary size budgets in mind.
+- [ ] No new runtime dependency without a clear reason.
+- [ ] Tauri imports stay inside `src/platform/` or `src-tauri/`.
+- [ ] Tests added or updated for new behavior.
+- [ ] Commit messages follow `type(scope): description`.

@@ -5,7 +5,7 @@
 //         theme validation, dropdown DOM sync, all 10 themes enumeration
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { initThemes, setTheme, applyTheme } from '../src/themes.js';
+import { initThemes, setTheme, applyTheme } from '../../src/ui/themes.js';
 
 const THEMES = ['snow', 'solarized-light', 'github-light', 'sepia', 'gruvbox-light', 'onyx', 'solarized-dark', 'github-dark', 'monokai', 'gruvbox-dark'];
 

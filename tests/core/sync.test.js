@@ -5,7 +5,7 @@
 //         active source tracking, edge cases
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { initScrollSync, setSyncEnabled } from '../src/sync.js';
+import { initScrollSync, setSyncEnabled } from '../../src/core/sync.js';
 
 // Stub requestAnimationFrame globally to run callbacks synchronously in the test environment.
 vi.stubGlobal('requestAnimationFrame', (callback) => callback());

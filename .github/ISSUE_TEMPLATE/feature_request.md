@@ -1,20 +1,27 @@
 ---
 name: Feature request
-about: Suggest an idea or enhancement for Feather MD
+about: Suggest a new capability or improvement for Feather MD
 title: 'feat: '
 labels: enhancement
 assignees: ''
-
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. (e.g. I'm always frustrated when...)
+## The problem
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+What pain point are you running into today? Skip the proposed solution for a moment and describe the friction.
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+## The solution you have in mind
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+What you think Feather MD should do.
+
+## Alternatives considered
+
+Other approaches you weighed and why they fell short.
+
+## Fit with the project
+
+Feather MD optimizes for small footprint, fast startup, and a focused dual-pane experience. Briefly note how the feature fits inside those constraints (or argue for relaxing them).
+
+## Mockups or references
+
+Screenshots, sketches, or links to other tools that do this well.

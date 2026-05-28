@@ -6,7 +6,7 @@
 //         scroll ratio API, onCursorActivity callback
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { initEditor } from '../src/editor.js';
+import { initEditor } from '../../src/editor/editor.js';
 
 // -- Initialization & API Surface --
 

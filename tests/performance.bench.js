@@ -1,6 +1,6 @@
 import { describe, bench } from 'vitest';
-import { initPreview } from '../src/preview.js';
-import { initThemes, applyTheme } from '../src/themes.js';
+import { initPreview } from '../src/preview/preview.js';
+import { initThemes, applyTheme } from '../src/ui/themes.js';
 import { vi } from 'vitest';
 
 // Mock window.matchMedia at the global level
