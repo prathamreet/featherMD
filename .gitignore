@@ -7,25 +7,53 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Dependencies and build output
+node_modules/
+dist/
+dist-ssr/
+coverage/
 *.local
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+# Rust / Tauri build artifacts
+src-tauri/target/
+src-tauri/gen/schemas/*.json
+src-tauri/WixTools/
+src-tauri/.cargo/
+
+# Audit and test report output
+test-results-raw.json
+*.tsbuildinfo
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
 
 # Tauri signing keys (NEVER commit these)
 ~/.tauri/
 *.key
 *.key.pub
 
-.agent
+# Editor and IDE
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.bak
+*.tmp
+*.swp
+*.orig
+
+# Agent workspace
+.agent/
