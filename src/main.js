@@ -1,5 +1,5 @@
-// Feather MD — application entry. Wires editor ↔ preview ↔ Tauri IPC ↔
-// toolbar ↔ settings. Each subsystem lives in its own module; this file is
+// Feather MD - application entry. Wires editor, preview, Tauri IPC,
+// menu bar, and settings. Each subsystem lives in its own module; this file is
 // orchestration only.
 
 import './core/state.js';
@@ -11,6 +11,7 @@ import {
   loadFileContent,
   openFile,
   saveFile,
+  saveFileAs,
   newFile,
   onRecentFileSelect,
 } from './core/file-io.js';
@@ -21,8 +22,15 @@ import { initEditor } from './editor/editor.js';
 import { initPreview } from './preview/preview.js';
 
 import { initThemes, setTheme } from './ui/themes.js';
-import { initSettings, toggleSettings, updateRecentFiles, updateSettingsUI } from './ui/settings.js';
-import { initToolbar, setToolbarButtonActive } from './ui/toolbar.js';
+import { updateRecentFiles } from './ui/settings.js';
+import {
+  initToolbar,
+  setMenuChecked,
+  setActiveTheme,
+  setActiveFontFamily,
+  setActiveTabSize,
+  setFontSizeSlider,
+} from './ui/toolbar.js';
 import { initShortcutsModal, showUnsavedDialog } from './ui/dialogs.js';
 import { initStatusBar, updateTitleBar, updateStatusBar, updateCursorPosition } from './ui/status-bar.js';
 import { initDividerDrag } from './ui/divider.js';
@@ -59,13 +67,14 @@ window.addEventListener( 'DOMContentLoaded', async () => {
     saveConfig();
   } );
 
-  initSettings( config, onSettingChange );
   updateRecentFiles( config.recentFiles || [], onRecentFileSelect );
 
   initToolbar( {
     onOpen: openFile,
     onSave: saveFile,
+    onSaveAs: saveFileAs,
     onNew: newFile,
+    onPrint: () => window.print(),
     onSyncToggle: ( enabled ) => {
       setSyncEnabled( enabled );
       config.syncScroll = enabled;
@@ -85,15 +94,22 @@ window.addEventListener( 'DOMContentLoaded', async () => {
       editorAPI.setLineWrapping( wrap );
       config.wordWrap = wrap;
       saveConfig();
-      updateSettingsUI( config );
     },
-    onVimToggle: async ( enabled ) => {
-      await editorAPI.setVimMode( enabled );
-      config.vimMode = enabled;
+    onFontSize: ( size ) => {
+      document.documentElement.style.setProperty( '--font-size', `${ size }px` );
+      config.fontSize = size;
       saveConfig();
-      updateSettingsUI( config );
     },
-    onSettings: toggleSettings,
+    onFontFamily: ( font ) => {
+      document.documentElement.style.setProperty( '--font-mono', font );
+      config.fontFamily = font;
+      saveConfig();
+    },
+    onTabSize: ( size ) => {
+      editorAPI.setTabSize( size );
+      config.tabSize = size;
+      saveConfig();
+    },
   } );
 
   applyPersistedConfig();
@@ -134,6 +150,15 @@ async function wireTauriListeners() {
     appWindow.onCloseRequested( async ( event ) => {
       event.preventDefault();
 
+      // Save window maximized state before closing
+      try {
+        const maximized = await appWindow.isMaximized();
+        config.windowMaximized = maximized;
+        await saveConfig();
+      } catch {
+        // ignore
+      }
+
       if ( isDirty ) {
         const response = await showUnsavedDialog();
 
@@ -151,7 +176,7 @@ async function wireTauriListeners() {
       }
     } );
   } catch {
-    console.log( 'Tauri API not available — running in browser mode' );
+    console.log( 'Tauri API not available - running in browser mode' );
   }
 
   try {
@@ -229,72 +254,31 @@ function onContentChange( text, isProgrammatic ) {
   }
 }
 
-// ---- Settings change handler ----
-function onSettingChange( key, value ) {
-  config[ key ] = value;
-
-  switch ( key ) {
-    case 'fontSize':
-      document.documentElement.style.setProperty( '--font-size', `${ value }px` );
-      break;
-    case 'fontFamily':
-      document.documentElement.style.setProperty( '--font-mono', value );
-      break;
-    case 'tabSize':
-      editorAPI.setTabSize( value );
-      break;
-    case 'wordWrap':
-      editorAPI.setLineWrapping( value );
-      setToolbarButtonActive( 'btn-word-wrap', value );
-      break;
-    case 'vimMode':
-      editorAPI.setVimMode( value ).catch( ( err ) => {
-        console.warn( 'Failed to toggle Vim mode:', err );
-      } );
-      setToolbarButtonActive( 'btn-vim', value );
-      break;
-  }
-
-  saveConfig();
-}
-
-function applyFontSettings() {
-  if ( config.fontSize ) {
-    document.documentElement.style.setProperty( '--font-size', `${ config.fontSize }px` );
-  }
-  if ( config.fontFamily ) {
-    document.documentElement.style.setProperty( '--font-mono', config.fontFamily );
-  }
-}
-
 // ---- Apply persisted preferences on startup ----
-// Editor defaults are line-numbers ON, line-wrapping ON, tab-size 4, vim OFF.
-// Sync defaults to enabled. Toolbar HTML hardcodes the .active class. None of
-// that respects saved user state until this runs.
 function applyPersistedConfig() {
   if ( !editorAPI ) return;
 
   const lineNumbers = config.lineNumbers !== false;
   const wordWrap = config.wordWrap !== false;
   const syncScroll = config.syncScroll !== false;
-  const vimMode = config.vimMode === true;
   const tabSize = config.tabSize || 4;
 
   editorAPI.setLineNumbers( lineNumbers );
   editorAPI.setLineWrapping( wordWrap );
   editorAPI.setTabSize( tabSize );
-  if ( vimMode ) {
-    editorAPI.setVimMode( true ).catch( ( err ) => {
-      console.warn( 'Failed to apply persisted vim mode:', err );
-    } );
-  }
 
   setSyncEnabled( syncScroll );
 
-  reflectToolbarState( 'btn-line-numbers', lineNumbers );
-  reflectToolbarState( 'btn-word-wrap', wordWrap );
-  reflectToolbarState( 'btn-sync-scroll', syncScroll );
-  reflectToolbarState( 'btn-vim', vimMode );
+  // Reflect state in View menu
+  setMenuChecked( 'toggle-line-numbers', lineNumbers );
+  setMenuChecked( 'toggle-word-wrap', wordWrap );
+  setMenuChecked( 'toggle-sync', syncScroll );
+
+  // Reflect state in Style menu
+  setActiveTheme( config.theme || 'snow' );
+  setActiveFontFamily( config.fontFamily || "'JetBrains Mono', monospace" );
+  setActiveTabSize( tabSize );
+  setFontSizeSlider( config.fontSize || 14 );
 
   const ratio = typeof config.splitRatio === 'number' ? config.splitRatio : 0.5;
   if ( Math.abs( ratio - 0.5 ) > 0.001 ) {
@@ -308,7 +292,11 @@ function applyPersistedConfig() {
   }
 }
 
-function reflectToolbarState( id, active ) {
-  const btn = document.getElementById( id );
-  if ( btn ) btn.classList.toggle( 'active', active );
+function applyFontSettings() {
+  if ( config.fontSize ) {
+    document.documentElement.style.setProperty( '--font-size', `${ config.fontSize }px` );
+  }
+  if ( config.fontFamily ) {
+    document.documentElement.style.setProperty( '--font-mono', config.fontFamily );
+  }
 }
