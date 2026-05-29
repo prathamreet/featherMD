@@ -15,6 +15,17 @@ import {
 
 document.addEventListener( 'DOMContentLoaded', () => {
 
+  // Disable browser scroll restoration and force viewport to the top on reload
+  if ( 'scrollRestoration' in history ) {
+    history.scrollRestoration = 'manual';
+  }
+  window.scrollTo( 0, 0 );
+
+  // Prevent browser from auto-scrolling to hashtag sections on reload/refresh
+  if ( window.location.hash ) {
+    history.replaceState( "", document.title, window.location.pathname + window.location.search );
+  }
+
   // 1. Initial State & Configuration Template
   const INITIAL_DOC = `# Feather MD — Pure Performance Markdown
 

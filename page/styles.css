@@ -2296,10 +2296,10 @@ p {
 .hero-stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 32px;
-  max-width: 900px;
+  gap: 48px;
+  max-width: 1000px;
   margin: 80px auto 0 auto;
-  padding: 24px 0;
+  padding: 36px 0;
   border-top: 1px solid var(--page-border);
   border-bottom: 1px solid var(--page-border);
 }
@@ -2307,7 +2307,7 @@ p {
 @media (max-width: 768px) {
   .hero-stats-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
+    gap: 32px;
     padding: 32px 16px;
   }
 }
@@ -2316,7 +2316,7 @@ p {
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
 .hero-stat-value {
