@@ -390,4 +390,53 @@ Give it a spin. Type some markdown, drag the center divider to resize, adjust th
   demoEditor.addEventListener( 'input', () => {
     updatePreview();
   } );
+
+  // 8. Dynamic live fetch for Latest GitHub Release assets (Generic & Non-hardcoded)
+  async function fetchLatestReleaseDetails() {
+    try {
+      const response = await fetch( 'https://api.github.com/repos/prathamreet/featherMD/releases/latest' );
+      if ( !response.ok ) return;
+      const data = await response.json();
+      
+      const assets = data.assets || [];
+      const versionTag = data.tag_name || 'latest';
+
+      // Update version tag elements dynamically
+      [ 'dl-win-ver', 'dl-deb-ver', 'dl-app-ver' ].forEach( id => {
+        const el = document.getElementById( id );
+        if ( el ) el.textContent = versionTag;
+      } );
+
+      // Map assets to columns dynamically
+      assets.forEach( asset => {
+        const name = asset.name.toLowerCase();
+        const sizeMB = ( asset.size / ( 1024 * 1024 ) ).toFixed( 1 );
+        const url = asset.browser_download_url;
+
+        if ( name.endsWith( '.exe' ) ) {
+          const btn = document.getElementById( 'dl-win-btn' );
+          if ( btn ) {
+            btn.setAttribute( 'href', url );
+            btn.querySelector( 'span' ).textContent = `Download .exe (${ sizeMB } MB)`;
+          }
+        } else if ( name.endsWith( '.deb' ) ) {
+          const btn = document.getElementById( 'dl-deb-btn' );
+          if ( btn ) {
+            btn.setAttribute( 'href', url );
+            btn.querySelector( 'span' ).textContent = `Download .deb (${ sizeMB } MB)`;
+          }
+        } else if ( name.endsWith( '.appimage' ) ) {
+          const btn = document.getElementById( 'dl-app-btn' );
+          if ( btn ) {
+            btn.setAttribute( 'href', url );
+            btn.querySelector( 'span' ).textContent = `Download .AppImage (${ sizeMB } MB)`;
+          }
+        }
+      } );
+    } catch ( err ) {
+      console.warn( 'Failed to dynamically fetch latest release:', err );
+    }
+  }
+
+  fetchLatestReleaseDetails();
 } );
