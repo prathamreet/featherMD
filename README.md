@@ -60,13 +60,13 @@ Feather MD is the small, fast thing that lives between those edges.
 
 ### Download a release
 
-[Latest release (v1.3.4)](https://github.com/prathamreet/featherMD/releases/latest):
+[Latest release (v1.4.1)](https://github.com/prathamreet/featherMD/releases/latest):
 
 | Platform | File | Size |
 | --- | --- | --- |
-| Windows 10 / 11 | `Feather.MD_1.3.4_x64-setup.exe` (NSIS) | 5.03 MB |
-| Debian / Ubuntu | `Feather.MD_1.3.4_amd64.deb` | 7.84 MB |
-| Any Linux distro | `Feather.MD_1.3.4_amd64.AppImage` | 81.5 MB |
+| Windows 10 / 11 | `Feather.MD_1.4.1_x64-setup.exe` (NSIS) | 5.0 MB |
+| Debian / Ubuntu | `Feather.MD_1.4.1_amd64.deb` | 7.8 MB |
+| Any Linux distro | `Feather.MD_1.4.1_amd64.AppImage` | 81.4 MB |
 
 > The AppImage bundles its own GTK and WebKit runtime so it works on any Linux distro without system packages. The `.deb` uses your system libraries and stays small.
 
@@ -110,18 +110,20 @@ Release bundles land in:
 
 | | |
 | --- | --- |
+| **Premium Unified Header** | Combines legacy title-bar and toolbar into a singular, 40px bar. Mathematically centered active document title horizontally with transparent pointer events. |
+| **Hover Dropdown Menus** | Mouse hover-activated dropdown menus (File, View, Style) with a 180ms hover-intent delay and diagonal pointer bridge to prevent accidental dismissals. |
 | **Native dual-pane** | Editor on the left, live preview on the right. Resizable from 20% to 80%. Double-click the divider to reset to center. |
 | **Bidirectional scroll sync** | Scroll either pane, the other follows. Ratio-based, no jitter on long documents. Toggleable. |
 | **CodeMirror 6 editor** | Markdown syntax styling, code folding, bracket and quote auto-pair, active-line highlight, find and replace. |
-| **Vim mode, optional** | Lazy-loaded only when you toggle it. Zero cost if you do not. |
 | **Highlight.js code blocks** | On-demand language loading for fenced blocks. Hundreds of languages, no startup penalty. |
-| **10 built-in themes** | Five light, five dark. Switches in under 1 ms. CSS variables, zero relayout. |
+| **10 built-in themes** | Five light, five dark. Switches in under 1 ms. CSS variables locked to `:root` to preserve text contrast, zero relayout. |
+| **Advanced Printing Engine** | Bypasses browser native headers/footers (hostnames, local times, page URLs) and viewport-clipping limits to support infinite multi-page document prints. |
 | **External-change watcher** | If another program edits your open file, Feather MD reloads it. Asks first if you have unsaved edits. |
-| **Recent files** | Up to ten, one click to re-open from the settings panel. |
+| **Recent files** | Up to ten, one click to re-open from the File -> Recent Files dropdown submenu, updating instantly on new saves. |
 | **CLI launch** | `feathermd <path>` opens a file directly. Useful from a terminal or a shell hotkey. |
 | **OS file associations** | `.md` and `.markdown` open in Feather MD on double-click. |
-| **Signed auto-updates** | Ed25519-signed, verified before installation, in-place relaunch. |
-| **Persistent preferences** | Theme, split ratio, window size, editor toggles, recent files. Saved to the OS config directory natively. |
+| **Signed auto-updates** | Cryptographically secure (Ed25519-signed) auto-update checking on startup with a minimalist slide-in notification banner and one-click installation. |
+| **Persistent preferences** | Restores customizations natively on startup (theme, font family, font size, tab size, line numbers, word wrapping, scroll-sync, split ratio, window size, and windowMaximized state). |
 
 ## Performance budget
 
@@ -137,7 +139,7 @@ Real numbers from `npm run report` on the current build. Targets are PRD constra
 | Theme swap | < 0.1 ms | < 16 ms |
 | Background timers at idle | 0 | 0 |
 | CSS bundle (gzip) | 19 KB | < 30 KB |
-| Test suite | 221 / 221 passing | 100% |
+| Test suite | 204 / 204 passing | 100% |
 
 ## How it compares
 
@@ -171,12 +173,12 @@ If you are managing thousands of linked notes with backlinks and graphs, you wan
 | `Ctrl + O` | Open file |
 | `Ctrl + S` | Save |
 | `Ctrl + Shift + S` | Save as |
+| `Ctrl + P` | Print document |
 | `Ctrl + F` | Find |
 | `Ctrl + H` | Find and replace |
 | `Ctrl + L` | Toggle line numbers |
 | `Alt + Z` | Toggle word wrap |
 | `Alt + S` | Toggle scroll sync |
-| `Ctrl + ,` | Open settings panel |
 | `Ctrl + ?` | Show all shortcuts |
 
 ## Architecture
@@ -196,15 +198,15 @@ featherMD/
 │   │
 │   ├── editor/
 │   │   └── editor.js                CodeMirror 6 setup. Compartments for line-numbers, wrap,
-│   │                                tab-size, and vim mode (lazy-loaded on toggle).
+│   │                                and tab-size preference.
 │   │
 │   ├── preview/
 │   │   └── preview.js               Marked + DOMPurify pipeline. highlight.js loaded on-demand
 │   │                                per language via import.meta.glob.
 │   │
 │   ├── ui/
-│   │   ├── toolbar.js               Toolbar buttons, theme dropdown, click-outside dismiss.
-│   │   ├── settings.js              Settings panel, font controls, recent files list.
+│   │   ├── toolbar.js               Unified header bar menu dropdowns, font size control, and recent files builder.
+│   │   ├── settings.js              Helper to update the recent files list in the dropdown submenu.
 │   │   ├── themes.js                Theme switching + prefers-color-scheme detection.
 │   │   ├── dialogs.js               Unsaved-changes prompt and shortcuts help modal.
 │   │   ├── status-bar.js            Word count, cursor position, file path, line ending.
@@ -244,7 +246,7 @@ featherMD/
 │   ├── Cargo.toml                   Rust dependencies.
 │   └── build.rs                     Tauri build script.
 │
-├── tests/                           Vitest suites mirroring src/ layout. 221 specs across 8 files.
+├── tests/                           Vitest suites mirroring src/ layout. 204 specs across 8 files.
 │   ├── editor/editor.test.js        CodeMirror integration: API surface, compartments, cursor.
 │   ├── preview/preview.test.js      Markdown rendering, XSS sanitization, GFM, scroll API.
 │   ├── ui/
@@ -277,7 +279,7 @@ featherMD/
 ## Quality checks
 
 ```bash
-npm test            # 221 specs across 8 suites
+npm test            # 204 specs across 8 suites
 npm run lint        # ESLint
 npm run bench       # Render latency, word count, theme swap benchmarks
 npm run report      # Full audit: build + tests + bench + bundle sizes
@@ -302,8 +304,8 @@ On Tauri builds, the OS config directory under `feathermd/config.json`. On Windo
 **Is the auto-updater safe?**
 Releases are signed with Ed25519. The public key is embedded in the binary. The updater verifies the signature before writing anything. See [SECURITY.md](SECURITY.md).
 
-**How do I use Vim mode?**
-Open the settings panel (`Ctrl + ,`) and toggle Vim Mode. The Vim binding chunk loads on first activation and stays out of the bundle if you never enable it.
+**How does the advanced printing engine work?**
+Pressing `Ctrl + P` (or selecting File -> Print) bypasses native browser headers and footers (local times, hostnames, page URLs) using page margin overrides. It also resolves viewport clipping issues, allowing you to print clean, infinite multi-page documents seamlessly.
 
 **Why is there no plugin system?**
 A plugin system is a commitment to an API surface for a long time. Feather MD is small enough that a focused feature set is the point. If something is missing, open an issue. Frequent requests turn into core features.
