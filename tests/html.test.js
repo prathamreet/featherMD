@@ -48,20 +48,17 @@ describe('HTML -- SEO & Head Metadata', () => {
 
 describe('HTML -- Required Element IDs', () => {
   const requiredIds = [
-    // Title bar
-    'title-bar', 'title-bar-text', 'title-bar-controls',
+    // Header bar
+    'header-bar', 'header-left', 'header-icon', 'header-title', 'header-controls',
     'btn-minimize', 'btn-maximize', 'btn-close',
-    // Toolbar
-    'toolbar', 'btn-open', 'btn-save', 'btn-new',
-    'btn-sync-scroll', 'btn-theme', 'theme-menu',
-    'btn-line-numbers', 'btn-word-wrap', 'btn-vim', 'btn-settings',
+    // Menus
+    'file-menu', 'view-menu', 'style-menu',
+    // Font size slider
+    'font-size-label', 'header-font-size',
+    // Recent files submenu
+    'recent-files-submenu',
     // Split container
     'split-container', 'editor-pane', 'divider', 'preview-pane', 'preview-content',
-    // Settings panel
-    'settings-panel', 'btn-close-settings',
-    'setting-font-size', 'setting-font-size-value',
-    'setting-font-family', 'setting-tab-size',
-    'setting-word-wrap', 'setting-vim-mode',
     // Shortcuts modal
     'shortcuts-modal', 'btn-close-shortcuts',
     // Unsaved dialog
@@ -86,16 +83,6 @@ describe('HTML -- Accessibility (ARIA labels)', () => {
     { id: 'btn-minimize', label: 'Minimize' },
     { id: 'btn-maximize', label: 'Maximize' },
     { id: 'btn-close', label: 'Close' },
-    { id: 'btn-open', label: 'Open file' },
-    { id: 'btn-save', label: 'Save' },
-    { id: 'btn-new', label: 'New file' },
-    { id: 'btn-sync-scroll', label: 'Toggle sync scroll' },
-    { id: 'btn-theme', label: 'Change theme' },
-    { id: 'btn-line-numbers', label: 'Toggle line numbers' },
-    { id: 'btn-word-wrap', label: 'Toggle word wrap' },
-    { id: 'btn-vim', label: 'Toggle Vim mode' },
-    { id: 'btn-settings', label: 'Settings' },
-    { id: 'btn-close-settings', label: 'Close settings' },
     { id: 'btn-close-shortcuts', label: 'Close shortcuts' },
   ];
 
@@ -108,44 +95,61 @@ describe('HTML -- Accessibility (ARIA labels)', () => {
   });
 });
 
-// -- Theme Dropdown --
+// -- Menu Structure --
 
-describe('HTML -- Theme Dropdown Structure', () => {
-  it('should have exactly 10 theme items in dropdown', () => {
-    const items = doc.querySelectorAll('#theme-menu .dropdown-item');
+describe('HTML -- Menu Bar Structure', () => {
+  it('should have 3 menu buttons (File, View, Style)', () => {
+    const menuBtns = doc.querySelectorAll('.menu-btn');
+    expect(menuBtns.length).toBe(3);
+  });
+
+  it('should have all 3 menu panels', () => {
+    expect(doc.getElementById('file-menu')).toBeTruthy();
+    expect(doc.getElementById('view-menu')).toBeTruthy();
+    expect(doc.getElementById('style-menu')).toBeTruthy();
+  });
+
+  it('should have menu panels starting hidden', () => {
+    expect(doc.getElementById('file-menu').hasAttribute('hidden')).toBe(true);
+    expect(doc.getElementById('view-menu').hasAttribute('hidden')).toBe(true);
+    expect(doc.getElementById('style-menu').hasAttribute('hidden')).toBe(true);
+  });
+
+  it('should have 10 theme items in style menu', () => {
+    const items = doc.querySelectorAll('#style-menu .theme-item');
     expect(items.length).toBe(10);
   });
 
-  it('should have 5 light themes followed by 5 dark themes', () => {
-    const labels = doc.querySelectorAll('#theme-menu .dropdown-group-label');
-    expect(labels.length).toBe(2);
-    expect(labels[0].textContent).toBe('Light');
-    expect(labels[1].textContent).toBe('Dark');
-  });
-
-  it('should have correct data-theme attributes on all dropdown items', () => {
+  it('should have correct data-theme attributes on theme items', () => {
     const expectedThemes = [
       'snow', 'solarized-light', 'github-light', 'sepia', 'gruvbox-light',
       'onyx', 'solarized-dark', 'github-dark', 'monokai', 'gruvbox-dark',
     ];
-    const items = doc.querySelectorAll('#theme-menu .dropdown-item');
+    const items = doc.querySelectorAll('#style-menu .theme-item');
     items.forEach((item, i) => {
       expect(item.getAttribute('data-theme')).toBe(expectedThemes[i]);
     });
   });
 
-  it('should start with theme menu hidden', () => {
-    expect(doc.getElementById('theme-menu').hasAttribute('hidden')).toBe(true);
+  it('should have 3 checkable items in view menu', () => {
+    const items = doc.querySelectorAll('#view-menu .menu-item.checkable');
+    expect(items.length).toBe(3);
+  });
+
+  it('should have file menu actions with keyboard shortcuts displayed', () => {
+    const shortcuts = doc.querySelectorAll('#file-menu .menu-item-shortcut');
+    expect(shortcuts.length).toBeGreaterThanOrEqual(4);
+  });
+
+  it('should have a Print menu item', () => {
+    const printItem = doc.querySelector('[data-action="print"]');
+    expect(printItem).toBeTruthy();
   });
 });
 
 // -- Modals & Panels --
 
-describe('HTML -- Modals & Panels Initial State', () => {
-  it('should start with settings panel hidden', () => {
-    expect(doc.getElementById('settings-panel').hasAttribute('hidden')).toBe(true);
-  });
-
+describe('HTML -- Modals Initial State', () => {
   it('should start with shortcuts modal hidden', () => {
     expect(doc.getElementById('shortcuts-modal').hasAttribute('hidden')).toBe(true);
   });
@@ -196,21 +200,39 @@ describe('HTML -- Keyboard Shortcuts Table', () => {
     const tableHTML = doc.querySelector('.shortcuts-table').innerHTML;
     expect(tableHTML).toContain('Save');
   });
-});
 
-// -- Title Bar --
-
-describe('HTML -- Custom Title Bar', () => {
-  it('should have data-tauri-drag-region on title bar', () => {
-    expect(doc.getElementById('title-bar').hasAttribute('data-tauri-drag-region')).toBe(true);
+  it('should contain Ctrl+P print shortcut', () => {
+    const tableHTML = doc.querySelector('.shortcuts-table').innerHTML;
+    expect(tableHTML).toContain('Print');
   });
 
-  it('should display "Feather MD" as default title text', () => {
-    expect(doc.getElementById('title-bar-text').textContent).toBe('Feather MD');
+  it('should NOT contain Ctrl+comma settings shortcut', () => {
+    const tableHTML = doc.querySelector('.shortcuts-table').innerHTML;
+    expect(tableHTML).not.toContain('Settings');
+  });
+});
+
+// -- Header Bar --
+
+describe('HTML -- Header Bar', () => {
+  it('should have data-tauri-drag-region on title area', () => {
+    expect(doc.getElementById('header-title').hasAttribute('data-tauri-drag-region')).toBe(true);
+  });
+
+  it('should display "FeatherMD - Untitled" as default title text', () => {
+    expect(doc.getElementById('header-title').textContent).toBe('FeatherMD - Untitled');
   });
 
   it('should have 3 window control buttons', () => {
-    const controls = doc.querySelectorAll('#title-bar-controls .title-btn');
+    const controls = doc.querySelectorAll('#header-controls .title-btn');
     expect(controls.length).toBe(3);
+  });
+
+  it('should have font size slider in header', () => {
+    const slider = doc.getElementById('header-font-size');
+    expect(slider).toBeTruthy();
+    expect(slider.getAttribute('type')).toBe('range');
+    expect(slider.getAttribute('min')).toBe('12');
+    expect(slider.getAttribute('max')).toBe('20');
   });
 });

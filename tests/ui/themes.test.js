@@ -2,7 +2,7 @@
 // Feather MD -- Theme Manager Tests
 // ========================================
 // Covers: initialization, OS detection, manual switching, callback firing,
-//         theme validation, dropdown DOM sync, all 10 themes enumeration
+//         theme validation, menu active state sync, all 10 themes enumeration
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { initThemes, setTheme, applyTheme } from '../../src/ui/themes.js';
@@ -16,17 +16,47 @@ function setupThemeDOM(prefersDark = false) {
   document.documentElement.removeAttribute('data-theme');
 
   document.body.innerHTML = `
-    <div id="theme-menu">
-      <button class="dropdown-item" data-theme="snow">Snow</button>
-      <button class="dropdown-item" data-theme="solarized-light">Solarized Light</button>
-      <button class="dropdown-item" data-theme="github-light">GitHub Light</button>
-      <button class="dropdown-item" data-theme="sepia">Sepia</button>
-      <button class="dropdown-item" data-theme="gruvbox-light">Gruvbox Light</button>
-      <button class="dropdown-item" data-theme="onyx">Onyx</button>
-      <button class="dropdown-item" data-theme="solarized-dark">Solarized Dark</button>
-      <button class="dropdown-item" data-theme="github-dark">GitHub Dark</button>
-      <button class="dropdown-item" data-theme="monokai">Monokai</button>
-      <button class="dropdown-item" data-theme="gruvbox-dark">Gruvbox Dark</button>
+    <div id="style-menu">
+      <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="snow">
+        <span class="menu-check"><svg></svg></span>
+        <span class="menu-item-label">Snow</span>
+      </button>
+      <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="solarized-light">
+        <span class="menu-check"><svg></svg></span>
+        <span class="menu-item-label">Solarized Light</span>
+      </button>
+      <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="github-light">
+        <span class="menu-check"><svg></svg></span>
+        <span class="menu-item-label">GitHub Light</span>
+      </button>
+      <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="sepia">
+        <span class="menu-check"><svg></svg></span>
+        <span class="menu-item-label">Sepia</span>
+      </button>
+      <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="gruvbox-light">
+        <span class="menu-check"><svg></svg></span>
+        <span class="menu-item-label">Gruvbox Light</span>
+      </button>
+      <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="onyx">
+        <span class="menu-check"><svg></svg></span>
+        <span class="menu-item-label">Onyx</span>
+      </button>
+      <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="solarized-dark">
+        <span class="menu-check"><svg></svg></span>
+        <span class="menu-item-label">Solarized Dark</span>
+      </button>
+      <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="github-dark">
+        <span class="menu-check"><svg></svg></span>
+        <span class="menu-item-label">GitHub Dark</span>
+      </button>
+      <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="monokai">
+        <span class="menu-check"><svg></svg></span>
+        <span class="menu-item-label">Monokai</span>
+      </button>
+      <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="gruvbox-dark">
+        <span class="menu-check"><svg></svg></span>
+        <span class="menu-item-label">Gruvbox Dark</span>
+      </button>
     </div>
   `;
 
@@ -128,27 +158,27 @@ describe('Themes -- Change Callback', () => {
   });
 });
 
-// -- Dropdown DOM Sync --
+// -- Menu Active State Sync --
 
-describe('Themes -- Dropdown Active State Sync', () => {
+describe('Themes -- Menu Active State Sync', () => {
   beforeEach(() => setupThemeDOM(false));
 
-  it('should mark current theme item as active in dropdown', () => {
+  it('should mark current theme item as checked in menu', () => {
     initThemes(null);
     setTheme('monokai');
-    const monokaiBtn = document.querySelector('#theme-menu [data-theme="monokai"]');
-    const snowBtn = document.querySelector('#theme-menu [data-theme="snow"]');
-    expect(monokaiBtn.classList.contains('active')).toBe(true);
-    expect(snowBtn.classList.contains('active')).toBe(false);
+    const monokaiBtn = document.querySelector('.theme-item[data-theme="monokai"]');
+    const snowBtn = document.querySelector('.theme-item[data-theme="snow"]');
+    expect(monokaiBtn.getAttribute('data-checked')).toBe('true');
+    expect(snowBtn.getAttribute('data-checked')).toBe('false');
   });
 
-  it('should switch active class when switching themes', () => {
+  it('should switch checked state when switching themes', () => {
     initThemes(null);
     setTheme('sepia');
-    expect(document.querySelector('#theme-menu [data-theme="sepia"]').classList.contains('active')).toBe(true);
+    expect(document.querySelector('.theme-item[data-theme="sepia"]').getAttribute('data-checked')).toBe('true');
     setTheme('gruvbox-dark');
-    expect(document.querySelector('#theme-menu [data-theme="sepia"]').classList.contains('active')).toBe(false);
-    expect(document.querySelector('#theme-menu [data-theme="gruvbox-dark"]').classList.contains('active')).toBe(true);
+    expect(document.querySelector('.theme-item[data-theme="sepia"]').getAttribute('data-checked')).toBe('false');
+    expect(document.querySelector('.theme-item[data-theme="gruvbox-dark"]').getAttribute('data-checked')).toBe('true');
   });
 });
 
