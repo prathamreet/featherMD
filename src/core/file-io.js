@@ -56,6 +56,8 @@ export async function saveFile() {
       isDirty = false;
       updateTitleBar();
 
+      addToRecentFiles( currentFilePath );
+
       await invoke( 'watch_file', { path: currentFilePath } );
     } catch ( e ) {
       console.error( 'Failed to save file:', e );
@@ -81,6 +83,8 @@ export async function saveFileAs() {
         currentFilePath = path;
         isDirty = false;
         updateTitleBar();
+
+        addToRecentFiles( path );
 
         await invoke( 'watch_file', { path } );
       }
