@@ -29,6 +29,33 @@
 
 /* Print styles - hide everything except preview */
 @media print {
+  :root {
+    --bg: #ffffff !important;
+    --bg-secondary: #f6f8fa !important;
+    --bg-editor: #ffffff !important;
+    --text: #1a1a1a !important;
+    --text-muted: #57606a !important;
+    --border: #d0d7de !important;
+    --accent: #0969da !important;
+    --code-bg: #f6f8fa !important;
+    --heading: #1a1a1a !important;
+    --link: #0969da !important;
+    
+    /* Syntax highlighting print variables */
+    --cm-keyword: #cf222e !important;
+    --cm-string: #0a3069 !important;
+    --cm-comment: #6e7781 !important;
+    --cm-heading: #0550ae !important;
+  }
+
+  html, body {
+    background: #ffffff !important;
+    color: #1a1a1a !important;
+    font-size: 12pt !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
   #header-bar,
   #status-bar,
   #editor-pane,
@@ -39,11 +66,30 @@
 
   #split-container {
     height: auto !important;
+    overflow: visible !important;
+    display: block !important;
   }
 
   #preview-pane {
     width: 100% !important;
     max-width: 100% !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
     overflow: visible !important;
+    background: #ffffff !important;
+    color: #1a1a1a !important;
+  }
+
+  #preview-content {
+    color: #1a1a1a !important;
+    font-size: 12pt !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }
