@@ -131,6 +131,10 @@ Give it a spin. Type some markdown, drag the center divider to resize, adjust th
       }
       lineNumbersCol.innerHTML = lineHtml;
     }
+    // Sync scroll layout immediately on type
+    if ( typeof triggerScroll === 'function' ) {
+      triggerScroll( 'editor' );
+    }
   }
 
   // 3. Module Bootstrapping & Initializations
@@ -389,7 +393,75 @@ Give it a spin. Type some markdown, drag the center divider to resize, adjust th
   // Bind direct textarea typing compiler updates
   demoEditor.addEventListener( 'input', () => {
     updatePreview();
+    if ( typeof triggerScroll === 'function' ) {
+      triggerScroll( 'editor' );
+    }
   } );
+
+  // 7.5 Lenis Smooth Scroll Engine & Kinetic Scrolljacking
+  const lenis = new Lenis( {
+    duration: 1.2,
+    easing: ( t ) => Math.min( 1, 1.001 - Math.pow( 2, -10 * t ) ),
+    smooth: true,
+    mouseMultiplier: 1,
+    smoothTouch: false,
+    infinite: false
+  } );
+
+  function raf( time ) {
+    lenis.raf( time );
+    requestAnimationFrame( raf );
+  }
+  requestAnimationFrame( raf );
+
+  // Intercept anchor link jumps for Lenis kinetic smoothness
+  document.querySelectorAll( 'a[href^="#"]' ).forEach( anchor => {
+    anchor.addEventListener( 'click', function ( e ) {
+      e.preventDefault();
+      const targetId = this.getAttribute( 'href' );
+      if ( targetId === '#' ) return;
+      lenis.scrollTo( targetId, { duration: 1.2 } );
+    } );
+  } );
+
+  // Velocity-controlled Hero Scrolljacking transition
+  let isScrollJacking = false;
+
+  window.addEventListener( 'wheel', ( e ) => {
+    const scrollY = window.scrollY;
+    const heroSection = document.querySelector( '.hero-section' );
+    if ( !heroSection ) return;
+    const heroHeight = heroSection.offsetHeight;
+
+    // Scroll Down from Hero to Editor
+    if ( scrollY < 20 && e.deltaY > 0 && !isScrollJacking ) {
+      e.preventDefault();
+      isScrollJacking = true;
+      lenis.scrollTo( '#editor-section', {
+        duration: 1.4,
+        onComplete: () => {
+          setTimeout( () => { isScrollJacking = false; }, 200 );
+        }
+      } );
+    }
+    // Scroll Up from Editor to Hero
+    else if ( scrollY > 20 && scrollY < heroHeight + 80 && e.deltaY < 0 && !isScrollJacking ) {
+      const editorSection = document.getElementById( 'editor-section' );
+      if ( editorSection ) {
+        const rect = editorSection.getBoundingClientRect();
+        if ( rect.top >= -20 && rect.top <= 120 ) {
+          e.preventDefault();
+          isScrollJacking = true;
+          lenis.scrollTo( 0, {
+            duration: 1.4,
+            onComplete: () => {
+              setTimeout( () => { isScrollJacking = false; }, 200 );
+            }
+          } );
+        }
+      }
+    }
+  }, { passive: false } );
 
   // 8. Dynamic live fetch for Latest GitHub Release assets (Generic & Non-hardcoded)
   async function fetchLatestReleaseDetails() {
