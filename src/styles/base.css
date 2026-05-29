@@ -70,14 +70,55 @@ html, body {
 #header-icon {
   display: flex;
   align-items: center;
+  justify-content: center;
   color: var(--accent);
   flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md);
   margin-right: 8px;
-  transition: transform var(--transition-fast) cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: transparent;
+  border: 1px solid transparent;
+  position: relative;
+  cursor: pointer;
+  transition: transform var(--transition-fast) cubic-bezier(0.34, 1.56, 0.64, 1),
+              background var(--transition-fast) ease,
+              border-color var(--transition-fast) ease;
 }
 
 #header-icon:hover {
-  transform: scale(1.1) rotate(5deg);
+  transform: scale(1.08);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+/* Premium Floating Version Tooltip */
+#header-icon::after {
+  content: "v1.3.5";
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms cubic-bezier(0.16, 1, 0.3, 1),
+              transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1000;
+}
+
+#header-icon:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 /* ---- Menu Bar Buttons ---- */
