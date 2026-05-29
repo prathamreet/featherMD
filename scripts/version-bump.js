@@ -22,3 +22,11 @@ if (fs.existsSync(lockPath)) {
   fs.writeFileSync(lockPath, lock, 'utf8');
   console.log(`Synced Cargo.lock version to ${version}`);
 }
+
+const cssPath = 'src/styles/base.css';
+if (fs.existsSync(cssPath)) {
+  let css = fs.readFileSync(cssPath, 'utf8');
+  css = css.replace(/content:\s*"v[^"]*";\s*\/\*\s*brand-version\s*\*\//g, `content: "v${version}"; /* brand-version */`);
+  fs.writeFileSync(cssPath, css, 'utf8');
+  console.log(`Synced base.css brand-version to ${version}`);
+}
