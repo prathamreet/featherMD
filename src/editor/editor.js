@@ -1,5 +1,5 @@
 // ========================================
-// Feather MD — Editor Module (CodeMirror 6)
+// Feather MD - Editor Module (CodeMirror 6)
 // ========================================
 
 import { EditorView, lineNumbers, highlightActiveLine, highlightActiveLineGutter, keymap, drawSelection, dropCursor, rectangularSelection, crosshairCursor } from '@codemirror/view';
@@ -15,7 +15,6 @@ import { closeBrackets, closeBracketsKeymap, autocompletion } from '@codemirror/
 const lineNumbersCompartment = new Compartment();
 const lineWrappingCompartment = new Compartment();
 const tabSizeCompartment = new Compartment();
-const vimCompartment = new Compartment();
 
 let editorView = null;
 let onChangeCallback = null;
@@ -50,7 +49,6 @@ export function initEditor(domEl, onChange, onCursorActivity) {
   const state = EditorState.create({
     doc: '',
     extensions: [
-      vimCompartment.of([]),
       lineNumbersCompartment.of(lineNumbers()),
       lineWrappingCompartment.of(EditorView.lineWrapping),
       tabSizeCompartment.of([EditorState.tabSize.of(4), indentUnit.of('    ')]),
@@ -105,7 +103,6 @@ export function initEditor(domEl, onChange, onCursorActivity) {
     setLineNumbers,
     setLineWrapping,
     setTabSize,
-    setVimMode,
     focus: () => editorView.focus(),
     getScrollDOM: () => editorView.scrollDOM,
   };
@@ -189,21 +186,4 @@ function setTabSize(size) {
       indentUnit.of(' '.repeat(size)),
     ]),
   });
-}
-
-/**
- * Toggle Vim mode (lazy-loaded)
- */
-async function setVimMode(enabled) {
-  if (!editorView) return;
-  if (enabled) {
-    const { vim } = await import('@replit/codemirror-vim');
-    editorView.dispatch({
-      effects: vimCompartment.reconfigure(vim()),
-    });
-  } else {
-    editorView.dispatch({
-      effects: vimCompartment.reconfigure([]),
-    });
-  }
 }
