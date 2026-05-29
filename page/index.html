@@ -435,12 +435,13 @@
         <div class="features-clean-grid">
 
           <div class="features-column">
-            
+
             <div class="feature-item">
               <div class="feature-number">01</div>
               <div class="feature-body">
                 <h3 class="feature-heading">Bidirectional Scroll Sync</h3>
-                <p class="feature-text">Scroll either the CodeMirror 6 editor or the preview pane, and the other pane follows perfectly with ratio-based tracking.</p>
+                <p class="feature-text">Scroll either the CodeMirror 6 editor or the preview pane, and the other pane
+                  follows perfectly with ratio-based tracking.</p>
               </div>
             </div>
 
@@ -448,7 +449,8 @@
               <div class="feature-number">02</div>
               <div class="feature-body">
                 <h3 class="feature-heading">Advanced Printing Engine</h3>
-                <p class="feature-text">Bypasses browser native limits to print beautiful, clean, multi-page documents without hostnames or page URLs.</p>
+                <p class="feature-text">Bypasses browser native limits to print beautiful, clean, multi-page documents
+                  without hostnames or page URLs.</p>
               </div>
             </div>
 
@@ -456,7 +458,8 @@
               <div class="feature-number">03</div>
               <div class="feature-body">
                 <h3 class="feature-heading">Signed Auto-Updates</h3>
-                <p class="feature-text">Release packages are cryptographically signed with Ed25519 for absolute security, updating seamlessly on launch.</p>
+                <p class="feature-text">Release packages are cryptographically signed with Ed25519 for absolute
+                  security, updating seamlessly on launch.</p>
               </div>
             </div>
 
@@ -464,7 +467,8 @@
               <div class="feature-number">04</div>
               <div class="feature-body">
                 <h3 class="feature-heading">OS File Association</h3>
-                <p class="feature-text">Integrates directly with Windows and Linux. Double-click any markdown file to launch instantly from your file manager.</p>
+                <p class="feature-text">Integrates directly with Windows and Linux. Double-click any markdown file to
+                  launch instantly from your file manager.</p>
               </div>
             </div>
 
@@ -476,7 +480,8 @@
               <div class="feature-number">05</div>
               <div class="feature-body">
                 <h3 class="feature-heading">Premium Unified Header</h3>
-                <p class="feature-text">Combines window titlebar and editor toolbar into a singular, mathematically centered bar with floating interactive tooltips.</p>
+                <p class="feature-text">Combines window titlebar and editor toolbar into a singular, mathematically
+                  centered bar with floating interactive tooltips.</p>
               </div>
             </div>
 
@@ -484,7 +489,8 @@
               <div class="feature-number">06</div>
               <div class="feature-body">
                 <h3 class="feature-heading">10 Built-In UI Themes</h3>
-                <p class="feature-text">Five light and five dark themes. Switch instantly under 1ms with custom repainting locked to CSS root variables.</p>
+                <p class="feature-text">Five light and five dark themes. Switch instantly under 1ms with custom
+                  repainting locked to CSS root variables.</p>
               </div>
             </div>
 
@@ -492,7 +498,8 @@
               <div class="feature-number">07</div>
               <div class="feature-body">
                 <h3 class="feature-heading">External File Watcher</h3>
-                <p class="feature-text">Monitors active files in the background using tokio async channels. Prompting you instantly on external alterations.</p>
+                <p class="feature-text">Monitors active files in the background using tokio async channels. Prompting
+                  you instantly on external alterations.</p>
               </div>
             </div>
 
@@ -500,7 +507,8 @@
               <div class="feature-number">08</div>
               <div class="feature-body">
                 <h3 class="feature-heading">Keyboard-First Workflows</h3>
-                <p class="feature-text">Full command panel shortcuts for fast toggles of line numbering, word wraps, active-line highlights, and find/replace.</p>
+                <p class="feature-text">Full command panel shortcuts for fast toggles of line numbering, word wraps,
+                  active-line highlights, and find/replace.</p>
               </div>
             </div>
 
@@ -514,10 +522,7 @@
     <section class="metrics-section" id="metrics">
       <div class="metrics-container">
         <div class="section-header centered">
-          <span class="section-tag-mono">BENCHMARKS</span>
           <h2 class="section-title">How It Compares</h2>
-          <p class="section-desc">We measure against real quality standards. Feather MD is designed specifically to
-            live in the gap between bloated full IDEs and heavy note vaults.</p>
         </div>
 
         <!-- Comparison Table -->
@@ -530,6 +535,7 @@
                 <th>VS Code</th>
                 <th>Typora</th>
                 <th>Obsidian</th>
+                <th>Notion</th>
               </tr>
             </thead>
             <tbody>
@@ -539,6 +545,7 @@
                 <td>~90 MB</td>
                 <td>~85 MB</td>
                 <td>~110 MB</td>
+                <td>~150 MB</td>
               </tr>
               <tr>
                 <td><strong>Resident Memory (RAM)</strong></td>
@@ -546,6 +553,7 @@
                 <td>~300 MB</td>
                 <td>~150 MB</td>
                 <td>~400 MB</td>
+                <td>~250 MB</td>
               </tr>
               <tr>
                 <td><strong>Cold Startup Time</strong></td>
@@ -553,6 +561,7 @@
                 <td>1 to 3 s</td>
                 <td>&lt; 1 s</td>
                 <td>1 to 2 s</td>
+                <td>2 to 4 s</td>
               </tr>
               <tr>
                 <td><strong>Dual-pane preview</strong></td>
@@ -560,10 +569,12 @@
                 <td>Extension / split</td>
                 <td>Hybrid only</td>
                 <td>Plugin</td>
+                <td>No</td>
               </tr>
               <tr>
                 <td><strong>Native Binary</strong></td>
                 <td class="highlight-column"><strong>Yes (Tauri)</strong></td>
+                <td>No (Electron)</td>
                 <td>No (Electron)</td>
                 <td>No (Electron)</td>
                 <td>No (Electron)</td>
@@ -574,6 +585,7 @@
                 <td>Opt-out</td>
                 <td>Opt-out</td>
                 <td>Opt-in</td>
+                <td>Full Tracking</td>
               </tr>
               <tr>
                 <td><strong>Licensing & Cost</strong></td>
@@ -581,6 +593,7 @@
                 <td>Free, MIT</td>
                 <td>Paid</td>
                 <td>Free, freemium</td>
+                <td>Proprietary</td>
               </tr>
             </tbody>
           </table>

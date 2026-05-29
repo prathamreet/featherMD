@@ -2489,49 +2489,57 @@ p {
    METRICS COMPARISON SECTION
    ========================================================================== */
 .metrics-section {
-  padding: 80px 40px;
+  padding: 100px 40px;
   background: var(--page-bg);
   border-top: 1px solid var(--page-border);
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
 }
 
 .metrics-container {
-  max-width: 1200px;
+  width: 100%;
+  max-width: 1150px;
   margin: 0 auto;
 }
 
 .comparison-table-wrapper {
   overflow-x: auto;
-  border: 1px solid var(--page-border);
-  border-radius: 8px;
-  background: var(--page-bg);
-  margin-top: 48px;
+  margin-top: 64px;
 }
 
 .comparison-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: 0.85rem;
+  font-size: 1.02rem;
 }
 
 .comparison-table th, 
 .comparison-table td {
-  padding: 14px 20px;
+  padding: 16px 48px;
   border-bottom: 1px solid var(--page-border);
+  border-right: 1px solid var(--page-border);
 }
 
-.comparison-table tr:last-child td {
-  border-bottom: none;
+.comparison-table th:last-child, 
+.comparison-table td:last-child {
+  border-right: none;
 }
 
 .comparison-table th {
-  background: var(--card-bg);
-  font-family: 'Inter', sans-serif;
-  font-weight: 600;
+  font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
+  font-weight: 700;
   color: var(--page-text);
-  font-size: 0.8rem;
+  font-size: 0.88rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.12em;
+  border-bottom: 2px solid var(--page-border);
 }
 
 .comparison-table td {
@@ -2540,12 +2548,12 @@ p {
 
 .comparison-table td strong {
   color: var(--page-text);
+  font-weight: 600;
 }
 
 .comparison-table .highlight-column {
-  background: var(--card-bg);
-  color: var(--page-text);
-  font-weight: 500;
+  color: var(--page-accent);
+  font-weight: 700;
 }
 
 .comparison-table th.highlight-column {
