@@ -1647,159 +1647,6 @@ p {
   animation: pulse 1s infinite alternate;
 }
 
-/* 11. Downloads Center */
-
-.downloads-section {
-  padding: 100px 40px 140px 40px;
-  position: relative;
-  z-index: 10;
-  border-top: 1px solid var(--page-border);
-}
-
-.downloads-container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.downloads-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
-  margin-top: 64px;
-}
-
-.download-card {
-  background: var(--card-bg);
-  border: 1px solid var(--page-border);
-  border-radius: 12px;
-  padding: 36px 24px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  overflow: hidden;
-  box-shadow: 0 4px 20px var(--shadow-color);
-  box-sizing: border-box;
-}
-
-.download-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, var(--page-accent-muted) 0%, transparent 40%);
-  opacity: 0;
-  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  pointer-events: none;
-}
-
-.download-card:hover {
-  transform: translateY(-6px);
-  border-color: var(--page-accent);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-}
-
-.download-card:hover::before {
-  opacity: 1;
-}
-
-.download-platform-icon {
-  color: var(--page-accent);
-  margin-bottom: 24px;
-}
-
-.download-card h3 {
-  font-size: 1.5rem;
-  margin-bottom: 8px;
-}
-
-.download-platform-desc {
-  font-size: 0.9rem;
-  color: var(--page-text-muted);
-  margin-bottom: 32px;
-}
-
-.download-btn-main {
-  width: 100%;
-  background: var(--page-text);
-  color: var(--page-bg);
-  text-decoration: none;
-  padding: 16px 24px;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-weight: 600;
-  font-size: 1rem;
-  margin-top: auto;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.download-btn-main:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
-.download-btn-main:active {
-  transform: translateY(1px);
-}
-
-.download-btn-sub {
-  font-size: 0.72rem;
-  font-weight: 400;
-  opacity: 0.8;
-}
-
-.install-hash {
-  margin-top: 18px;
-  font-size: 0.72rem;
-  color: var(--page-text-muted);
-}
-
-.install-hash code {
-  font-family: 'JetBrains Mono', monospace;
-  background: var(--page-border);
-  padding: 1px 4px;
-  border-radius: 3px;
-}
-
-/* System requirements drawer */
-.requirements-box {
-  margin-top: 64px;
-  background: var(--card-bg);
-  border: 1px solid var(--page-border);
-  border-radius: 12px;
-  padding: 32px 40px;
-}
-
-.requirements-box h4 {
-  font-size: 1.15rem;
-  margin-bottom: 20px;
-  border-bottom: 1px solid var(--page-border);
-  padding-bottom: 12px;
-}
-
-.requirements-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-}
-
-.requirements-grid h5 {
-  font-size: 0.95rem;
-  margin-bottom: 8px;
-  color: var(--page-text);
-}
-
-.requirements-grid p {
-  font-size: 0.85rem;
-  color: var(--page-text-muted);
-  line-height: 1.6;
-}
 
 /* 12. Footer */
 
@@ -2400,7 +2247,6 @@ p {
 .features-section {
   padding: 100px 40px;
   background: var(--page-bg);
-  border-top: 1px solid var(--page-border);
   position: relative;
   overflow: hidden;
 }
@@ -2523,7 +2369,6 @@ p {
 .metrics-section {
   padding: 100px 40px;
   background: var(--page-bg);
-  border-top: 1px solid var(--page-border);
   position: relative;
   overflow: hidden;
   min-height: 100vh;
@@ -2661,7 +2506,6 @@ p {
 .techstack-section {
   padding: 100px 40px;
   background: var(--page-bg);
-  border-top: 1px solid var(--page-border);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -2682,7 +2526,6 @@ p {
   gap: 0;
   margin-top: 64px;
   border-top: 1px solid var(--page-border);
-  border-bottom: 1px solid var(--page-border);
 }
 
 .techstack-item {
@@ -2764,7 +2607,6 @@ p {
 .downloads-section {
   padding: 100px 40px;
   background: var(--page-bg);
-  border-top: 1px solid var(--page-border);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -2785,7 +2627,6 @@ p {
   gap: 0;
   margin-top: 64px;
   border-top: 1px solid var(--page-border);
-  border-bottom: 1px solid var(--page-border);
 }
 
 .download-item {
@@ -2805,6 +2646,17 @@ p {
 
 .download-item:hover {
   background: rgba(255, 255, 255, 0.015);
+}
+.download-number {
+  font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
+  font-size: 3.2rem;
+  font-weight: 800;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--page-accent) 40%, var(--page-text) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  opacity: 0.85;
+  margin-bottom: 24px;
 }
 
 .download-body {
