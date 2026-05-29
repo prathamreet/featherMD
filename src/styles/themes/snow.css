@@ -1,5 +1,5 @@
 /* Snow — Pure white, black text (default light) */
-[data-theme="snow"] {
+:root[data-theme="snow"] {
   --bg: #ffffff;
   --bg-secondary: #f6f8fa;
   --bg-editor: #ffffff;

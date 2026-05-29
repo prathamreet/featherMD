@@ -1,5 +1,5 @@
 /* Monokai — Dark background, vivid syntax */
-[data-theme="monokai"] {
+:root[data-theme="monokai"] {
   --bg: #272822;
   --bg-secondary: #1e1f1c;
   --bg-editor: #272822;
