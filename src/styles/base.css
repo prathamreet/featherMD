@@ -94,7 +94,7 @@ html, body {
 
 /* Premium Floating Version Tooltip */
 #header-icon::after {
-  content: "v1.4.0"; /* brand-version */
+  content: "v1.4.1"; /* brand-version */
   position: absolute;
   top: calc(100% + 8px);
   left: 50%;
