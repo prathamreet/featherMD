@@ -469,7 +469,7 @@ Give it a spin. Type some markdown, drag the center divider to resize, adjust th
       const response = await fetch( 'https://api.github.com/repos/prathamreet/featherMD/releases/latest' );
       if ( !response.ok ) return;
       const data = await response.json();
-      
+
       const assets = data.assets || [];
       const versionTag = data.tag_name || 'latest';
 
