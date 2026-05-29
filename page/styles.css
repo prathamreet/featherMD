@@ -402,7 +402,7 @@ p {
   padding: 0 40px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .logo-link {
@@ -472,8 +472,13 @@ p {
 .hero-section {
   position: relative;
   z-index: 10;
-  padding-top: 180px;
-  padding-bottom: 80px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding-top: 68px;
+  padding-bottom: 40px;
   text-align: center;
 }
 
@@ -2219,7 +2224,7 @@ p {
 
 .hero-title {
   font-family: 'Outfit', 'Inter', -apple-system, sans-serif !important;
-  font-size: 3.8rem !important;
+  font-size: 5.2rem !important;
   font-weight: 800 !important;
   line-height: 1.12 !important;
   letter-spacing: -0.04em !important;
@@ -2227,17 +2232,17 @@ p {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   max-width: 900px;
-  margin: 0 auto 24px auto;
+  margin: 0 auto 28px auto !important;
   text-align: center;
 }
 
 .hero-subtitle {
-  font-size: 1.15rem !important;
+  font-size: 1.4rem !important;
   font-weight: 400 !important;
   line-height: 1.65 !important;
   color: var(--page-text-muted) !important;
-  max-width: 780px !important;
-  margin: 0 auto 40px auto !important;
+  max-width: 820px !important;
+  margin: 0 auto 48px auto !important;
   text-align: center;
 }
 
@@ -2245,7 +2250,7 @@ p {
   display: flex;
   gap: 16px;
   justify-content: center;
-  margin-bottom: 60px;
+  margin-bottom: 80px;
 }
 
 .cta-button {
@@ -2293,7 +2298,7 @@ p {
   grid-template-columns: repeat(4, 1fr);
   gap: 32px;
   max-width: 900px;
-  margin: 64px auto 0 auto;
+  margin: 80px auto 0 auto;
   padding: 24px 0;
   border-top: 1px solid var(--page-border);
   border-bottom: 1px solid var(--page-border);
