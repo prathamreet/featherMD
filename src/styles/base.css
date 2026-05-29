@@ -272,8 +272,8 @@ html, body {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
   padding: 6px;
   min-width: 240px;
-  max-height: 300px;
-  overflow-y: auto;
+  max-height: none;
+  overflow-y: visible;
   z-index: 201;
   display: none;
   animation: submenu-in 140ms cubic-bezier(0.16, 1, 0.3, 1);
