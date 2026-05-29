@@ -4,7 +4,14 @@
 
 import { escapeHtml } from '../core/utils.js';
 
-let _openMenu = null;
+let _leaveTimeout = null;
+
+function clearLeaveTimeout() {
+  if ( _leaveTimeout ) {
+    clearTimeout( _leaveTimeout );
+    _leaveTimeout = null;
+  }
+}
 
 /**
  * Initialize the header menu bar
@@ -12,39 +19,50 @@ let _openMenu = null;
  */
 export function initToolbar( handlers ) {
 
-  // Menu buttons open/close panels
-  document.querySelectorAll( '.menu-btn' ).forEach( ( btn ) => {
+  // Menu dropdown wrapper handles mouse hover opening/closing and clicks
+  document.querySelectorAll( '.menu-dropdown' ).forEach( ( dropdown ) => {
+    const btn = dropdown.querySelector( '.menu-btn' );
+    if ( !btn ) return;
+    const menuId = btn.getAttribute( 'data-menu' );
+    const panel = document.getElementById( menuId );
+    if ( !panel ) return;
+
+    // Toggle panel on click
     btn.addEventListener( 'click', ( e ) => {
       e.stopPropagation();
-      const menuId = btn.getAttribute( 'data-menu' );
-      const panel = document.getElementById( menuId );
-      if ( !panel ) return;
-
-      if ( _openMenu && _openMenu !== panel ) {
-        closeAllMenus();
-      }
-
+      clearLeaveTimeout();
       const isHidden = panel.hidden;
       closeAllMenus();
       if ( isHidden ) {
         panel.hidden = false;
         btn.classList.add( 'open' );
-        _openMenu = panel;
       }
     } );
 
-    // Hover to switch between menus when one is open
+    // Hover mouse enter on button -> immediately open the menu!
     btn.addEventListener( 'mouseenter', () => {
-      if ( _openMenu ) {
-        const menuId = btn.getAttribute( 'data-menu' );
-        const panel = document.getElementById( menuId );
-        if ( panel && panel !== _openMenu ) {
-          closeAllMenus();
-          panel.hidden = false;
-          btn.classList.add( 'open' );
-          _openMenu = panel;
-        }
+      clearLeaveTimeout();
+      closeAllMenus();
+      panel.hidden = false;
+      btn.classList.add( 'open' );
+    } );
+
+    // Hover mouse enter on dropdown -> immediately open the menu!
+    dropdown.addEventListener( 'mouseenter', () => {
+      clearLeaveTimeout();
+      if ( panel.hidden ) {
+        closeAllMenus();
+        panel.hidden = false;
+        btn.classList.add( 'open' );
       }
+    } );
+
+    // Hover mouse leave -> gracefully schedule closure of all menus!
+    dropdown.addEventListener( 'mouseleave', () => {
+      clearLeaveTimeout();
+      _leaveTimeout = setTimeout( () => {
+        closeAllMenus();
+      }, 180 ); // 180ms graceful delay to prevent accidental micro-movement close
     } );
   } );
 
@@ -136,13 +154,13 @@ function wireAction( action, callback ) {
 }
 
 function closeAllMenus() {
+  clearLeaveTimeout();
   document.querySelectorAll( '.menu-panel' ).forEach( ( p ) => {
     p.hidden = true;
   } );
   document.querySelectorAll( '.menu-btn' ).forEach( ( b ) => {
     b.classList.remove( 'open' );
   } );
-  _openMenu = null;
 }
 
 /**

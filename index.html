@@ -101,97 +101,125 @@
         <!-- Style Menu -->
         <div class="menu-dropdown">
           <button class="menu-btn" data-menu="style-menu">Style</button>
-          <div id="style-menu" class="menu-panel menu-panel-wide" hidden>
-            <div class="menu-group-label">Theme - Light</div>
-            <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="snow" data-checked="true">
-              <span class="menu-check">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
-              </span>
-              <span class="menu-item-label">Snow</span>
-            </button>
-            <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="solarized-light">
-              <span class="menu-check">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
-              </span>
-              <span class="menu-item-label">Solarized Light</span>
-            </button>
-            <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="github-light">
-              <span class="menu-check">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
-              </span>
-              <span class="menu-item-label">GitHub Light</span>
-            </button>
-            <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="sepia">
-              <span class="menu-check">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
-              </span>
-              <span class="menu-item-label">Sepia</span>
-            </button>
-            <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="gruvbox-light">
-              <span class="menu-check">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
-              </span>
-              <span class="menu-item-label">Gruvbox Light</span>
-            </button>
-            <div class="menu-group-label">Theme - Dark</div>
-            <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="onyx">
-              <span class="menu-check">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
-              </span>
-              <span class="menu-item-label">Onyx</span>
-            </button>
-            <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="solarized-dark">
-              <span class="menu-check">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
-              </span>
-              <span class="menu-item-label">Solarized Dark</span>
-            </button>
-            <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="github-dark">
-              <span class="menu-check">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
-              </span>
-              <span class="menu-item-label">GitHub Dark</span>
-            </button>
-            <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="monokai">
-              <span class="menu-check">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
-              </span>
-              <span class="menu-item-label">Monokai</span>
-            </button>
-            <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="gruvbox-dark">
-              <span class="menu-check">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
-              </span>
-              <span class="menu-item-label">Gruvbox Dark</span>
-            </button>
-            <div class="menu-separator"></div>
-            <div class="menu-group-label">Font</div>
-            <button class="menu-item checkable font-item" data-action="set-font" data-font="'JetBrains Mono', monospace" data-checked="true">
-              <span class="menu-check">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
-              </span>
-              <span class="menu-item-label">JetBrains Mono</span>
-            </button>
-            <button class="menu-item checkable font-item" data-action="set-font" data-font="monospace">
-              <span class="menu-check">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
-              </span>
-              <span class="menu-item-label">System Monospace</span>
-            </button>
-            <div class="menu-separator"></div>
-            <div class="menu-group-label">Tab Size</div>
-            <button class="menu-item checkable tab-item" data-action="set-tab" data-tab="2">
-              <span class="menu-check">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
-              </span>
-              <span class="menu-item-label">2 spaces</span>
-            </button>
-            <button class="menu-item checkable tab-item" data-action="set-tab" data-tab="4" data-checked="true">
-              <span class="menu-check">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
-              </span>
-              <span class="menu-item-label">4 spaces</span>
-            </button>
+          <div id="style-menu" class="menu-panel" hidden>
+            
+            <!-- Theme Submenu -->
+            <div class="menu-submenu">
+              <button class="menu-item has-submenu" data-action="theme-submenu-btn">
+                <span class="menu-item-label">Theme</span>
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="3,2 7,5 3,8"/></svg>
+              </button>
+              <div class="submenu-panel" id="theme-submenu">
+                <div class="menu-group-label">Theme - Light</div>
+                <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="snow" data-checked="true">
+                  <span class="menu-check">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+                  </span>
+                  <span class="menu-item-label">Snow</span>
+                </button>
+                <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="solarized-light">
+                  <span class="menu-check">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+                  </span>
+                  <span class="menu-item-label">Solarized Light</span>
+                </button>
+                <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="github-light">
+                  <span class="menu-check">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+                  </span>
+                  <span class="menu-item-label">GitHub Light</span>
+                </button>
+                <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="sepia">
+                  <span class="menu-check">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+                  </span>
+                  <span class="menu-item-label">Sepia</span>
+                </button>
+                <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="gruvbox-light">
+                  <span class="menu-check">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+                  </span>
+                  <span class="menu-item-label">Gruvbox Light</span>
+                </button>
+                <div class="menu-separator"></div>
+                <div class="menu-group-label">Theme - Dark</div>
+                <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="onyx">
+                  <span class="menu-check">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+                  </span>
+                  <span class="menu-item-label">Onyx</span>
+                </button>
+                <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="solarized-dark">
+                  <span class="menu-check">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+                  </span>
+                  <span class="menu-item-label">Solarized Dark</span>
+                </button>
+                <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="github-dark">
+                  <span class="menu-check">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+                  </span>
+                  <span class="menu-item-label">GitHub Dark</span>
+                </button>
+                <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="monokai">
+                  <span class="menu-check">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+                  </span>
+                  <span class="menu-item-label">Monokai</span>
+                </button>
+                <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="gruvbox-dark">
+                  <span class="menu-check">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+                  </span>
+                  <span class="menu-item-label">Gruvbox Dark</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Font Submenu -->
+            <div class="menu-submenu">
+              <button class="menu-item has-submenu" data-action="font-submenu-btn">
+                <span class="menu-item-label">Font</span>
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="3,2 7,5 3,8"/></svg>
+              </button>
+              <div class="submenu-panel" id="font-submenu">
+                <button class="menu-item checkable font-item" data-action="set-font" data-font="'JetBrains Mono', monospace" data-checked="true">
+                  <span class="menu-check">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+                  </span>
+                  <span class="menu-item-label">JetBrains Mono</span>
+                </button>
+                <button class="menu-item checkable font-item" data-action="set-font" data-font="monospace">
+                  <span class="menu-check">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+                  </span>
+                  <span class="menu-item-label">System Monospace</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Tab Size Submenu -->
+            <div class="menu-submenu">
+              <button class="menu-item has-submenu" data-action="tab-submenu-btn">
+                <span class="menu-item-label">Tab Size</span>
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="3,2 7,5 3,8"/></svg>
+              </button>
+              <div class="submenu-panel" id="tab-submenu">
+                <button class="menu-item checkable tab-item" data-action="set-tab" data-tab="2">
+                  <span class="menu-check">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+                  </span>
+                  <span class="menu-item-label">2 spaces</span>
+                </button>
+                <button class="menu-item checkable tab-item" data-action="set-tab" data-tab="4" data-checked="true">
+                  <span class="menu-check">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+                  </span>
+                  <span class="menu-item-label">4 spaces</span>
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
 
