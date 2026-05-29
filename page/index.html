@@ -424,223 +424,258 @@
       </div>
     </section>
 
-      <!-- 1. Features Grid Section -->
-      <section class="features-section" id="features">
-        <div class="features-container">
-          <div class="section-header centered">
-            <span class="section-tag-mono">PRODUCT CAPABILITIES</span>
-            <h2 class="section-title">Engineered to write. Built to fly.</h2>
-            <p class="section-desc">Feather MD strips away the bloat to deliver a hyper-focused, local-first editing
-              surface designed for instantaneous Markdown workflows.</p>
+    <!-- 1. Features Grid Section -->
+    <section class="features-section" id="features">
+      <div class="features-container">
+        <div class="section-header centered">
+          <h2 class="section-title">Engineered to write. Built to fly.</h2>
+        </div>
+
+        <!-- Modern Clean Typographic Features Grid (No Cards/Boxes, 4 Left, 4 Right) -->
+        <div class="features-clean-grid">
+
+          <div class="features-column">
+            
+            <div class="feature-item">
+              <div class="feature-number">01</div>
+              <div class="feature-body">
+                <h3 class="feature-heading">Bidirectional Scroll Sync</h3>
+                <p class="feature-text">Scroll either the CodeMirror 6 editor or the preview pane, and the other pane follows perfectly with ratio-based tracking.</p>
+              </div>
+            </div>
+
+            <div class="feature-item">
+              <div class="feature-number">02</div>
+              <div class="feature-body">
+                <h3 class="feature-heading">Advanced Printing Engine</h3>
+                <p class="feature-text">Bypasses browser native limits to print beautiful, clean, multi-page documents without hostnames or page URLs.</p>
+              </div>
+            </div>
+
+            <div class="feature-item">
+              <div class="feature-number">03</div>
+              <div class="feature-body">
+                <h3 class="feature-heading">Signed Auto-Updates</h3>
+                <p class="feature-text">Release packages are cryptographically signed with Ed25519 for absolute security, updating seamlessly on launch.</p>
+              </div>
+            </div>
+
+            <div class="feature-item">
+              <div class="feature-number">04</div>
+              <div class="feature-body">
+                <h3 class="feature-heading">OS File Association</h3>
+                <p class="feature-text">Integrates directly with Windows and Linux. Double-click any markdown file to launch instantly from your file manager.</p>
+              </div>
+            </div>
+
           </div>
 
-          <!-- Modern Bento Grid Features -->
-          <div class="features-grid">
-            <!-- 1. Instant Execution -->
-            <div class="feature-bento-card">
-              <div class="feature-content">
-                <h4>Sub-100ms Cold Start</h4>
-                <p>Natively compiled binary launches instantly. Zero load screens, zero splash latency, and zero memory
-                  leaks.</p>
+          <div class="features-column">
+
+            <div class="feature-item">
+              <div class="feature-number">05</div>
+              <div class="feature-body">
+                <h3 class="feature-heading">Premium Unified Header</h3>
+                <p class="feature-text">Combines window titlebar and editor toolbar into a singular, mathematically centered bar with floating interactive tooltips.</p>
               </div>
             </div>
 
-            <!-- 2. Infinite Performance -->
-            <div class="feature-bento-card">
-              <div class="feature-content">
-                <h4>50MB Active RAM</h4>
-                <p>Built directly on Tauri and Rust. Bypasses heavy browser frameworks to run on 90% less overhead than
-                  Electron.</p>
+            <div class="feature-item">
+              <div class="feature-number">06</div>
+              <div class="feature-body">
+                <h3 class="feature-heading">10 Built-In UI Themes</h3>
+                <p class="feature-text">Five light and five dark themes. Switch instantly under 1ms with custom repainting locked to CSS root variables.</p>
               </div>
             </div>
 
-            <!-- 3. Advanced Printing -->
-            <div class="feature-bento-card">
-              <div class="feature-content">
-                <h4>Clean PDF Printing</h4>
-                <p>Bypasses default browser URLs and timestamp stamps. Native print engine renders infinite multi-page
-                  margins cleanly.</p>
+            <div class="feature-item">
+              <div class="feature-number">07</div>
+              <div class="feature-body">
+                <h3 class="feature-heading">External File Watcher</h3>
+                <p class="feature-text">Monitors active files in the background using tokio async channels. Prompting you instantly on external alterations.</p>
               </div>
             </div>
 
-            <!-- 4. Offline Integrity -->
-            <div class="feature-bento-card">
-              <div class="feature-content">
-                <h4>100% Local Integrity</h4>
-                <p>Zero tracking, zero cloud telemetry, and zero mandatory sign-ins. Your thoughts stay local and
-                  cryptographically private.</p>
+            <div class="feature-item">
+              <div class="feature-number">08</div>
+              <div class="feature-body">
+                <h3 class="feature-heading">Keyboard-First Workflows</h3>
+                <p class="feature-text">Full command panel shortcuts for fast toggles of line numbering, word wraps, active-line highlights, and find/replace.</p>
               </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Metrics & Comparison Section -->
+    <section class="metrics-section" id="metrics">
+      <div class="metrics-container">
+        <div class="section-header centered">
+          <span class="section-tag-mono">BENCHMARKS</span>
+          <h2 class="section-title">How It Compares</h2>
+          <p class="section-desc">We measure against real quality standards. Feather MD is designed specifically to
+            live in the gap between bloated full IDEs and heavy note vaults.</p>
+        </div>
+
+        <!-- Comparison Table -->
+        <div class="comparison-table-wrapper">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Metric / Feature</th>
+                <th class="highlight-column">Feather MD</th>
+                <th>VS Code</th>
+                <th>Typora</th>
+                <th>Obsidian</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Installer Size</strong></td>
+                <td class="highlight-column"><strong>~5 MB</strong></td>
+                <td>~90 MB</td>
+                <td>~85 MB</td>
+                <td>~110 MB</td>
+              </tr>
+              <tr>
+                <td><strong>Resident Memory (RAM)</strong></td>
+                <td class="highlight-column"><strong>~50 MB</strong></td>
+                <td>~300 MB</td>
+                <td>~150 MB</td>
+                <td>~400 MB</td>
+              </tr>
+              <tr>
+                <td><strong>Cold Startup Time</strong></td>
+                <td class="highlight-column"><strong>&lt; 100 ms</strong></td>
+                <td>1 to 3 s</td>
+                <td>&lt; 1 s</td>
+                <td>1 to 2 s</td>
+              </tr>
+              <tr>
+                <td><strong>Dual-pane preview</strong></td>
+                <td class="highlight-column"><strong>Built-in</strong></td>
+                <td>Extension / split</td>
+                <td>Hybrid only</td>
+                <td>Plugin</td>
+              </tr>
+              <tr>
+                <td><strong>Native Binary</strong></td>
+                <td class="highlight-column"><strong>Yes (Tauri)</strong></td>
+                <td>No (Electron)</td>
+                <td>No (Electron)</td>
+                <td>No (Electron)</td>
+              </tr>
+              <tr>
+                <td><strong>Telemetry</strong></td>
+                <td class="highlight-column"><strong>None</strong></td>
+                <td>Opt-out</td>
+                <td>Opt-out</td>
+                <td>Opt-in</td>
+              </tr>
+              <tr>
+                <td><strong>Licensing & Cost</strong></td>
+                <td class="highlight-column"><strong>Free, MIT</strong></td>
+                <td>Free, MIT</td>
+                <td>Paid</td>
+                <td>Free, freemium</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Tech Stack Section -->
+    <section class="techstack-section" id="techstack">
+      <div class="techstack-container">
+        <div class="section-header centered">
+          <span class="section-tag-mono">ARCHITECTURE</span>
+          <h2 class="section-title">The Technology Stack</h2>
+          <p class="section-desc">Feather MD is built cleanly with modular layers that respect both the host operating
+            system resources and web security boundaries.</p>
+        </div>
+
+        <!-- Modern Bento Grid Tech Stack -->
+        <div class="techstack-grid">
+          <!-- 1. Shell & Core -->
+          <div class="techstack-card">
+            <div class="techstack-card-tag">Shell & Core</div>
+            <h4>Tauri 2 (Rust)</h4>
+            <p>Leverages native system webviews to deliver lightweight binaries, lightning-fast execution, and
+              near-zero idle CPU cycles.</p>
+          </div>
+
+          <!-- 2. Editing Area -->
+          <div class="techstack-card">
+            <div class="techstack-card-tag">Editing Area</div>
+            <h4>CodeMirror 6</h4>
+            <p>A modular, tree-shaken editor core supporting syntax highlighting, brackets auto-pairing, code folding,
+              and optional Vim keys.</p>
+          </div>
+
+          <!-- 3. Compilation Pipeline -->
+          <div class="techstack-card">
+            <div class="techstack-card-tag">Compilation Pipeline</div>
+            <h4>Marked + DOMPurify</h4>
+            <p>Compiles Markdown synchronously into native HTML, coupled with DOMPurify for absolute, client-side XSS
+              protection.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Downloads Center -->
+    <section class="downloads-section" id="downloads">
+      <div class="downloads-container">
+        <div class="section-header centered">
+          <span class="section-tag-mono">NATIVE BINARIES</span>
+          <h2 class="section-title">Get Feather MD</h2>
+          <p class="section-desc">Download signed native packages. No background tracking updates, no registration
+            flows, and no accounts.</p>
+        </div>
+
+        <div class="downloads-grid">
+          <!-- Windows Card -->
+          <div class="download-card">
+            <h3>Windows</h3>
+            <p class="download-platform-desc">Windows 10 / 11 (x64 setup)</p>
+            <a href="#" class="download-btn-main">
+              <span>Download .exe Installer (5.0 MB)</span>
+            </a>
+            <div class="install-hash">
+              <span>SHA-256: <code>8b5f3a1...7e9c2</code></span>
+            </div>
+          </div>
+
+          <!-- Linux Debian Card -->
+          <div class="download-card">
+            <h3>Linux Debian</h3>
+            <p class="download-platform-desc">Ubuntu / Debian / Mint (x64 .deb)</p>
+            <a href="#" class="download-btn-main">
+              <span>Download .deb Package (7.8 MB)</span>
+            </a>
+            <div class="install-hash">
+              <span>SHA-256: <code>4f2a9e1...9c1a7</code></span>
+            </div>
+          </div>
+
+          <!-- Linux AppImage Card -->
+          <div class="download-card">
+            <h3>Linux AppImage</h3>
+            <p class="download-platform-desc">Universal Portable (x64 .AppImage)</p>
+            <a href="#" class="download-btn-main">
+              <span>Download .AppImage (81.5 MB)</span>
+            </a>
+            <div class="install-hash">
+              <span>SHA-256: <code>2d7f8a3...3c8b4</code></span>
             </div>
           </div>
         </div>
-      </section>
-
-      <!-- 2. Metrics & Comparison Section -->
-      <section class="metrics-section" id="metrics">
-        <div class="metrics-container">
-          <div class="section-header centered">
-            <span class="section-tag-mono">BENCHMARKS</span>
-            <h2 class="section-title">How It Compares</h2>
-            <p class="section-desc">We measure against real quality standards. Feather MD is designed specifically to
-              live in the gap between bloated full IDEs and heavy note vaults.</p>
-          </div>
-
-          <!-- Comparison Table -->
-          <div class="comparison-table-wrapper">
-            <table class="comparison-table">
-              <thead>
-                <tr>
-                  <th>Metric / Feature</th>
-                  <th class="highlight-column">Feather MD</th>
-                  <th>VS Code</th>
-                  <th>Typora</th>
-                  <th>Obsidian</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>Installer Size</strong></td>
-                  <td class="highlight-column"><strong>~5 MB</strong></td>
-                  <td>~90 MB</td>
-                  <td>~85 MB</td>
-                  <td>~110 MB</td>
-                </tr>
-                <tr>
-                  <td><strong>Resident Memory (RAM)</strong></td>
-                  <td class="highlight-column"><strong>~50 MB</strong></td>
-                  <td>~300 MB</td>
-                  <td>~150 MB</td>
-                  <td>~400 MB</td>
-                </tr>
-                <tr>
-                  <td><strong>Cold Startup Time</strong></td>
-                  <td class="highlight-column"><strong>&lt; 100 ms</strong></td>
-                  <td>1 to 3 s</td>
-                  <td>&lt; 1 s</td>
-                  <td>1 to 2 s</td>
-                </tr>
-                <tr>
-                  <td><strong>Dual-pane preview</strong></td>
-                  <td class="highlight-column"><strong>Built-in</strong></td>
-                  <td>Extension / split</td>
-                  <td>Hybrid only</td>
-                  <td>Plugin</td>
-                </tr>
-                <tr>
-                  <td><strong>Native Binary</strong></td>
-                  <td class="highlight-column"><strong>Yes (Tauri)</strong></td>
-                  <td>No (Electron)</td>
-                  <td>No (Electron)</td>
-                  <td>No (Electron)</td>
-                </tr>
-                <tr>
-                  <td><strong>Telemetry</strong></td>
-                  <td class="highlight-column"><strong>None</strong></td>
-                  <td>Opt-out</td>
-                  <td>Opt-out</td>
-                  <td>Opt-in</td>
-                </tr>
-                <tr>
-                  <td><strong>Licensing & Cost</strong></td>
-                  <td class="highlight-column"><strong>Free, MIT</strong></td>
-                  <td>Free, MIT</td>
-                  <td>Paid</td>
-                  <td>Free, freemium</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- 3. Tech Stack Section -->
-      <section class="techstack-section" id="techstack">
-        <div class="techstack-container">
-          <div class="section-header centered">
-            <span class="section-tag-mono">ARCHITECTURE</span>
-            <h2 class="section-title">The Technology Stack</h2>
-            <p class="section-desc">Feather MD is built cleanly with modular layers that respect both the host operating
-              system resources and web security boundaries.</p>
-          </div>
-
-          <!-- Modern Bento Grid Tech Stack -->
-          <div class="techstack-grid">
-            <!-- 1. Shell & Core -->
-            <div class="techstack-card">
-              <div class="techstack-card-tag">Shell & Core</div>
-              <h4>Tauri 2 (Rust)</h4>
-              <p>Leverages native system webviews to deliver lightweight binaries, lightning-fast execution, and
-                near-zero idle CPU cycles.</p>
-            </div>
-
-            <!-- 2. Editing Area -->
-            <div class="techstack-card">
-              <div class="techstack-card-tag">Editing Area</div>
-              <h4>CodeMirror 6</h4>
-              <p>A modular, tree-shaken editor core supporting syntax highlighting, brackets auto-pairing, code folding,
-                and optional Vim keys.</p>
-            </div>
-
-            <!-- 3. Compilation Pipeline -->
-            <div class="techstack-card">
-              <div class="techstack-card-tag">Compilation Pipeline</div>
-              <h4>Marked + DOMPurify</h4>
-              <p>Compiles Markdown synchronously into native HTML, coupled with DOMPurify for absolute, client-side XSS
-                protection.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Downloads Center -->
-      <section class="downloads-section" id="downloads">
-        <div class="downloads-container">
-          <div class="section-header centered">
-            <span class="section-tag-mono">NATIVE BINARIES</span>
-            <h2 class="section-title">Get Feather MD</h2>
-            <p class="section-desc">Download signed native packages. No background tracking updates, no registration
-              flows, and no accounts.</p>
-          </div>
-
-          <div class="downloads-grid">
-            <!-- Windows Card -->
-            <div class="download-card">
-              <h3>Windows</h3>
-              <p class="download-platform-desc">Windows 10 / 11 (x64 setup)</p>
-              <a href="#" class="download-btn-main">
-                <span>Download .exe Installer (5.0 MB)</span>
-              </a>
-              <div class="install-hash">
-                <span>SHA-256: <code>8b5f3a1...7e9c2</code></span>
-              </div>
-            </div>
-
-            <!-- Linux Debian Card -->
-            <div class="download-card">
-              <h3>Linux Debian</h3>
-              <p class="download-platform-desc">Ubuntu / Debian / Mint (x64 .deb)</p>
-              <a href="#" class="download-btn-main">
-                <span>Download .deb Package (7.8 MB)</span>
-              </a>
-              <div class="install-hash">
-                <span>SHA-256: <code>4f2a9e1...9c1a7</code></span>
-              </div>
-            </div>
-
-            <!-- Linux AppImage Card -->
-            <div class="download-card">
-              <h3>Linux AppImage</h3>
-              <p class="download-platform-desc">Universal Portable (x64 .AppImage)</p>
-              <a href="#" class="download-btn-main">
-                <span>Download .AppImage (81.5 MB)</span>
-              </a>
-              <div class="install-hash">
-                <span>SHA-256: <code>2d7f8a3...3c8b4</code></span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      </div>
+    </section>
 
   </main>
 
