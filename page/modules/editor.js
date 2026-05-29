@@ -8,7 +8,7 @@
 export function initWorkspaceResizer(demoDivider, demoWorkspace, demoEditorPane, demoPreviewPane) {
   let isResizing = false;
 
-  demoDivider.addEventListener('mousedown', (e) => {
+  demoDivider.addEventListener('mousedown', () => {
     isResizing = true;
     demoDivider.classList.add('active');
     document.body.style.cursor = 'col-resize';

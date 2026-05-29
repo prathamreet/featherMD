@@ -1,11 +1,12 @@
+/* global Lenis */
 /* ==========================================================================
    FEATHER MD LANDING PAGE — MAIN COORDINATOR SCRIPT (VANILLA JS MODULE)
    ========================================================================== */
 
 import { compileMarkdown } from './modules/compiler.js';
-import { applyTheme, detectOSPreference } from './modules/theme.js';
+import { applyTheme } from './modules/theme.js';
 import { initDropdownMenus } from './modules/menu.js';
-import { initAmbientGlowParallax, initBenchmarkReveal } from './modules/effects.js';
+import { initAmbientGlowParallax } from './modules/effects.js';
 import {
   initWorkspaceResizer,
   initSynchronizedScrolling,

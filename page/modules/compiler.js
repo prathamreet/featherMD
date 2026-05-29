@@ -153,7 +153,7 @@ export function compileMarkdown(md) {
         html.push('<ul>');
         inList = true;
       }
-      let content = line.trim().replace(/^([-\*]\s+)/, '');
+      let content = line.trim().replace(/^([-*]\s+)/, '');
       if (content.startsWith('[ ]')) {
         html.push(`<li><input type="checkbox" disabled style="margin-right:8px; vertical-align: middle;">${parseInline(content.substring(3).trim())}</li>`);
       } else if (content.startsWith('[x]') || content.startsWith('[X]')) {
