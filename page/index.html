@@ -1,413 +1,627 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="onyx">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    <!-- SEO Meta Tags -->
-    <title>Feather MD — Zero-Bloat, Native Dual-Pane Markdown Editor</title>
-    <meta name="description" content="An ultra-lightweight, high-performance markdown editor for Windows and Linux. Opens in under 100ms, installer under 10MB, and memory footprint under 60MB. Fully native, local-first, zero telemetry." />
-    
-    <!-- Premium Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Stylesheet -->
-    <link rel="stylesheet" href="./styles.css" />
-  </head>
-  <body>
-    
-    <!-- Ambient Background Lighting -->
-    <div class="ambient-glow" id="ambient-glow"></div>
-    <div class="grid-overlay"></div>
+<html lang="en" data-theme="monokai">
 
-    <!-- Navigation Header -->
-    <header class="site-header">
-      <div class="header-container">
-        <a href="#" class="logo-link" id="site-logo">
-          <div class="logo-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
-              <line x1="16" y1="8" x2="2" y2="22"></line>
-              <line x1="17.5" y1="15" x2="9" y2="15"></line>
-              <line x1="11.5" y1="9" x2="15" y2="9"></line>
-              <line x1="8.5" y1="12" x2="12" y2="12"></line>
-            </svg>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO Meta Tags -->
+  <title>Feather MD — Zero-Bloat, Native Dual-Pane Markdown Editor</title>
+  <meta name="description"
+    content="An ultra-lightweight, high-performance markdown editor for Windows and Linux. Opens in under 100ms, installer under 10MB, and memory footprint under 60MB. Fully native, local-first, zero telemetry." />
+
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+
+  <!-- Ambient Background Lighting -->
+  <div class="ambient-glow" id="ambient-glow"></div>
+  <div class="grid-overlay"></div>
+
+  <!-- Navigation Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="#" class="logo-link" id="site-logo">
+        <div class="logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
+            <line x1="16" y1="8" x2="2" y2="22"></line>
+            <line x1="17.5" y1="15" x2="9" y2="15"></line>
+            <line x1="11.5" y1="9" x2="15" y2="9"></line>
+            <line x1="8.5" y1="12" x2="12" y2="12"></line>
+          </svg>
+        </div>
+        <span class="logo-text">Feather MD</span>
+      </a>
+
+      <nav class="main-nav">
+        <a href="#editor-section" class="nav-link">Live Demo</a>
+        <a href="#features" class="nav-link">Why Feather</a>
+        <a href="#metrics" class="nav-link">How It Compares</a>
+        <a href="#techstack" class="nav-link">Tech Stack</a>
+        <a href="#downloads" class="nav-link download-nav-btn">Download</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main>
+
+    <!-- Hero Header Section -->
+    <section class="hero-section">
+      <div class="hero-container">
+        <div class="hero-brand-mono">FEATHER MD</div>
+
+        <h1 class="hero-title">
+          Why should skimming a text file cost a gigabyte of memory?
+        </h1>
+        <p class="hero-subtitle">
+          Feather MD is a native, dual-pane Markdown editor that opens in under 100 milliseconds, operates under 50 MB
+          of memory, and respects your focus with zero tracking telemetry. Built on Tauri 2, not Electron.
+        </p>
+
+        <div class="hero-cta-group">
+          <a href="#downloads" class="cta-button primary-cta">
+            Download for Desktop
+          </a>
+          <a href="#editor-section" class="cta-button secondary-cta">
+            Try the live web demo →
+          </a>
+        </div>
+
+        <!-- Editorial Value Columns -->
+        <div class="why-grid">
+          <div class="why-card">
+            <div class="why-tag">01 / DISPATCH</div>
+            <h4>Sub-100ms cold start</h4>
+            <p>Associated natively with your operating system. Double-click any <code>.md</code> file to read or edit
+              immediately without spawning heavy IDE background processes or web engine loading screens.</p>
           </div>
-          <span class="logo-text">Feather MD</span>
-        </a>
-        
-        <nav class="main-nav">
-          <a href="#editor-section" class="nav-link">Live Demo</a>
-          <a href="#downloads" class="nav-link download-nav-btn">Download</a>
-        </nav>
+
+          <div class="why-card">
+            <div class="why-tag">02 / WEIGHT</div>
+            <h4>5 MB installer. 50 MB RAM.</h4>
+            <p>Built directly on Rust and Tauri. Feather MD runs on your machine's pre-installed native WebView, keeping
+              the installation bundle tiny and preventing memory leaks over long work sessions.</p>
+          </div>
+
+          <div class="why-card">
+            <div class="why-tag">03 / UTILITY</div>
+            <h4>Dual-pane ratio scroll sync</h4>
+            <p>Features zero-setup side-by-side Markdown rendering with bidirectional ratio scroll sync right out of the
+              box. No jitter, no lost cursor focus, and absolutely offline-first.</p>
+          </div>
+        </div>
       </div>
-    </header>
+    </section>
 
-    <!-- Main Content Layout -->
-    <main>
-      
-      <!-- Hero Header Section -->
-      <section class="hero-section">
-        <div class="hero-container">
-          <div class="hero-badge-wrapper">
-            <span class="hero-badge">Tauri 2 + Rust Core</span>
-            <span class="hero-badge-separator">•</span>
-            <span class="hero-badge">100% Local</span>
+    <!-- Interactive Editor Section (The Hero Product) -->
+    <section class="editor-section" id="editor-section">
+      <div class="section-header">
+        <span class="section-tag">Interactive Experience</span>
+        <h2 class="section-title">The editor is the hero.</h2>
+        <p class="section-desc">Experience the exact UI, responsive feel, and lightning-fast speed of the desktop
+          application right here in your browser.</p>
+      </div>
+
+      <div class="editor-outer-container">
+        <!-- Editor Title Bar -->
+        <div class="editor-titlebar">
+          <div class="editor-titlebar-left">
+            <div class="editor-titlebar-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
+                <line x1="16" y1="8" x2="2" y2="22"></line>
+              </svg>
+            </div>
+
+            <!-- File Dropdown -->
+            <div class="editor-menu-dropdown">
+              <button class="editor-menu-btn" id="demo-menu-file">File</button>
+              <div class="editor-menu-panel" id="panel-file" hidden>
+                <button class="editor-menu-item" id="btn-demo-new">
+                  <span>New File</span><kbd>Ctrl+N</kbd>
+                </button>
+                <button class="editor-menu-item" id="btn-demo-open">
+                  <span>Open</span><kbd>Ctrl+O</kbd>
+                </button>
+                <button class="editor-menu-item" id="btn-demo-save">
+                  <span>Save</span><kbd>Ctrl+S</kbd>
+                </button>
+                <button class="editor-menu-item" id="btn-demo-save-as">
+                  <span>Save As</span><kbd>Ctrl+Shift+S</kbd>
+                </button>
+                <div class="editor-menu-separator"></div>
+                <!-- Recent Files Submenu -->
+                <div class="editor-menu-item has-submenu">
+                  <span class="menu-item-label">Recent Files</span>
+                  <svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <polyline points="3,2 7,5 3,8" />
+                  </svg>
+                  <div class="editor-submenu-panel" style="width: 140px;">
+                    <div
+                      style="font-size: 0.72rem; color: var(--page-text-muted); padding: 6px 8px; text-align: center;">
+                      No recent files</div>
+                  </div>
+                </div>
+                <button class="editor-menu-item" id="btn-demo-reset">
+                  <span>Reset Demo</span><kbd>Ctrl+R</kbd>
+                </button>
+                <div class="editor-menu-separator"></div>
+                <button class="editor-menu-item" id="btn-demo-print">
+                  <span>Print Document</span><kbd>Ctrl+P</kbd>
+                </button>
+              </div>
+            </div>
+
+            <!-- View Dropdown -->
+            <div class="editor-menu-dropdown">
+              <button class="editor-menu-btn" id="demo-menu-view">View</button>
+              <div class="editor-menu-panel" id="panel-view" hidden>
+                <button class="editor-menu-item checkable checked" id="btn-toggle-sync">
+                  <span class="check-icon">✓</span><span>Sync Scroll</span><kbd>Alt+S</kbd>
+                </button>
+                <button class="editor-menu-item checkable checked" id="btn-toggle-lines">
+                  <span class="check-icon">✓</span><span>Line Numbers</span><kbd>Ctrl+L</kbd>
+                </button>
+                <button class="editor-menu-item checkable checked" id="btn-toggle-wrap">
+                  <span class="check-icon">✓</span><span>Word Wrap</span><kbd>Alt+Z</kbd>
+                </button>
+              </div>
+            </div>
+
+            <!-- Style Dropdown -->
+            <div class="editor-menu-dropdown">
+              <button class="editor-menu-btn" id="demo-menu-style">Style</button>
+              <div class="editor-menu-panel" id="panel-style" hidden>
+
+                <!-- Theme Submenu -->
+                <div class="editor-menu-item has-submenu">
+                  <span class="menu-item-label">Theme</span>
+                  <svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <polyline points="3,2 7,5 3,8" />
+                  </svg>
+                  <div class="editor-submenu-panel theme-submenu-panel">
+                    <div class="menu-group-label">Theme — Light</div>
+                    <button class="editor-submenu-item theme-select-btn" data-theme="snow">
+                      <span class="check-icon"></span><span>Snow</span>
+                    </button>
+                    <button class="editor-submenu-item theme-select-btn" data-theme="solarized-light">
+                      <span class="check-icon"></span><span>Solarized Light</span>
+                    </button>
+                    <button class="editor-submenu-item theme-select-btn" data-theme="github-light">
+                      <span class="check-icon"></span><span>GitHub Light</span>
+                    </button>
+                    <button class="editor-submenu-item theme-select-btn" data-theme="sepia">
+                      <span class="check-icon"></span><span>Sepia</span>
+                    </button>
+                    <button class="editor-submenu-item theme-select-btn" data-theme="gruvbox-light">
+                      <span class="check-icon"></span><span>Gruvbox Light</span>
+                    </button>
+
+                    <div class="editor-menu-separator"></div>
+                    <div class="menu-group-label">Theme — Dark</div>
+                    <button class="editor-submenu-item theme-select-btn checked" data-theme="onyx">
+                      <span class="check-icon">✓</span><span>Onyx</span>
+                    </button>
+                    <button class="editor-submenu-item theme-select-btn" data-theme="solarized-dark">
+                      <span class="check-icon"></span><span>Solarized Dark</span>
+                    </button>
+                    <button class="editor-submenu-item theme-select-btn" data-theme="github-dark">
+                      <span class="check-icon"></span><span>GitHub Dark</span>
+                    </button>
+                    <button class="editor-submenu-item theme-select-btn" data-theme="monokai">
+                      <span class="check-icon"></span><span>Monokai</span>
+                    </button>
+                    <button class="editor-submenu-item theme-select-btn" data-theme="gruvbox-dark">
+                      <span class="check-icon"></span><span>Gruvbox Dark</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Font Submenu -->
+                <div class="editor-menu-item has-submenu">
+                  <span class="menu-item-label">Font</span>
+                  <svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <polyline points="3,2 7,5 3,8" />
+                  </svg>
+                  <div class="editor-submenu-panel">
+                    <button class="editor-submenu-item checkable checked" id="btn-font-mono">
+                      <span class="check-icon">✓</span><span>JetBrains Mono</span>
+                    </button>
+                    <button class="editor-submenu-item checkable" id="btn-font-sans">
+                      <span class="check-icon"></span><span>System Monospace</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Tab Size Submenu -->
+                <div class="editor-menu-item has-submenu">
+                  <span class="menu-item-label">Tab Size</span>
+                  <svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <polyline points="3,2 7,5 3,8" />
+                  </svg>
+                  <div class="editor-submenu-panel">
+                    <button class="editor-submenu-item checkable" id="btn-tab-2">
+                      <span class="check-icon"></span><span>2 spaces</span>
+                    </button>
+                    <button class="editor-submenu-item checkable checked" id="btn-tab-4">
+                      <span class="check-icon">✓</span><span>4 spaces</span>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="editor-header-separator"></div>
+
+            <!-- Font Size range slider -->
+            <div class="editor-font-slider">
+              <span class="font-slider-val" id="lbl-font-size">14px</span>
+              <input type="range" id="slider-font-size" min="12" max="20" value="14" />
+            </div>
           </div>
-          
-          <h1 class="hero-title">
-            Zero-bloat markdown editing.
-          </h1>
-          <p class="hero-subtitle">
-            A native, dual-pane markdown editor built for speed. Opens instantly in under 100ms, operates with a memory footprint under 60MB, and stays quiet with zero telemetry.
-          </p>
-          
-          <div class="hero-cta-group">
-            <a href="#downloads" class="cta-button primary-cta">
-              Get Feather MD
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-            </a>
-            <a href="#editor-section" class="cta-button secondary-cta">
-              Try Interactive Demo
-            </a>
+
+          <div class="editor-titlebar-center">
+            feathermd — getting-started.md
           </div>
-          
-          <!-- Key Constraints / Stats Row -->
-          <div class="hero-metrics">
-            <div class="metric-card">
-              <span class="metric-value">&lt; 100ms</span>
-              <span class="metric-label">Cold Startup</span>
+
+          <div class="editor-titlebar-right">
+            <span class="win-btn win-minimize">
+              <svg width="10" height="10" viewBox="0 0 12 12">
+                <line x1="2" y1="6" x2="10" y2="6" stroke="currentColor" stroke-width="1.5" />
+              </svg>
+            </span>
+            <span class="win-btn win-maximize">
+              <svg width="10" height="10" viewBox="0 0 12 12">
+                <rect x="2" y="2" width="8" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="1.5" />
+              </svg>
+            </span>
+            <span class="win-btn win-close">
+              <svg width="10" height="10" viewBox="0 0 12 12">
+                <line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.5" />
+                <line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.5" />
+              </svg>
+            </span>
+          </div>
+        </div>
+
+        <!-- Main Interactive Work Space -->
+        <div class="editor-workspace" id="editor-workspace">
+
+          <!-- Left Editor Pane -->
+          <div class="editor-pane-left" id="demo-editor-pane">
+            <!-- Line Numbers Container -->
+            <div class="line-numbers-col" id="line-numbers-col"></div>
+            <!-- Text Area -->
+            <textarea class="editor-textarea" id="demo-editor" spellcheck="false" wrap="soft"></textarea>
+          </div>
+
+          <!-- Draggable Divider -->
+          <div class="editor-workspace-divider" id="demo-divider">
+            <div class="divider-line"></div>
+          </div>
+
+          <!-- Right Preview Pane -->
+          <div class="editor-pane-right" id="demo-preview-pane">
+            <div class="preview-content-rendered" id="demo-preview"></div>
+          </div>
+
+        </div>
+
+        <!-- Editor Status Bar -->
+        <div class="editor-statusbar">
+          <span class="status-left" id="status-path">C:\Users\feathermd\documents\getting-started.md</span>
+          <div class="status-right">
+            <span id="status-words">0 words</span>
+            <span class="status-sep">|</span>
+            <span id="status-cursor">Ln 1, Col 1</span>
+            <span class="status-sep">|</span>
+            <span>UTF-8</span>
+            <span class="status-sep">|</span>
+            <span>LF</span>
+          </div>
+        </div>
+
+        <!-- Keyboard Shortcuts Modal -->
+        <div id="shortcuts-modal" class="editor-modal-overlay" hidden>
+          <div class="editor-modal-content">
+            <div class="editor-modal-header">
+              <h3>Keyboard Shortcuts</h3>
+              <button id="btn-close-shortcuts" class="editor-modal-close" aria-label="Close shortcuts">
+                <svg width="12" height="12" viewBox="0 0 12 12">
+                  <line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.5" />
+                  <line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.5" />
+                </svg>
+              </button>
             </div>
-            <div class="metric-card">
-              <span class="metric-value">&lt; 10MB</span>
-              <span class="metric-label">Installer Size</span>
-            </div>
-            <div class="metric-card">
-              <span class="metric-value">&lt; 60MB</span>
-              <span class="metric-label">Runtime RAM</span>
-            </div>
-            <div class="metric-card">
-              <span class="metric-value">&lt; 1%</span>
-              <span class="metric-label">CPU at Idle</span>
+            <div class="editor-modal-body">
+              <table class="editor-shortcuts-table">
+                <tbody>
+                  <tr>
+                    <td><kbd>Ctrl</kbd>+<kbd>N</kbd></td>
+                    <td>New File</td>
+                  </tr>
+                  <tr>
+                    <td><kbd>Ctrl</kbd>+<kbd>R</kbd></td>
+                    <td>Reset Demo</td>
+                  </tr>
+                  <tr>
+                    <td><kbd>Ctrl</kbd>+<kbd>P</kbd></td>
+                    <td>Print Document</td>
+                  </tr>
+                  <tr>
+                    <td><kbd>Ctrl</kbd>+<kbd>L</kbd></td>
+                    <td>Toggle Line Numbers</td>
+                  </tr>
+                  <tr>
+                    <td><kbd>Alt</kbd>+<kbd>Z</kbd></td>
+                    <td>Toggle Word Wrap</td>
+                  </tr>
+                  <tr>
+                    <td><kbd>Alt</kbd>+<kbd>S</kbd></td>
+                    <td>Toggle Sync Scroll</td>
+                  </tr>
+                  <tr>
+                    <td><kbd>Ctrl</kbd>+<kbd>?</kbd></td>
+                    <td>Keyboard Shortcuts Help</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
-      </section>
 
-      <!-- Interactive Editor Section (The Hero Product) -->
-      <section class="editor-section" id="editor-section">
-        <div class="section-header">
-          <span class="section-tag">Interactive Experience</span>
-          <h2 class="section-title">The editor is the hero.</h2>
-          <p class="section-desc">Experience the exact UI, responsive feel, and lightning-fast speed of the desktop application right here in your browser.</p>
+        <!-- Unsaved Changes Dialog -->
+        <div id="unsaved-dialog" class="editor-modal-overlay" hidden>
+          <div class="editor-modal-content editor-unsaved-content">
+            <div class="editor-modal-header">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--page-accent)" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                </path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              <h3>Unsaved Changes</h3>
+            </div>
+            <div class="editor-modal-body">
+              <p>You have made changes to the current document. Resetting or creating a new document will lose these
+                edits.</p>
+            </div>
+            <div class="editor-modal-footer">
+              <button id="unsaved-btn-cancel" class="editor-dialog-btn editor-btn-secondary">Cancel</button>
+              <button id="unsaved-btn-discard" class="editor-dialog-btn editor-btn-danger">Don't Save</button>
+              <button id="unsaved-btn-save" class="editor-dialog-btn editor-btn-primary">Save Changes</button>
+            </div>
+          </div>
         </div>
 
-        <div class="editor-outer-container">
-          <!-- Editor Title Bar -->
-          <div class="editor-titlebar">
-            <div class="editor-titlebar-left">
-              <div class="editor-titlebar-icon">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <!-- About Dialog -->
+        <div id="about-dialog" class="editor-modal-overlay" hidden>
+          <div class="editor-modal-content editor-about-content">
+            <div class="editor-modal-header">
+              <h3>About Feather MD</h3>
+              <button id="btn-close-about" class="editor-modal-close" aria-label="Close about">
+                <svg width="12" height="12" viewBox="0 0 12 12">
+                  <line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.5" />
+                  <line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.5" />
+                </svg>
+              </button>
+            </div>
+            <div class="editor-modal-body" style="text-align: center; padding: 20px 10px;">
+              <div class="closed-state-icon" style="margin-bottom: 12px; display: inline-block;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--page-accent)"
+                  stroke-width="2">
                   <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
                   <line x1="16" y1="8" x2="2" y2="22"></line>
                 </svg>
               </div>
-              
-              <!-- File Dropdown -->
-              <div class="editor-menu-dropdown">
-                <button class="editor-menu-btn" id="demo-menu-file">File</button>
-                <div class="editor-menu-panel" id="panel-file" hidden>
-                  <button class="editor-menu-item" id="btn-demo-new">
-                    <span>New File</span><kbd>Ctrl+N</kbd>
-                  </button>
-                  <button class="editor-menu-item" id="btn-demo-open">
-                    <span>Open</span><kbd>Ctrl+O</kbd>
-                  </button>
-                  <button class="editor-menu-item" id="btn-demo-save">
-                    <span>Save</span><kbd>Ctrl+S</kbd>
-                  </button>
-                  <button class="editor-menu-item" id="btn-demo-save-as">
-                    <span>Save As</span><kbd>Ctrl+Shift+S</kbd>
-                  </button>
-                  <div class="editor-menu-separator"></div>
-                  <!-- Recent Files Submenu -->
-                  <div class="editor-menu-item has-submenu">
-                    <span class="menu-item-label">Recent Files</span>
-                    <svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="3,2 7,5 3,8"/></svg>
-                    <div class="editor-submenu-panel" style="width: 140px;">
-                      <div style="font-size: 0.72rem; color: var(--page-text-muted); padding: 6px 8px; text-align: center;">No recent files</div>
-                    </div>
-                  </div>
-                  <button class="editor-menu-item" id="btn-demo-reset">
-                    <span>Reset Demo</span><kbd>Ctrl+R</kbd>
-                  </button>
-                  <div class="editor-menu-separator"></div>
-                  <button class="editor-menu-item" id="btn-demo-print">
-                    <span>Print Document</span><kbd>Ctrl+P</kbd>
-                  </button>
-                </div>
-              </div>
-              
-              <!-- View Dropdown -->
-              <div class="editor-menu-dropdown">
-                <button class="editor-menu-btn" id="demo-menu-view">View</button>
-                <div class="editor-menu-panel" id="panel-view" hidden>
-                  <button class="editor-menu-item checkable checked" id="btn-toggle-sync">
-                    <span class="check-icon">✓</span><span>Sync Scroll</span><kbd>Alt+S</kbd>
-                  </button>
-                  <button class="editor-menu-item checkable checked" id="btn-toggle-lines">
-                    <span class="check-icon">✓</span><span>Line Numbers</span><kbd>Ctrl+L</kbd>
-                  </button>
-                  <button class="editor-menu-item checkable checked" id="btn-toggle-wrap">
-                    <span class="check-icon">✓</span><span>Word Wrap</span><kbd>Alt+Z</kbd>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Style Dropdown -->
-              <div class="editor-menu-dropdown">
-                <button class="editor-menu-btn" id="demo-menu-style">Style</button>
-                <div class="editor-menu-panel" id="panel-style" hidden>
-                  
-                  <!-- Theme Submenu -->
-                  <div class="editor-menu-item has-submenu">
-                    <span class="menu-item-label">Theme</span>
-                    <svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="3,2 7,5 3,8"/></svg>
-                    <div class="editor-submenu-panel theme-submenu-panel">
-                      <div class="menu-group-label">Theme — Light</div>
-                      <button class="editor-submenu-item theme-select-btn" data-theme="snow">
-                        <span class="check-icon"></span><span>Snow</span>
-                      </button>
-                      <button class="editor-submenu-item theme-select-btn" data-theme="solarized-light">
-                        <span class="check-icon"></span><span>Solarized Light</span>
-                      </button>
-                      <button class="editor-submenu-item theme-select-btn" data-theme="github-light">
-                        <span class="check-icon"></span><span>GitHub Light</span>
-                      </button>
-                      <button class="editor-submenu-item theme-select-btn" data-theme="sepia">
-                        <span class="check-icon"></span><span>Sepia</span>
-                      </button>
-                      <button class="editor-submenu-item theme-select-btn" data-theme="gruvbox-light">
-                        <span class="check-icon"></span><span>Gruvbox Light</span>
-                      </button>
-                      
-                      <div class="editor-menu-separator"></div>
-                      <div class="menu-group-label">Theme — Dark</div>
-                      <button class="editor-submenu-item theme-select-btn checked" data-theme="onyx">
-                        <span class="check-icon">✓</span><span>Onyx</span>
-                      </button>
-                      <button class="editor-submenu-item theme-select-btn" data-theme="solarized-dark">
-                        <span class="check-icon"></span><span>Solarized Dark</span>
-                      </button>
-                      <button class="editor-submenu-item theme-select-btn" data-theme="github-dark">
-                        <span class="check-icon"></span><span>GitHub Dark</span>
-                      </button>
-                      <button class="editor-submenu-item theme-select-btn" data-theme="monokai">
-                        <span class="check-icon"></span><span>Monokai</span>
-                      </button>
-                      <button class="editor-submenu-item theme-select-btn" data-theme="gruvbox-dark">
-                        <span class="check-icon"></span><span>Gruvbox Dark</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  <!-- Font Submenu -->
-                  <div class="editor-menu-item has-submenu">
-                    <span class="menu-item-label">Font</span>
-                    <svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="3,2 7,5 3,8"/></svg>
-                    <div class="editor-submenu-panel">
-                      <button class="editor-submenu-item checkable checked" id="btn-font-mono">
-                        <span class="check-icon">✓</span><span>JetBrains Mono</span>
-                      </button>
-                      <button class="editor-submenu-item checkable" id="btn-font-sans">
-                        <span class="check-icon"></span><span>System Monospace</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  <!-- Tab Size Submenu -->
-                  <div class="editor-menu-item has-submenu">
-                    <span class="menu-item-label">Tab Size</span>
-                    <svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="3,2 7,5 3,8"/></svg>
-                    <div class="editor-submenu-panel">
-                      <button class="editor-submenu-item checkable" id="btn-tab-2">
-                        <span class="check-icon"></span><span>2 spaces</span>
-                      </button>
-                      <button class="editor-submenu-item checkable checked" id="btn-tab-4">
-                        <span class="check-icon">✓</span><span>4 spaces</span>
-                      </button>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-              
-              <div class="editor-header-separator"></div>
-              
-              <!-- Font Size range slider -->
-              <div class="editor-font-slider">
-                <span class="font-slider-val" id="lbl-font-size">14px</span>
-                <input type="range" id="slider-font-size" min="12" max="20" value="14" />
-              </div>
-            </div>
-            
-            <div class="editor-titlebar-center">
-              feathermd — getting-started.md
-            </div>
-            
-            <div class="editor-titlebar-right">
-              <span class="win-btn win-minimize">
-                <svg width="10" height="10" viewBox="0 0 12 12"><line x1="2" y1="6" x2="10" y2="6" stroke="currentColor" stroke-width="1.5"/></svg>
-              </span>
-              <span class="win-btn win-maximize">
-                <svg width="10" height="10" viewBox="0 0 12 12"><rect x="2" y="2" width="8" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
-              </span>
-              <span class="win-btn win-close">
-                <svg width="10" height="10" viewBox="0 0 12 12"><line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.5"/><line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.5"/></svg>
-              </span>
-            </div>
-          </div>
-
-          <!-- Main Interactive Work Space -->
-          <div class="editor-workspace" id="editor-workspace">
-            
-            <!-- Left Editor Pane -->
-            <div class="editor-pane-left" id="demo-editor-pane">
-              <!-- Line Numbers Container -->
-              <div class="line-numbers-col" id="line-numbers-col"></div>
-              <!-- Text Area -->
-              <textarea class="editor-textarea" id="demo-editor" spellcheck="false" wrap="soft"></textarea>
-            </div>
-            
-            <!-- Draggable Divider -->
-            <div class="editor-workspace-divider" id="demo-divider">
-              <div class="divider-line"></div>
-            </div>
-            
-            <!-- Right Preview Pane -->
-            <div class="editor-pane-right" id="demo-preview-pane">
-              <div class="preview-content-rendered" id="demo-preview"></div>
-            </div>
-            
-          </div>
-
-          <!-- Editor Status Bar -->
-          <div class="editor-statusbar">
-            <span class="status-left" id="status-path">C:\Users\feathermd\documents\getting-started.md</span>
-            <div class="status-right">
-              <span id="status-words">0 words</span>
-              <span class="status-sep">|</span>
-              <span id="status-cursor">Ln 1, Col 1</span>
-              <span class="status-sep">|</span>
-              <span>UTF-8</span>
-              <span class="status-sep">|</span>
-              <span>LF</span>
-            </div>
-          </div>
-
-          <!-- Keyboard Shortcuts Modal -->
-          <div id="shortcuts-modal" class="editor-modal-overlay" hidden>
-            <div class="editor-modal-content">
-              <div class="editor-modal-header">
-                <h3>Keyboard Shortcuts</h3>
-                <button id="btn-close-shortcuts" class="editor-modal-close" aria-label="Close shortcuts">
-                  <svg width="12" height="12" viewBox="0 0 12 12"><line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.5"/><line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.5"/></svg>
-                </button>
-              </div>
-              <div class="editor-modal-body">
-                <table class="editor-shortcuts-table">
-                  <tbody>
-                    <tr><td><kbd>Ctrl</kbd>+<kbd>N</kbd></td><td>New File</td></tr>
-                    <tr><td><kbd>Ctrl</kbd>+<kbd>R</kbd></td><td>Reset Demo</td></tr>
-                    <tr><td><kbd>Ctrl</kbd>+<kbd>P</kbd></td><td>Print Document</td></tr>
-                    <tr><td><kbd>Ctrl</kbd>+<kbd>L</kbd></td><td>Toggle Line Numbers</td></tr>
-                    <tr><td><kbd>Alt</kbd>+<kbd>Z</kbd></td><td>Toggle Word Wrap</td></tr>
-                    <tr><td><kbd>Alt</kbd>+<kbd>S</kbd></td><td>Toggle Sync Scroll</td></tr>
-                    <tr><td><kbd>Ctrl</kbd>+<kbd>?</kbd></td><td>Keyboard Shortcuts Help</td></tr>
-                  </tbody>
-                </table>
+              <h4
+                style="font-family: 'Outfit', sans-serif; font-size: 1.1rem; margin-bottom: 4px; color: var(--page-text); font-weight: 600;">
+                Feather MD v1.4.1</h4>
+              <p style="font-size: 0.8rem; color: var(--page-text-muted); margin-bottom: 16px;">Pure Performance
+                Markdown Editor</p>
+              <div
+                style="font-size: 0.75rem; color: var(--page-text-muted); line-height: 1.5; background: var(--titlebar-bg); border: 1px solid var(--page-border); border-radius: 6px; padding: 10px; font-family: 'JetBrains Mono', monospace; text-align: left;">
+                Built with Tauri + Rust + Vanilla JS<br>
+                Memory: &lt; 60MB RAM<br>
+                Cold Start: &lt; 100ms
               </div>
             </div>
           </div>
+        </div>
+      </div>
+      </div>
 
-          <!-- Unsaved Changes Dialog -->
-          <div id="unsaved-dialog" class="editor-modal-overlay" hidden>
-            <div class="editor-modal-content editor-unsaved-content">
-              <div class="editor-modal-header">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--page-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
-                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                  <line x1="12" y1="9" x2="12" y2="13"></line>
-                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                </svg>
-                <h3>Unsaved Changes</h3>
-              </div>
-              <div class="editor-modal-body">
-                <p>You have made changes to the current document. Resetting or creating a new document will lose these edits.</p>
-              </div>
-              <div class="editor-modal-footer">
-                <button id="unsaved-btn-cancel" class="editor-dialog-btn editor-btn-secondary">Cancel</button>
-                <button id="unsaved-btn-discard" class="editor-dialog-btn editor-btn-danger">Don't Save</button>
-                <button id="unsaved-btn-save" class="editor-dialog-btn editor-btn-primary">Save Changes</button>
-              </div>
-            </div>
+      <!-- 1. Features Grid Section -->
+      <section class="features-section" id="features">
+        <div class="features-container">
+          <div class="section-header centered">
+            <span class="section-tag-mono">CORE UTILITIES</span>
+            <h2 class="section-title">Engineered to write. Nothing else.</h2>
+            <p class="section-desc">Feather MD provides a focused, native editing surface designed for swift Markdown
+              documentation with zero background noise.</p>
           </div>
 
-          <!-- About Dialog -->
-          <div id="about-dialog" class="editor-modal-overlay" hidden>
-            <div class="editor-modal-content editor-about-content">
-              <div class="editor-modal-header">
-                <h3>About Feather MD</h3>
-                <button id="btn-close-about" class="editor-modal-close" aria-label="Close about">
-                  <svg width="12" height="12" viewBox="0 0 12 12"><line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.5"/><line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.5"/></svg>
-                </button>
-              </div>
-              <div class="editor-modal-body" style="text-align: center; padding: 20px 10px;">
-                <div class="closed-state-icon" style="margin-bottom: 12px; display: inline-block;">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--page-accent)" stroke-width="2">
-                    <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
-                    <line x1="16" y1="8" x2="2" y2="22"></line>
-                  </svg>
-                </div>
-                <h4 style="font-family: 'Outfit', sans-serif; font-size: 1.1rem; margin-bottom: 4px; color: var(--page-text); font-weight: 600;">Feather MD v1.4.1</h4>
-                <p style="font-size: 0.8rem; color: var(--page-text-muted); margin-bottom: 16px;">Pure Performance Markdown Editor</p>
-                <div style="font-size: 0.75rem; color: var(--page-text-muted); line-height: 1.5; background: var(--titlebar-bg); border: 1px solid var(--page-border); border-radius: 6px; padding: 10px; font-family: 'JetBrains Mono', monospace; text-align: left;">
-                  Built with Tauri + Rust + Vanilla JS<br>
-                  Memory: &lt; 60MB RAM<br>
-                  Cold Start: &lt; 100ms
-                </div>
-              </div>
+          <!-- Clean Bullet Features -->
+          <div class="features-bullet-list">
+            <div class="feature-item-editorial">
+              <h4>CodeMirror 6 Editor Core</h4>
+              <p>Fully equipped with Markdown syntax highlights, active line highlighting, bracket & quote auto-pairing,
+                code folding, and optional Vim keyboard mapping compartments loaded natively on demand.</p>
+            </div>
+
+            <div class="feature-item-editorial">
+              <h4>Highlight.js Code Blocks</h4>
+              <p>Fenced code blocks load language grammars dynamically upon editor changes, saving startup latency and
+                avoiding massive, unused dependency weight.</p>
+            </div>
+
+            <div class="feature-item-editorial">
+              <h4>Rust Asynchronous Watcher</h4>
+              <p>A custom tokio-powered Rust thread monitors active documents on disk in real-time. If modified by
+                external programs, it prompts you to reload immediately.</p>
+            </div>
+
+            <div class="feature-item-editorial">
+              <h4>Persistent Configuration</h4>
+              <p>Window dimensions, divider split ratios, light/dark themes, and recent documents lists are preserved
+                directly to native platform config folders (<code>AppData/Roaming</code> or <code>~/.config</code>) with
+                no third-party cloud synchronization.</p>
             </div>
           </div>
         </div>
       </section>
 
+      <!-- 2. Metrics & Comparison Section -->
+      <section class="metrics-section" id="metrics">
+        <div class="metrics-container">
+          <div class="section-header centered">
+            <span class="section-tag-mono">BENCHMARKS</span>
+            <h2 class="section-title">How It Compares</h2>
+            <p class="section-desc">We measure against real quality standards. Feather MD is designed specifically to
+              live in the gap between bloated full IDEs and heavy note vaults.</p>
+          </div>
 
+          <!-- Comparison Table -->
+          <div class="comparison-table-wrapper">
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>Metric / Feature</th>
+                  <th class="highlight-column">Feather MD</th>
+                  <th>VS Code</th>
+                  <th>Typora</th>
+                  <th>Obsidian</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Installer Size</strong></td>
+                  <td class="highlight-column"><strong>~5 MB</strong></td>
+                  <td>~90 MB</td>
+                  <td>~85 MB</td>
+                  <td>~110 MB</td>
+                </tr>
+                <tr>
+                  <td><strong>Resident Memory (RAM)</strong></td>
+                  <td class="highlight-column"><strong>~50 MB</strong></td>
+                  <td>~300 MB</td>
+                  <td>~150 MB</td>
+                  <td>~400 MB</td>
+                </tr>
+                <tr>
+                  <td><strong>Cold Startup Time</strong></td>
+                  <td class="highlight-column"><strong>&lt; 100 ms</strong></td>
+                  <td>1 to 3 s</td>
+                  <td>&lt; 1 s</td>
+                  <td>1 to 2 s</td>
+                </tr>
+                <tr>
+                  <td><strong>Dual-pane preview</strong></td>
+                  <td class="highlight-column"><strong>Built-in</strong></td>
+                  <td>Extension / split</td>
+                  <td>Hybrid only</td>
+                  <td>Plugin</td>
+                </tr>
+                <tr>
+                  <td><strong>Native Binary</strong></td>
+                  <td class="highlight-column"><strong>Yes (Tauri)</strong></td>
+                  <td>No (Electron)</td>
+                  <td>No (Electron)</td>
+                  <td>No (Electron)</td>
+                </tr>
+                <tr>
+                  <td><strong>Telemetry</strong></td>
+                  <td class="highlight-column"><strong>None</strong></td>
+                  <td>Opt-out</td>
+                  <td>Opt-out</td>
+                  <td>Opt-in</td>
+                </tr>
+                <tr>
+                  <td><strong>Licensing & Cost</strong></td>
+                  <td class="highlight-column"><strong>Free, MIT</strong></td>
+                  <td>Free, MIT</td>
+                  <td>Paid</td>
+                  <td>Free, freemium</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Tech Stack Section -->
+      <section class="techstack-section" id="techstack">
+        <div class="techstack-container">
+          <div class="section-header centered">
+            <span class="section-tag-mono">ARCHITECTURE</span>
+            <h2 class="section-title">The Technology Stack</h2>
+            <p class="section-desc">Feather MD is built cleanly with modular layers that respect both the host operating
+              system resources and web security boundaries.</p>
+          </div>
+
+          <div class="techstack-spec-grid">
+            <div class="techstack-editorial-row">
+              <div class="techstack-col-label">Shell & Core</div>
+              <div class="techstack-col-body">
+                <h4>Tauri 2 (Rust)</h4>
+                <p>Uses the host operating system native Webview engine directly. Avoids bundling heavy chromium
+                  runtimes, yielding lightweight binaries and minimal runtime CPU cycles at idle states.</p>
+              </div>
+            </div>
+
+            <div class="techstack-editorial-row">
+              <div class="techstack-col-label">Editing Area</div>
+              <div class="techstack-col-body">
+                <h4>CodeMirror 6</h4>
+                <p>A modular, tree-shaken frontend text editor core. Keeps the script bundle small while rendering
+                  highly customizable keystroke buffers and vim registers on request.</p>
+              </div>
+            </div>
+
+            <div class="techstack-editorial-row">
+              <div class="techstack-col-label">Compilation Pipeline</div>
+              <div class="techstack-col-body">
+                <h4>Marked + DOMPurify</h4>
+                <p>Compiles GitHub Flavored Markdown into native HTML synchronously. DOMPurify provides absolute,
+                  client-side XSS protection before the preview renders.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <!-- Downloads Center -->
       <section class="downloads-section" id="downloads">
         <div class="downloads-container">
           <div class="section-header centered">
-            <span class="section-tag">Production Ready</span>
-            <h2 class="section-title">Download Feather MD</h2>
-            <p class="section-desc">Download signed, pre-compiled native binaries for your operating system. Zero runtime installations required.</p>
+            <span class="section-tag-mono">NATIVE BINARIES</span>
+            <h2 class="section-title">Get Feather MD</h2>
+            <p class="section-desc">Download signed native packages. No background tracking updates, no registration
+              flows, and no accounts.</p>
           </div>
 
           <div class="downloads-grid">
             <!-- Windows Card -->
             <div class="download-card">
-              <div class="download-platform-icon">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.449L9.75 2.1v9.45H0V3.449zM0 12.45h9.75v9.45L0 20.551v-8.1zM10.8 1.95L24 0v11.55H10.8V1.95zM10.8 12.45H24v11.55l-13.2-1.95v-9.6z"/></svg>
-              </div>
               <h3>Windows</h3>
-              <p class="download-platform-desc">Windows 10 / 11 (x64 Architecture)</p>
-              
+              <p class="download-platform-desc">Windows 10 / 11 (x64 setup)</p>
               <a href="#" class="download-btn-main">
-                <span>Download .exe Installer</span>
-                <span class="download-btn-sub">NSIS Setup (5.2 MB)</span>
+                <span>Download .exe Installer (5.0 MB)</span>
               </a>
-              
               <div class="install-hash">
                 <span>SHA-256: <code>8b5f3a1...7e9c2</code></span>
               </div>
@@ -415,17 +629,11 @@
 
             <!-- Linux Debian Card -->
             <div class="download-card">
-              <div class="download-platform-icon">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              </div>
               <h3>Linux Debian</h3>
-              <p class="download-platform-desc">Ubuntu / Mint / Debian (x64 .deb)</p>
-              
+              <p class="download-platform-desc">Ubuntu / Debian / Mint (x64 .deb)</p>
               <a href="#" class="download-btn-main">
-                <span>Download .deb Package</span>
-                <span class="download-btn-sub">Debian Binary (4.8 MB)</span>
+                <span>Download .deb Package (7.8 MB)</span>
               </a>
-              
               <div class="install-hash">
                 <span>SHA-256: <code>4f2a9e1...9c1a7</code></span>
               </div>
@@ -433,57 +641,50 @@
 
             <!-- Linux AppImage Card -->
             <div class="download-card">
-              <div class="download-platform-icon">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>
-              </div>
               <h3>Linux AppImage</h3>
-              <p class="download-platform-desc">Universal Portable Linux (x64 AppImage)</p>
-              
+              <p class="download-platform-desc">Universal Portable (x64 .AppImage)</p>
               <a href="#" class="download-btn-main">
-                <span>Download .AppImage</span>
-                <span class="download-btn-sub">Self-Contained (7.4 MB)</span>
+                <span>Download .AppImage (81.5 MB)</span>
               </a>
-              
               <div class="install-hash">
                 <span>SHA-256: <code>2d7f8a3...3c8b4</code></span>
               </div>
             </div>
           </div>
-
-
         </div>
       </section>
 
-    </main>
+  </main>
 
-    <!-- Footer -->
-    <footer class="site-footer">
-      <div class="footer-container">
-        <div class="footer-left">
-          <div class="footer-logo">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
-              <line x1="16" y1="8" x2="2" y2="22"></line>
-            </svg>
-            <span>Feather MD</span>
-          </div>
-          <p class="footer-tagline">Crafted with precision. Built for writers.</p>
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-left">
+        <div class="footer-logo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
+            <line x1="16" y1="8" x2="2" y2="22"></line>
+          </svg>
+          <span>Feather MD</span>
         </div>
-        
-        <div class="footer-middle">
-          <span class="telemetry-badge">
-            <span class="pulse-dot"></span>
-            Zero Analytics. Zero Telemetry. 100% Offline.
-          </span>
-        </div>
-
-        <div class="footer-right">
-          <span class="copyright">© 2026 Feather MD. Released under the MIT License.</span>
-        </div>
+        <p class="footer-tagline">Crafted with precision. Built for writers.</p>
       </div>
-    </footer>
 
-    <!-- Script File -->
-    <script type="module" src="./script.js"></script>
-  </body>
+      <div class="footer-middle">
+        <span class="telemetry-badge">
+          <span class="pulse-dot"></span>
+          Zero Analytics. Zero Telemetry. 100% Offline.
+        </span>
+      </div>
+
+      <div class="footer-right">
+        <span class="copyright">© 2026 Feather MD. Released under the MIT License.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Script File -->
+  <script type="module" src="./script.js"></script>
+</body>
+
 </html>
