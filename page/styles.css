@@ -1648,21 +1648,40 @@ p {
 .download-card {
   background: var(--card-bg);
   border: 1px solid var(--page-border);
-  border-radius: 14px;
-  padding: 40px;
+  border-radius: 12px;
+  padding: 36px 24px;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
-              border-color 0.4s ease, 
-              box-shadow 0.4s ease;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  box-shadow: 0 4px 20px var(--shadow-color);
+  box-sizing: border-box;
+}
+
+.download-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--page-accent-muted) 0%, transparent 40%);
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
 }
 
 .download-card:hover {
   transform: translateY(-6px);
   border-color: var(--page-accent);
-  box-shadow: 0 16px 40px var(--shadow-color);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+.download-card:hover::before {
+  opacity: 1;
 }
 
 .download-platform-icon {
@@ -2235,12 +2254,39 @@ p {
 }
 
 .why-card {
-  background: transparent;
-  border: none;
-  border-top: 1px solid var(--page-border);
-  padding: 20px 0 0 0;
+  background: var(--card-bg);
+  border: 1px solid var(--page-border);
+  border-radius: 12px;
+  padding: 36px 24px;
   text-align: left;
-  transition: border-color 0.2s ease;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  box-shadow: 0 4px 20px var(--shadow-color);
+  box-sizing: border-box;
+}
+
+.why-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--page-accent-muted) 0%, transparent 40%);
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.why-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--page-accent);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+.why-card:hover::before {
+  opacity: 1;
 }
 
 .why-tag {
@@ -2324,6 +2370,7 @@ p {
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
   box-shadow: 0 4px 20px var(--shadow-color);
+  box-sizing: border-box;
 }
 
 .feature-bento-card::before {
@@ -2347,22 +2394,6 @@ p {
 
 .feature-bento-card:hover::before {
   opacity: 1;
-}
-
-.feature-icon-wrapper {
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
-  background: var(--page-accent-muted);
-  color: var(--page-accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.feature-bento-card:hover .feature-icon-wrapper {
-  transform: scale(1.1) rotate(5deg);
 }
 
 .feature-content h4 {
@@ -2524,48 +2555,78 @@ p {
   margin: 0 auto;
 }
 
-.techstack-spec-grid {
-  display: flex;
-  flex-direction: column;
-  margin-top: 48px;
-  border-top: 1px solid var(--page-border);
-}
-
-.techstack-editorial-row {
+.techstack-grid {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  padding: 32px 0;
-  border-bottom: 1px solid var(--page-border);
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 48px;
 }
 
-@media (max-width: 768px) {
-  .techstack-editorial-row {
+@media (max-width: 968px) {
+  .techstack-grid {
     grid-template-columns: 1fr;
-    gap: 12px;
-    padding: 24px 0;
   }
 }
 
-.techstack-col-label {
+.techstack-card {
+  background: var(--card-bg);
+  border: 1px solid var(--page-border);
+  border-radius: 12px;
+  padding: 36px 24px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  box-shadow: 0 4px 20px var(--shadow-color);
+  box-sizing: border-box;
+}
+
+.techstack-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--page-accent-muted) 0%, transparent 40%);
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.techstack-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--page-accent);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+.techstack-card:hover::before {
+  opacity: 1;
+}
+
+.techstack-card-tag {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.72rem;
   font-weight: 700;
   color: var(--page-accent);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  margin-bottom: 12px;
 }
 
-.techstack-col-body h4 {
-  font-family: 'Inter', -apple-system, sans-serif;
-  font-size: 1.05rem;
-  font-weight: 600;
+.techstack-card h4 {
+  font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
   color: var(--page-text);
   margin-bottom: 8px;
+  letter-spacing: -0.01em;
 }
 
-.techstack-col-body p {
+.techstack-card p {
   font-size: 0.85rem;
-  line-height: 1.5;
+  line-height: 1.55;
   color: var(--page-text-muted);
   margin: 0;
 }
@@ -2600,17 +2661,49 @@ p {
 .download-card {
   background: var(--card-bg);
   border: 1px solid var(--page-border);
-  border-radius: 8px;
-  padding: 32px;
-  text-align: left;
+  border-radius: 12px;
+  padding: 36px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  box-shadow: 0 4px 20px var(--shadow-color);
+  box-sizing: border-box;
+}
+
+.download-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--page-accent-muted) 0%, transparent 40%);
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.download-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--page-accent);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+.download-card:hover::before {
+  opacity: 1;
 }
 
 .download-card h3 {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Outfit', 'Inter', sans-serif;
   font-size: 1.15rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--page-text);
   margin-bottom: 4px;
+  letter-spacing: -0.01em;
 }
 
 .download-platform-desc {
@@ -2621,6 +2714,7 @@ p {
 
 .download-btn-main {
   display: block;
+  width: 100%;
   text-align: center;
   background: var(--page-text);
   color: var(--page-bg);
