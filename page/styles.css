@@ -2172,10 +2172,36 @@ p {
 }
 
 /* ==========================================================================
-   CLEAN AESTHETIC OVERRIDES (Anti-SaaS AI)
+   PREMIUM BACKDROP AESTHETICS
    ========================================================================== */
-.ambient-glow, .grid-overlay {
-  display: none !important;
+.grid-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(to right, var(--page-border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--page-border) 1px, transparent 1px);
+  background-size: 80px 80px;
+  pointer-events: none;
+  opacity: 0.15;
+  z-index: 1;
+}
+
+.ambient-glow {
+  position: absolute;
+  top: -150px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 600px;
+  background: radial-gradient(circle, var(--page-accent-muted) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 2;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: blur(100px);
+  opacity: 0.55;
 }
 
 /* ==========================================================================
@@ -2183,59 +2209,83 @@ p {
    ========================================================================== */
 .hero-brand-mono {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--page-accent);
-  letter-spacing: 0.15em;
-  margin-bottom: 24px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
 }
 
 .hero-title {
-  font-family: 'Inter', -apple-system, sans-serif !important;
-  font-size: 3.2rem !important;
-  font-weight: 700 !important;
-  line-height: 1.15 !important;
-  letter-spacing: -0.03em !important;
-  color: var(--page-text);
-  margin-bottom: 24px;
+  font-family: 'Outfit', 'Inter', -apple-system, sans-serif !important;
+  font-size: 3.8rem !important;
+  font-weight: 800 !important;
+  line-height: 1.12 !important;
+  letter-spacing: -0.04em !important;
+  background: linear-gradient(135deg, var(--page-text) 50%, var(--page-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  max-width: 900px;
+  margin: 0 auto 24px auto;
+  text-align: center;
 }
 
 .hero-subtitle {
   font-size: 1.15rem !important;
   font-weight: 400 !important;
-  line-height: 1.6 !important;
-  color: var(--page-text-muted);
-  max-width: 720px;
-  margin: 0 auto 36px auto;
+  line-height: 1.65 !important;
+  color: var(--page-text-muted) !important;
+  max-width: 780px !important;
+  margin: 0 auto 40px auto !important;
+  text-align: center;
+}
+
+.hero-cta-group {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 60px;
+}
+
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
 }
 
 .primary-cta {
   background: var(--page-accent) !important;
   color: var(--page-bg) !important;
-  box-shadow: none !important;
-  border-radius: 6px !important;
-  padding: 10px 20px !important;
-  font-size: 0.95rem !important;
   border: 1px solid var(--page-accent) !important;
+  box-shadow: 0 4px 12px var(--page-accent-muted) !important;
 }
 
 .primary-cta:hover {
-  transform: none !important;
-  opacity: 0.95;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px var(--page-accent-muted) !important;
+  opacity: 1 !important;
 }
 
 .secondary-cta {
-  background: transparent !important;
-  border: none !important;
-  color: var(--page-text-muted) !important;
-  padding: 10px 12px !important;
-  font-size: 0.95rem !important;
+  background: var(--card-bg) !important;
+  color: var(--page-text) !important;
+  border: 1px solid var(--page-border) !important;
+  backdrop-filter: blur(8px);
 }
 
 .secondary-cta:hover {
-  transform: none !important;
-  color: var(--page-text) !important;
-  background: transparent !important;
+  transform: translateY(-2px) !important;
+  border-color: var(--page-accent) !important;
+  background: var(--card-bg) !important;
 }
 
 .why-grid {
