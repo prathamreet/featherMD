@@ -1804,7 +1804,7 @@ p {
 /* 12. Footer */
 
 .site-footer {
-  height: 96px;
+  padding: 48px 0;
   border-top: 1px solid var(--page-border);
   background: var(--page-bg);
   position: relative;
@@ -1814,7 +1814,6 @@ p {
 
 .footer-container {
   max-width: 1400px;
-  height: 100%;
   margin: 0 auto;
   padding: 0 40px;
   display: flex;
@@ -1822,6 +1821,12 @@ p {
   justify-content: space-between;
   font-size: 0.85rem;
   color: var(--page-text-muted);
+}
+
+.footer-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .footer-logo {
@@ -1835,29 +1840,56 @@ p {
 
 .footer-tagline {
   font-size: 0.78rem;
+  color: var(--page-text-muted);
 }
 
-.telemetry-badge {
+
+.footer-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.footer-links {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: var(--card-bg);
-  border: 1px solid var(--page-border);
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-weight: 500;
-  font-size: 0.8rem;
-  color: var(--page-text);
 }
 
-.pulse-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #00e676;
-  display: inline-block;
-  box-shadow: 0 0 8px rgba(0, 230, 118, 0.6);
-  animation: pulse 1.5s infinite alternate;
+.footer-links a {
+  color: var(--page-text-muted);
+  text-decoration: none;
+  font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: var(--page-accent);
+}
+
+.footer-link-divider {
+  color: var(--page-border);
+  user-select: none;
+  font-size: 0.82rem;
+}
+
+.copyright {
+  font-size: 0.76rem;
+  color: var(--page-text-muted);
+}
+
+@media (max-width: 900px) {
+  .footer-container {
+    flex-direction: column;
+    gap: 32px;
+    text-align: center;
+  }
+  .footer-left, .footer-right {
+    align-items: center;
+  }
 }
 
 /* 13. Animations & Responsive Specifications */
