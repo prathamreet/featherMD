@@ -154,13 +154,52 @@ Give it a spin. Type some markdown, drag the center divider to resize, adjust th
     demoEditor.setAttribute('wrap', state.wordWrapActive ? 'soft' : 'off');
   });
 
-  btnFontMono.addEventListener('click', () => {
-    const isChecked = btnFontMono.classList.contains('checked');
-    btnFontMono.classList.toggle('checked', !isChecked);
-    btnFontMono.querySelector('.check-icon').textContent = !isChecked ? '✓' : '';
-    demoEditor.style.fontFamily = !isChecked ? "'JetBrains Mono', 'System Monospace', monospace" : "monospace";
-    demoPreview.style.fontFamily = !isChecked ? "'Inter', sans-serif" : "monospace";
-  });
+  // Style Submenus Bindings
+  const btnFontSans = document.getElementById('btn-font-sans');
+  const btnTab2 = document.getElementById('btn-tab-2');
+  const btnTab4 = document.getElementById('btn-tab-4');
+
+  if (btnFontMono && btnFontSans) {
+    btnFontMono.addEventListener('click', () => {
+      btnFontMono.classList.add('checked');
+      btnFontMono.querySelector('.check-icon').textContent = '✓';
+      btnFontSans.classList.remove('checked');
+      btnFontSans.querySelector('.check-icon').textContent = '';
+      
+      demoEditor.style.fontFamily = "'JetBrains Mono', monospace";
+      demoPreview.style.fontFamily = "'Inter', sans-serif";
+    });
+
+    btnFontSans.addEventListener('click', () => {
+      btnFontSans.classList.add('checked');
+      btnFontSans.querySelector('.check-icon').textContent = '✓';
+      btnFontMono.classList.remove('checked');
+      btnFontMono.querySelector('.check-icon').textContent = '';
+      
+      demoEditor.style.fontFamily = "monospace";
+      demoPreview.style.fontFamily = "monospace";
+    });
+  }
+
+  if (btnTab2 && btnTab4) {
+    btnTab2.addEventListener('click', () => {
+      btnTab2.classList.add('checked');
+      btnTab2.querySelector('.check-icon').textContent = '✓';
+      btnTab4.classList.remove('checked');
+      btnTab4.querySelector('.check-icon').textContent = '';
+      
+      demoEditor.style.tabSize = '2';
+    });
+
+    btnTab4.addEventListener('click', () => {
+      btnTab4.classList.add('checked');
+      btnTab4.querySelector('.check-icon').textContent = '✓';
+      btnTab2.classList.remove('checked');
+      btnTab2.querySelector('.check-icon').textContent = '';
+      
+      demoEditor.style.tabSize = '4';
+    });
+  }
 
   // 5. Bind Document actions (With Simulated Native Modals)
   const modalShortcuts = document.getElementById('shortcuts-modal');
@@ -303,48 +342,7 @@ Give it a spin. Type some markdown, drag the center divider to resize, adjust th
     window.print();
   });
 
-  // 8. Simulated Mock Window Control Interactions
-  const btnMinimize = document.querySelector('.win-minimize');
-  const btnMaximize = document.querySelector('.win-maximize');
-  const btnClose = document.querySelector('.win-close');
-  const editorContainer = document.querySelector('.editor-outer-container');
 
-  if (btnMinimize && btnMaximize && btnClose && editorContainer) {
-    btnMinimize.addEventListener('click', () => {
-      editorContainer.classList.toggle('sim-minimized');
-      editorContainer.classList.remove('sim-fullscreen');
-    });
-
-    btnMaximize.addEventListener('click', () => {
-      editorContainer.classList.toggle('sim-fullscreen');
-      editorContainer.classList.remove('sim-minimized');
-    });
-
-    btnClose.addEventListener('click', () => {
-      // Create closed state overlay dynamically
-      const closedOverlay = document.createElement('div');
-      closedOverlay.className = 'editor-closed-state';
-      closedOverlay.innerHTML = `
-        <div class="closed-state-icon">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
-            <line x1="16" y1="8" x2="2" y2="22"></line>
-          </svg>
-        </div>
-        <div class="closed-state-title">Feather MD Mock Session Closed</div>
-        <button class="closed-state-btn">Relaunch Demo</button>
-      `;
-      
-      editorContainer.appendChild(closedOverlay);
-      
-      // Bind relaunch handler
-      closedOverlay.querySelector('.closed-state-btn').addEventListener('click', () => {
-        closedOverlay.remove();
-        editorContainer.classList.remove('sim-minimized');
-        editorContainer.classList.remove('sim-fullscreen');
-      });
-    });
-  }
 
   // 6. Bind Custom Theme Engine Switching
   function handleThemeChange(themeName) {
