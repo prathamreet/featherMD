@@ -82,24 +82,21 @@
         <!-- Editorial Value Columns -->
         <div class="why-grid">
           <div class="why-card">
-            <div class="why-tag">01 / DISPATCH</div>
-            <h4>Sub-100ms cold start</h4>
-            <p>Associated natively with your operating system. Double-click any <code>.md</code> file to read or edit
-              immediately without spawning heavy IDE background processes or web engine loading screens.</p>
+            <div class="why-tag">01 / SPEED</div>
+            <h4>Sub-100ms Cold Start</h4>
+            <p>Instant launch from your host OS. Bypasses heavy IDE loading screens and web engine splash delays to open files in a flash.</p>
           </div>
 
           <div class="why-card">
-            <div class="why-tag">02 / WEIGHT</div>
-            <h4>5 MB installer. 50 MB RAM.</h4>
-            <p>Built directly on Rust and Tauri. Feather MD runs on your machine's pre-installed native WebView, keeping
-              the installation bundle tiny and preventing memory leaks over long work sessions.</p>
+            <div class="why-tag">02 / EFFICIENCY</div>
+            <h4>5MB Size. 50MB RAM.</h4>
+            <p>Built on Rust and Tauri. Bypasses heavy local runtimes by inheriting the system WebView, maximizing storage and system resources.</p>
           </div>
 
           <div class="why-card">
-            <div class="why-tag">03 / UTILITY</div>
-            <h4>Dual-pane ratio scroll sync</h4>
-            <p>Features zero-setup side-by-side Markdown rendering with bidirectional ratio scroll sync right out of the
-              box. No jitter, no lost cursor focus, and absolutely offline-first.</p>
+            <div class="why-tag">03 / SCROLL</div>
+            <h4>Sync Scroll Engine</h4>
+            <p>Dual-pane side-by-side sync scroll out of the box. Zero layout jitter, zero cursor misalignment, and 100% offline-first.</p>
           </div>
         </div>
       </div>
@@ -458,11 +455,6 @@
           <div class="features-grid">
             <!-- 1. Instant Execution -->
             <div class="feature-bento-card">
-              <div class="feature-icon-wrapper">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-                </svg>
-              </div>
               <div class="feature-content">
                 <h4>Sub-100ms Cold Start</h4>
                 <p>Natively compiled binary launches instantly. Zero load screens, zero splash latency, and zero memory leaks.</p>
@@ -471,20 +463,6 @@
 
             <!-- 2. Infinite Performance -->
             <div class="feature-bento-card">
-              <div class="feature-icon-wrapper">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="2" y="2" width="20" height="20" rx="2" ry="2"></rect>
-                  <rect x="6" y="6" width="12" height="12"></rect>
-                  <line x1="9" y1="1" x2="9" y2="4"></line>
-                  <line x1="15" y1="1" x2="15" y2="4"></line>
-                  <line x1="9" y1="20" x2="9" y2="23"></line>
-                  <line x1="15" y1="20" x2="15" y2="23"></line>
-                  <line x1="20" y1="9" x2="23" y2="9"></line>
-                  <line x1="20" y1="15" x2="23" y2="15"></line>
-                  <line x1="1" y1="9" x2="4" y2="9"></line>
-                  <line x1="1" y1="15" x2="4" y2="15"></line>
-                </svg>
-              </div>
               <div class="feature-content">
                 <h4>50MB Active RAM</h4>
                 <p>Built directly on Tauri and Rust. Bypasses heavy browser frameworks to run on 90% less overhead than Electron.</p>
@@ -493,13 +471,6 @@
 
             <!-- 3. Advanced Printing -->
             <div class="feature-bento-card">
-              <div class="feature-icon-wrapper">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="6 9 6 2 18 2 18 9"></polyline>
-                  <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-                  <rect x="6" y="14" width="12" height="8"></rect>
-                </svg>
-              </div>
               <div class="feature-content">
                 <h4>Clean PDF Printing</h4>
                 <p>Bypasses default browser URLs and timestamp stamps. Native print engine renders infinite multi-page margins cleanly.</p>
@@ -508,11 +479,6 @@
 
             <!-- 4. Offline Integrity -->
             <div class="feature-bento-card">
-              <div class="feature-icon-wrapper">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                </svg>
-              </div>
               <div class="feature-content">
                 <h4>100% Local Integrity</h4>
                 <p>Zero tracking, zero cloud telemetry, and zero mandatory sign-ins. Your thoughts stay local and cryptographically private.</p>
@@ -610,32 +576,27 @@
               system resources and web security boundaries.</p>
           </div>
 
-          <div class="techstack-spec-grid">
-            <div class="techstack-editorial-row">
-              <div class="techstack-col-label">Shell & Core</div>
-              <div class="techstack-col-body">
-                <h4>Tauri 2 (Rust)</h4>
-                <p>Uses the host operating system native Webview engine directly. Avoids bundling heavy chromium
-                  runtimes, yielding lightweight binaries and minimal runtime CPU cycles at idle states.</p>
-              </div>
+          <!-- Modern Bento Grid Tech Stack -->
+          <div class="techstack-grid">
+            <!-- 1. Shell & Core -->
+            <div class="techstack-card">
+              <div class="techstack-card-tag">Shell & Core</div>
+              <h4>Tauri 2 (Rust)</h4>
+              <p>Leverages native system webviews to deliver lightweight binaries, lightning-fast execution, and near-zero idle CPU cycles.</p>
             </div>
 
-            <div class="techstack-editorial-row">
-              <div class="techstack-col-label">Editing Area</div>
-              <div class="techstack-col-body">
-                <h4>CodeMirror 6</h4>
-                <p>A modular, tree-shaken frontend text editor core. Keeps the script bundle small while rendering
-                  highly customizable keystroke buffers and vim registers on request.</p>
-              </div>
+            <!-- 2. Editing Area -->
+            <div class="techstack-card">
+              <div class="techstack-card-tag">Editing Area</div>
+              <h4>CodeMirror 6</h4>
+              <p>A modular, tree-shaken editor core supporting syntax highlighting, brackets auto-pairing, code folding, and optional Vim keys.</p>
             </div>
 
-            <div class="techstack-editorial-row">
-              <div class="techstack-col-label">Compilation Pipeline</div>
-              <div class="techstack-col-body">
-                <h4>Marked + DOMPurify</h4>
-                <p>Compiles GitHub Flavored Markdown into native HTML synchronously. DOMPurify provides absolute,
-                  client-side XSS protection before the preview renders.</p>
-              </div>
+            <!-- 3. Compilation Pipeline -->
+            <div class="techstack-card">
+              <div class="techstack-card-tag">Compilation Pipeline</div>
+              <h4>Marked + DOMPurify</h4>
+              <p>Compiles Markdown synchronously into native HTML, coupled with DOMPurify for absolute, client-side XSS protection.</p>
             </div>
           </div>
         </div>
