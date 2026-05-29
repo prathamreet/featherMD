@@ -619,7 +619,7 @@ p {
 
 .section-header {
   max-width: 720px;
-  margin-bottom: 48px;
+  margin-bottom: 40px;
   position: relative;
   z-index: 10;
 }
@@ -631,27 +631,35 @@ p {
 }
 
 .section-tag {
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
   color: var(--page-accent);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.15em;
   display: inline-block;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .section-title {
+  font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
   font-size: 2.8rem;
   font-weight: 800;
+  line-height: 1.15;
   letter-spacing: -0.03em;
   margin-bottom: 16px;
-  color: var(--page-text);
+  background: linear-gradient(135deg, var(--page-text) 50%, var(--page-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
 }
 
 .section-desc {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   color: var(--page-text-muted);
-  line-height: 1.5;
+  line-height: 1.6;
+  max-width: 680px;
+  margin: 0 auto;
 }
 
 /* 7. Interactive Editor Section (Hero Showcase) */
@@ -659,9 +667,15 @@ p {
 .editor-section {
   position: relative;
   z-index: 10;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   max-width: 1400px;
   margin: 0 auto;
   padding: 80px 40px;
+  box-sizing: border-box;
 }
 
 .editor-outer-container {
@@ -672,7 +686,11 @@ p {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  height: 700px;
+  width: 100%;
+  max-width: 1200px;
+  height: calc(100vh - 280px);
+  min-height: 520px;
+  max-height: 720px;
   transition: box-shadow 0.4s ease, border-color 0.4s ease, background 0.4s ease;
 }
 
