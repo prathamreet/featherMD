@@ -27,12 +27,13 @@
 | Shell / native | **Tauri 2** (Rust) | Uses OS WebView — no bundled Chromium; ~5MB binary |
 | WebView runtime | **WebView2** (Win) / **WebKitGTK** (Linux) | Ships with OS, zero extra download |
 | Editor component | **CodeMirror 6** — tree-shaken | ~300KB gzip; exposes precise scroll positions |
-| MD renderer | **marked.js v9** + **DOMPurify** | ~50KB gzip; synchronous; < 2ms render for 10k words |
-| Bundler | **Vite 5** | HMR dev, single ~400KB prod bundle |
+| MD renderer | **marked.js v15** + **DOMPurify** | Synchronous HTML parsing with sanitization |
+| Code block styling | **highlight.js v11** | Lazy-loaded language syntax highlighting modules |
+| Bundler | **Vite 6** | HMR dev, single ~400KB prod bundle |
 | Themes | **CSS custom properties only** | Zero JS overhead; instant swap |
 | Installer | **Tauri CLI** | `.exe` (Win NSIS), `.deb` + `.AppImage` (Linux) |
 
-**Excluded intentionally:** React, Vue, any UI framework, Electron, Monaco, ProseMirror, highlight.js (CodeMirror handles syntax), any CSS framework.
+**Excluded intentionally:** React, Vue, any UI framework, Electron, Monaco, ProseMirror, any CSS framework.
 
 ---
 
@@ -48,15 +49,15 @@
 - Unsaved changes indicator: `•` prefix in title bar
 - On close with unsaved changes: OS-native confirm dialog
 - Recent files: last 10 files stored in local config (no cloud)
-- File watcher: if file changes on disk while open, prompt to reload
+- File watcher: custom Rust-based async polling loop monitors the active file. If the file is modified externally, the user is prompted to reload it.
 
 ### 3.2 Editor Pane (left, 50% width)
 - CodeMirror 6 with Markdown language support
 - Syntax highlighting: headings, bold, italic, code spans, links, blockquotes
 - Line numbers: toggleable (`Ctrl+L`)
 - Word wrap: on by default, toggleable (`Alt+Z`)
-- Tab size: 4 spaces (configurable in settings)
-- Keyboard shortcuts: default bindings + optional Vim mode (lazy-loaded, ~40KB)
+- Tab size: 4 spaces (configurable in Style menu)
+- Keyboard shortcuts: default bindings (Vim mode is out of scope)
 - Find/replace: `Ctrl+F` / `Ctrl+H` — CodeMirror's built-in panel
 - Auto-close: brackets, backticks, quotes
 - No spell-check (keeps it light; OS spell-check handles this in WebView)
@@ -99,8 +100,10 @@ Theme auto-detection: reads OS `prefers-color-scheme` on first launch; picks `sn
 
 ### 3.6 UI Shell
 - Custom title bar: Tauri decorations off, custom HTML title bar (drag handle + window controls)
-- Toolbar: thin, icon-only (Tabler icons, SVG sprite, ~8KB)
-  - Open · Save · Separator · Toggle sync scroll · Theme picker (dropdown) · Toggle line numbers · Toggle word wrap · Vim mode toggle
+- Toolbar/Menu bar: Custom HTML drop-down menu bar (File, View, Style) + font-size range slider:
+  - File: New File, Open, Save, Save As, Recent Files, Print
+  - View: Sync Scroll, Line Numbers, Word Wrap
+  - Style: Themes (snow, solarized, github, etc.), Monospace Font selection, Tab Size (2 / 4 spaces)
 - No menu bar by default — all actions via keyboard or toolbar
 - Native menu bar (`File`, `Edit`, `View`) available as fallback / accessibility
 - Resizable split: drag the center divider; minimum 20% / maximum 80% per pane; double-click divider to reset 50/50
@@ -108,8 +111,8 @@ Theme auto-detection: reads OS `prefers-color-scheme` on first launch; picks `sn
 
 ### 3.7 Settings
 - Single JSON config file: `~/.config/feathermd/config.json` (Linux) / `%APPDATA%\feathermd\config.json` (Win)
-- Settings editable in-app via `Ctrl+,` — opens a settings panel (not a new window)
-- Persisted settings: theme, font size (12–20px), font family (monospace list), tab size, vim mode, word wrap default, recent files
+- Settings are managed directly via the menu bar drop-down selectors and slider controls (Style menu, View menu, and font-size control). A dedicated side-panel settings menu is omitted for streamlined, keyboard-accessible UX.
+- Persisted settings: theme, font size (12-20px), font family, tab size, word wrap state, line numbers state, sync scroll state, window dimensions, maximized state, and split ratio.
 
 ### 3.8 Performance Budget (enforced per phase)
 | Metric | Budget |
@@ -146,35 +149,12 @@ Theme auto-detection: reads OS `prefers-color-scheme` on first launch; picks `sn
 feathermd/
 ├── src-tauri/
 │   ├── src/
-│   │   ├── main.rs          # Tauri app entry, file association handler
-│   │   ├── commands.rs      # IPC commands: read_file, write_file, watch_file
-│   │   └── menu.rs          # Native menu bar definition
+│   │   ├── main.rs          # Rust main function
+│   │   └── lib.rs           # Tauri app orchestration & background async watch commands
 │   ├── icons/               # App icons (png 32/128/256, ico, icns)
 │   ├── Cargo.toml
 │   └── tauri.conf.json      # Bundle config, file associations, permissions
 ├── src/
-│   ├── main.js              # App entry: wires editor ↔ preview ↔ Tauri IPC
-│   ├── editor.js            # CodeMirror 6 setup, scroll emitter
-│   ├── preview.js           # marked render, scroll receiver, debounce
-│   ├── sync.js              # Scroll sync logic (ratio-based)
-│   ├── themes.js            # Theme loader, OS detection, config persistence
-│   ├── settings.js          # Settings panel logic
-│   ├── toolbar.js           # Toolbar event bindings
-│   └── vim.js               # Vim keybindings (lazy-loaded)
-├── styles/
-│   ├── base.css             # Layout, split pane, title bar, status bar
-│   ├── editor.css           # CodeMirror overrides
-│   ├── preview.css          # Markdown preview typography
-│   ├── toolbar.css          # Toolbar + settings panel
-│   └── themes/
-│       ├── snow.css
-│       ├── solarized-light.css
-│       ├── github-light.css
-│       ├── sepia.css
-│       ├── gruvbox-light.css
-│       ├── onyx.css
-│       ├── solarized-dark.css
-│       ├── github-dark.css
 │       ├── monokai.css
 │       └── gruvbox-dark.css
 ├── index.html
@@ -421,51 +401,47 @@ npm run tauri build
 
 ---
 
-### PHASE 5 — Settings, Toolbar & Polish
-**Goal:** Settings panel, full toolbar, keyboard shortcuts, status bar live data.
+### PHASE 5 — Header Menu Bar, Status Bar & Dialogs
+**Goal:** Modular menu drop-downs, shortcuts overlay, customized status bar indicators, and file guard modals.
 
-#### Session 5.1 — Settings Panel
-**Inputs:** Phase 4 complete  
+#### Session 5.1 — Header Menu bar Controls
+**Inputs:** Phase 4 complete
 **Tasks:**
-1. `src/settings.js` — `initSettings()`:
-   - Panel slides in from right (CSS transform, not a new window)
-   - Fields: font size (range 12–20), font family (select: `JetBrains Mono, Fira Code, Cascadia Code, monospace`), tab size (2/4), default word wrap (toggle), vim mode (toggle)
-   - All changes apply live + write to config JSON via Tauri `fs.writeTextFile`
-2. `Ctrl+,` opens/closes panel
-3. Verify: change font size → editor + preview update instantly
+1. `src/ui/toolbar.js` — `initToolbar(handlers)`:
+   - Handle drop-down hovering & clicking behavior for File, View, and Style menus.
+   - Bind Style controls: font size range slider (12-20px), font family, tab size.
+   - Bind View controls: sync scroll toggle, line numbers, word wrap.
+   - Bind File controls: New File, Open, Save, Save As, Recent Files, Print.
+2. Synchronize config loads: write configuration to local disk JSON and active environment css properties instantly.
 
-**Deliverables:** Settings panel functional; all settings persisted
+**Deliverables:** Menu bar fully interactive; dynamic theme, font and configuration selectors working.
 
 ---
 
-#### Session 5.2 — Toolbar, Status Bar & Shortcuts
-**Inputs:** Session 5.1 complete  
+#### Session 5.2 — Status Bar & Modal Dialogs
+**Inputs:** Session 5.1 complete
 **Tasks:**
-1. Toolbar (icon-only, Tabler SVG sprite):
-   - Open (`Ctrl+O`) · Save (`Ctrl+S`) · Separator · Sync scroll toggle · Theme dropdown · Line numbers toggle (`Ctrl+L`) · Word wrap toggle (`Alt+Z`) · Vim mode toggle · Settings (`Ctrl+,`)
-2. Status bar live data:
-   - File path (truncated with `…` if long; full path on hover title)
-   - Word count: recompute on each editor change (simple `split(/\s+/).length`)
-   - Line : Column (from CodeMirror cursor position)
-   - Encoding: always `UTF-8`
-   - Line ending: detect CRLF vs LF from file content on open
-3. Recent files: `File` menu shows last 10; stored in config; clicking opens file
-4. Keyboard shortcut reference: `Ctrl+?` opens a modal overlay listing all shortcuts
+1. Status bar live data:
+   - File path (truncated if long, full path shown in title hover)
+   - Word count: computed in real-time from CodeMirror document length
+   - Line : Column (event-driven from CodeMirror cursor index updates)
+   - Encoding & CRLF/LF indicators.
+2. Dialog overlays:
+   - Unsaved changes guard: customized CSS modal prompt overlay featuring options to Save, Discard, or Cancel when closing dirty files.
+   - Keyboard shortcut list modal triggered via `Ctrl+?`.
 
-**Deliverables:** Full toolbar functional; status bar shows live data; all keyboard shortcuts work
+**Deliverables:** Live status bar updates; custom confirmation overlays protect file buffer states.
 
 ---
 
-#### Session 5.3 — Vim Mode (lazy-loaded)
-**Inputs:** Session 5.2 complete  
-**Packages:** `@replit/codemirror-vim`  
+#### Session 5.3 — Modular Polish & Refactoring
+**Inputs:** Session 5.2 complete
 **Tasks:**
-1. `src/vim.js` — lazy import: `const { vim } = await import('@replit/codemirror-vim')`
-2. Called only when Vim mode toggled ON for the first time; cached after first load
-3. Reconfigures CodeMirror extension array to prepend `vim()`; toggling off removes it
-4. Verify: Vim mode adds ~40KB to bundle only if imported; not in initial bundle
+1. Clean up unused helper layers and separate platform modules (`window.js` window controller frame integration).
+2. Wire up Vite hot-module-reloading resistant storage state fields attached safely to the global browser `window` scope.
+3. Optimize theme switches and ensure robust fallback paths for running in native web browser sandbox modes.
 
-**Deliverables:** Vim mode works; zero impact on initial load if not used
+**Deliverables:** Codebase is clean, highly modularized, and fully responsive across both OS native shell and standard browser environments.
 
 ---
 
@@ -512,6 +488,8 @@ npm run tauri build
 
 | Feature | Reason excluded |
 |---|---|
+| Vim Mode | Omitted in favor of simplified, lightweight editor core features. |
+| Settings Panel | Removed dedicated settings dialog side-panel; preferences are directly configured from the menu-bar interfaces. |
 | Cloud sync | Adds complexity, network overhead, privacy concerns |
 | Collaborative editing | Out of scope — single-user tool |
 | Plugin system | Increases surface area; defeats lightweight goal |
@@ -530,10 +508,9 @@ npm run tauri build
 {
   "theme": "snow",
   "fontSize": 14,
-  "fontFamily": "monospace",
+  "fontFamily": "'JetBrains Mono', monospace",
   "tabSize": 4,
   "wordWrap": true,
-  "vimMode": false,
   "lineNumbers": true,
   "syncScroll": true,
   "recentFiles": [
@@ -542,6 +519,7 @@ npm run tauri build
   ],
   "windowWidth": 1200,
   "windowHeight": 800,
+  "windowMaximized": false,
   "splitRatio": 0.5
 }
 ```
@@ -558,10 +536,9 @@ npm run tauri build
 - [ ] `Ctrl+S` saves; unsaved state shown in title bar
 - [ ] Installer < 10MB on both platforms
 - [ ] RAM < 60MB with a 10,000-word file open
-- [ ] CPU < 1% when idle (no typing, no scrolling)
-- [ ] Vim mode available but zero weight if unused
+- [ ] CPU < 1% when idle (excluding periodic lightweight Rust watcher checks)
 - [ ] Works offline, no network calls, no telemetry
 
 ---
 
-*End of PRD — Feather MD v1.0.0*
+*End of PRD — Feather MD v1.4.1*
