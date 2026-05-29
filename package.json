@@ -16,8 +16,6 @@
     "version": "node scripts/version-bump.js && git add src-tauri/tauri.conf.json src-tauri/Cargo.toml src-tauri/Cargo.lock src/styles/base.css"
   },
   "dependencies": {
-    "@fontsource/inter": "^5.0.0",
-    "@fontsource/jetbrains-mono": "^5.0.0",
     "@codemirror/autocomplete": "^6.20.2",
     "@codemirror/commands": "^6.8.1",
     "@codemirror/lang-markdown": "^6.3.2",
@@ -26,13 +24,14 @@
     "@codemirror/search": "^6.5.10",
     "@codemirror/state": "^6.5.2",
     "@codemirror/view": "^6.36.8",
+    "@fontsource/inter": "^5.0.0",
+    "@fontsource/jetbrains-mono": "^5.0.0",
     "@lezer/highlight": "^1.2.1",
-    "@replit/codemirror-vim": "^6.3.0",
     "@tauri-apps/api": "^2.11.0",
     "@tauri-apps/plugin-dialog": "^2.7.1",
     "@tauri-apps/plugin-fs": "^2.5.1",
-    "@tauri-apps/plugin-updater": "^2",
     "@tauri-apps/plugin-process": "^2",
+    "@tauri-apps/plugin-updater": "^2",
     "dompurify": "^3.2.6",
     "highlight.js": "^11.9.0",
     "marked": "^15.0.0"
