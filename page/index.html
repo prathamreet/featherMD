@@ -605,37 +605,39 @@
     <section class="techstack-section" id="techstack">
       <div class="techstack-container">
         <div class="section-header centered">
-          <span class="section-tag-mono">ARCHITECTURE</span>
           <h2 class="section-title">The Technology Stack</h2>
-          <p class="section-desc">Feather MD is built cleanly with modular layers that respect both the host operating
-            system resources and web security boundaries.</p>
         </div>
 
-        <!-- Modern Bento Grid Tech Stack -->
-        <div class="techstack-grid">
-          <!-- 1. Shell & Core -->
-          <div class="techstack-card">
-            <div class="techstack-card-tag">Shell & Core</div>
-            <h4>Tauri 2 (Rust)</h4>
-            <p>Leverages native system webviews to deliver lightweight binaries, lightning-fast execution, and
-              near-zero idle CPU cycles.</p>
+        <!-- Modern Clean Typographic Tech Stack Grid (No Cards/Boxes) -->
+        <div class="techstack-clean-grid">
+          
+          <div class="techstack-item">
+            <div class="techstack-number">01</div>
+            <div class="techstack-body">
+              <span class="techstack-item-tag">Shell & Core</span>
+              <h3 class="techstack-heading">Tauri 2 (Rust)</h3>
+              <p class="techstack-text">Natively compiled Rust core utilizing host webviews to ship a secure, 5 MB package with zero Electron runtime bloat.</p>
+            </div>
           </div>
 
-          <!-- 2. Editing Area -->
-          <div class="techstack-card">
-            <div class="techstack-card-tag">Editing Area</div>
-            <h4>CodeMirror 6</h4>
-            <p>A modular, tree-shaken editor core supporting syntax highlighting, brackets auto-pairing, code folding,
-              and optional Vim keys.</p>
+          <div class="techstack-item">
+            <div class="techstack-number">02</div>
+            <div class="techstack-body">
+              <span class="techstack-item-tag">Editing Area</span>
+              <h3 class="techstack-heading">CodeMirror 6</h3>
+              <p class="techstack-text">Modular, tree-shaken editor core supporting active-line highlighting, quote auto-pairing, folding, and custom Vim keys.</p>
+            </div>
           </div>
 
-          <!-- 3. Compilation Pipeline -->
-          <div class="techstack-card">
-            <div class="techstack-card-tag">Compilation Pipeline</div>
-            <h4>Marked + DOMPurify</h4>
-            <p>Compiles Markdown synchronously into native HTML, coupled with DOMPurify for absolute, client-side XSS
-              protection.</p>
+          <div class="techstack-item">
+            <div class="techstack-number">03</div>
+            <div class="techstack-body">
+              <span class="techstack-item-tag">Compilation Pipeline</span>
+              <h3 class="techstack-heading">Marked + DOMPurify</h3>
+              <p class="techstack-text">Synchronous Markdown compiler coupled with DOMPurify XSS protection and Highlight.js on-demand syntax loading.</p>
+            </div>
           </div>
+
         </div>
       </div>
     </section>
