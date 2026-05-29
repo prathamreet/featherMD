@@ -122,6 +122,24 @@
                   <button class="editor-menu-item" id="btn-demo-new">
                     <span>New File</span><kbd>Ctrl+N</kbd>
                   </button>
+                  <button class="editor-menu-item" id="btn-demo-open">
+                    <span>Open</span><kbd>Ctrl+O</kbd>
+                  </button>
+                  <button class="editor-menu-item" id="btn-demo-save">
+                    <span>Save</span><kbd>Ctrl+S</kbd>
+                  </button>
+                  <button class="editor-menu-item" id="btn-demo-save-as">
+                    <span>Save As</span><kbd>Ctrl+Shift+S</kbd>
+                  </button>
+                  <div class="editor-menu-separator"></div>
+                  <!-- Recent Files Submenu -->
+                  <div class="editor-menu-item has-submenu">
+                    <span class="menu-item-label">Recent Files</span>
+                    <svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="3,2 7,5 3,8"/></svg>
+                    <div class="editor-submenu-panel" style="width: 140px;">
+                      <div style="font-size: 0.72rem; color: var(--page-text-muted); padding: 6px 8px; text-align: center;">No recent files</div>
+                    </div>
+                  </div>
                   <button class="editor-menu-item" id="btn-demo-reset">
                     <span>Reset Demo</span><kbd>Ctrl+R</kbd>
                   </button>
@@ -152,58 +170,77 @@
               <div class="editor-menu-dropdown">
                 <button class="editor-menu-btn" id="demo-menu-style">Style</button>
                 <div class="editor-menu-panel" id="panel-style" hidden>
-                  <div class="menu-group-label">Theme — Light</div>
-                  <button class="editor-menu-item checkable theme-select-btn" data-theme="snow">
-                    <span class="check-icon"></span><span>Snow</span>
-                  </button>
-                  <button class="editor-menu-item checkable theme-select-btn" data-theme="solarized-light">
-                    <span class="check-icon"></span><span>Solarized Light</span>
-                  </button>
-                  <button class="editor-menu-item checkable theme-select-btn" data-theme="github-light">
-                    <span class="check-icon"></span><span>GitHub Light</span>
-                  </button>
-                  <button class="editor-menu-item checkable theme-select-btn" data-theme="sepia">
-                    <span class="check-icon"></span><span>Sepia</span>
-                  </button>
-                  <button class="editor-menu-item checkable theme-select-btn" data-theme="gruvbox-light">
-                    <span class="check-icon"></span><span>Gruvbox Light</span>
-                  </button>
-                  <div class="editor-menu-separator"></div>
-                  <div class="menu-group-label">Theme — Dark</div>
-                  <button class="editor-menu-item checkable theme-select-btn checked" data-theme="onyx">
-                    <span class="check-icon">✓</span><span>Onyx</span>
-                  </button>
-                  <button class="editor-menu-item checkable theme-select-btn" data-theme="solarized-dark">
-                    <span class="check-icon"></span><span>Solarized Dark</span>
-                  </button>
-                  <button class="editor-menu-item checkable theme-select-btn" data-theme="github-dark">
-                    <span class="check-icon"></span><span>GitHub Dark</span>
-                  </button>
-                  <button class="editor-menu-item checkable theme-select-btn" data-theme="monokai">
-                    <span class="check-icon"></span><span>Monokai</span>
-                  </button>
-                  <button class="editor-menu-item checkable theme-select-btn" data-theme="gruvbox-dark">
-                    <span class="check-icon"></span><span>Gruvbox Dark</span>
-                  </button>
-                  <div class="editor-menu-separator"></div>
-                  <div class="menu-group-label">Font Family</div>
-                  <button class="editor-menu-item checkable checked" id="btn-font-mono">
-                    <span class="check-icon">✓</span><span>JetBrains Mono</span>
-                  </button>
-                </div>
-              </div>
-              
-              <!-- Help Dropdown -->
-              <div class="editor-menu-dropdown">
-                <button class="editor-menu-btn" id="demo-menu-help">Help</button>
-                <div class="editor-menu-panel" id="panel-help">
-                  <button class="editor-menu-item" id="btn-demo-shortcuts">
-                    <span>Keyboard Shortcuts</span><kbd>Ctrl+?</kbd>
-                  </button>
-                  <div class="editor-menu-separator"></div>
-                  <button class="editor-menu-item" id="btn-demo-about">
-                    <span>About Feather MD</span>
-                  </button>
+                  
+                  <!-- Theme Submenu -->
+                  <div class="editor-menu-item has-submenu">
+                    <span class="menu-item-label">Theme</span>
+                    <svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="3,2 7,5 3,8"/></svg>
+                    <div class="editor-submenu-panel theme-submenu-panel">
+                      <div class="menu-group-label">Theme — Light</div>
+                      <button class="editor-submenu-item theme-select-btn" data-theme="snow">
+                        <span class="check-icon"></span><span>Snow</span>
+                      </button>
+                      <button class="editor-submenu-item theme-select-btn" data-theme="solarized-light">
+                        <span class="check-icon"></span><span>Solarized Light</span>
+                      </button>
+                      <button class="editor-submenu-item theme-select-btn" data-theme="github-light">
+                        <span class="check-icon"></span><span>GitHub Light</span>
+                      </button>
+                      <button class="editor-submenu-item theme-select-btn" data-theme="sepia">
+                        <span class="check-icon"></span><span>Sepia</span>
+                      </button>
+                      <button class="editor-submenu-item theme-select-btn" data-theme="gruvbox-light">
+                        <span class="check-icon"></span><span>Gruvbox Light</span>
+                      </button>
+                      
+                      <div class="editor-menu-separator"></div>
+                      <div class="menu-group-label">Theme — Dark</div>
+                      <button class="editor-submenu-item theme-select-btn checked" data-theme="onyx">
+                        <span class="check-icon">✓</span><span>Onyx</span>
+                      </button>
+                      <button class="editor-submenu-item theme-select-btn" data-theme="solarized-dark">
+                        <span class="check-icon"></span><span>Solarized Dark</span>
+                      </button>
+                      <button class="editor-submenu-item theme-select-btn" data-theme="github-dark">
+                        <span class="check-icon"></span><span>GitHub Dark</span>
+                      </button>
+                      <button class="editor-submenu-item theme-select-btn" data-theme="monokai">
+                        <span class="check-icon"></span><span>Monokai</span>
+                      </button>
+                      <button class="editor-submenu-item theme-select-btn" data-theme="gruvbox-dark">
+                        <span class="check-icon"></span><span>Gruvbox Dark</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Font Submenu -->
+                  <div class="editor-menu-item has-submenu">
+                    <span class="menu-item-label">Font</span>
+                    <svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="3,2 7,5 3,8"/></svg>
+                    <div class="editor-submenu-panel">
+                      <button class="editor-submenu-item checkable checked" id="btn-font-mono">
+                        <span class="check-icon">✓</span><span>JetBrains Mono</span>
+                      </button>
+                      <button class="editor-submenu-item checkable" id="btn-font-sans">
+                        <span class="check-icon"></span><span>System Monospace</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Tab Size Submenu -->
+                  <div class="editor-menu-item has-submenu">
+                    <span class="menu-item-label">Tab Size</span>
+                    <svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="3,2 7,5 3,8"/></svg>
+                    <div class="editor-submenu-panel">
+                      <button class="editor-submenu-item checkable" id="btn-tab-2">
+                        <span class="check-icon"></span><span>2 spaces</span>
+                      </button>
+                      <button class="editor-submenu-item checkable checked" id="btn-tab-4">
+                        <span class="check-icon">✓</span><span>4 spaces</span>
+                      </button>
+                    </div>
+                  </div>
+
                 </div>
               </div>
               
