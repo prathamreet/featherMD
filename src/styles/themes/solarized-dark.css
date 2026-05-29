@@ -1,5 +1,5 @@
 /* Solarized Dark — Classic Solarized Dark */
-[data-theme="solarized-dark"] {
+:root[data-theme="solarized-dark"] {
   --bg: #002b36;
   --bg-secondary: #073642;
   --bg-editor: #002b36;

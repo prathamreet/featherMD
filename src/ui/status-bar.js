@@ -9,13 +9,14 @@ export function initStatusBar( editorAPI ) {
 }
 
 export function updateTitleBar() {
-  const titleEl = document.getElementById( 'title-bar-text' );
+  const titleEl = document.getElementById( 'header-title' );
   let name = 'Untitled';
   if ( currentFilePath ) {
     const parts = currentFilePath.replace( /\\/g, '/' ).split( '/' );
     name = parts[ parts.length - 1 ];
   }
-  titleEl.textContent = isDirty ? `Feather MD — •${ name }` : `Feather MD — ${ name }`;
+  const dot = isDirty ? ' *' : '';
+  titleEl.textContent = `FeatherMD - ${ name }${ dot }`;
   document.title = titleEl.textContent;
 }
 

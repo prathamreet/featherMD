@@ -1,5 +1,5 @@
 /* Solarized Light — Warm cream, muted palette */
-[data-theme="solarized-light"] {
+:root[data-theme="solarized-light"] {
   --bg: #fdf6e3;
   --bg-secondary: #eee8d5;
   --bg-editor: #fdf6e3;

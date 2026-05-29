@@ -1,10 +1,10 @@
 // Global keyboard shortcuts. Wires DOM-level shortcuts to file ops,
-// settings, editor toggles, and the shortcuts modal.
+// editor toggles, and the shortcuts modal.
 
 import { config, saveConfig } from './config.js';
 import { openFile, saveFile, saveFileAs, newFile } from './file-io.js';
 import { setSyncEnabled } from './sync.js';
-import { toggleSettings, updateSettingsUI } from '../ui/settings.js';
+import { setMenuChecked } from '../ui/toolbar.js';
 import { toggleShortcutsModal } from '../ui/dialogs.js';
 
 let _editorAPI = null;
@@ -28,31 +28,33 @@ export function initKeyboardShortcuts( editorAPI ) {
     } else if ( ctrl && !shift && e.key === 'n' ) {
       e.preventDefault();
       newFile();
+    } else if ( ctrl && !shift && e.key === 'p' ) {
+      e.preventDefault();
+      window.print();
     } else if ( ctrl && !shift && e.key === 'l' ) {
       e.preventDefault();
-      const btn = document.getElementById( 'btn-line-numbers' );
-      const isActive = btn.classList.toggle( 'active' );
-      _editorAPI.setLineNumbers( isActive );
-      config.lineNumbers = isActive;
+      const current = config.lineNumbers !== false;
+      const next = !current;
+      _editorAPI.setLineNumbers( next );
+      config.lineNumbers = next;
       saveConfig();
+      setMenuChecked( 'toggle-line-numbers', next );
     } else if ( e.altKey && e.key === 'z' ) {
       e.preventDefault();
-      const btn = document.getElementById( 'btn-word-wrap' );
-      const isActive = btn.classList.toggle( 'active' );
-      _editorAPI.setLineWrapping( isActive );
-      config.wordWrap = isActive;
+      const current = config.wordWrap !== false;
+      const next = !current;
+      _editorAPI.setLineWrapping( next );
+      config.wordWrap = next;
       saveConfig();
-      updateSettingsUI( config );
+      setMenuChecked( 'toggle-word-wrap', next );
     } else if ( e.altKey && e.key === 's' ) {
       e.preventDefault();
-      const btn = document.getElementById( 'btn-sync-scroll' );
-      const isActive = btn.classList.toggle( 'active' );
-      setSyncEnabled( isActive );
-      config.syncScroll = isActive;
+      const current = config.syncScroll !== false;
+      const next = !current;
+      setSyncEnabled( next );
+      config.syncScroll = next;
       saveConfig();
-    } else if ( ctrl && e.key === ',' ) {
-      e.preventDefault();
-      toggleSettings();
+      setMenuChecked( 'toggle-sync', next );
     } else if ( ctrl && ( e.key === '?' || ( shift && e.key === '/' ) ) ) {
       e.preventDefault();
       toggleShortcutsModal();

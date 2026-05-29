@@ -1,5 +1,5 @@
 /* Sepia — Warm beige, brown text (low eye strain) */
-[data-theme="sepia"] {
+:root[data-theme="sepia"] {
   --bg: #f4ecd8;
   --bg-secondary: #e8dfc8;
   --bg-editor: #f4ecd8;

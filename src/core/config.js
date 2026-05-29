@@ -9,13 +9,13 @@ export const config = {
   fontFamily: "'JetBrains Mono', monospace",
   tabSize: 4,
   wordWrap: true,
-  vimMode: false,
   lineNumbers: true,
   syncScroll: true,
   recentFiles: [],
   splitRatio: 0.5,
   windowWidth: 1200,
   windowHeight: 800,
+  windowMaximized: false,
 };
 
 export async function loadConfig() {

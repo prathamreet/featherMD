@@ -1,5 +1,5 @@
 /* Gruvbox Dark — Retro warm dark palette */
-[data-theme="gruvbox-dark"] {
+:root[data-theme="gruvbox-dark"] {
   --bg: #282828;
   --bg-secondary: #1d2021;
   --bg-editor: #282828;

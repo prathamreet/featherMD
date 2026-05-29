@@ -33,10 +33,12 @@ describe('Editor -- Initialization', () => {
     expect(typeof api.setLineNumbers).toBe('function');
     expect(typeof api.setLineWrapping).toBe('function');
     expect(typeof api.setTabSize).toBe('function');
-    expect(typeof api.setVimMode).toBe('function');
     expect(typeof api.focus).toBe('function');
     expect(typeof api.getScrollDOM).toBe('function');
+  });
 
+  it('should NOT expose setVimMode (vim removed)', () => {
+    expect(api.setVimMode).toBeUndefined();
   });
 
   it('should mount a CodeMirror editor inside the container', () => {

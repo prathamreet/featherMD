@@ -1,5 +1,5 @@
 /* Gruvbox Light — Retro warm light palette */
-[data-theme="gruvbox-light"] {
+:root[data-theme="gruvbox-light"] {
   --bg: #fbf1c7;
   --bg-secondary: #ebdbb2;
   --bg-editor: #fbf1c7;
