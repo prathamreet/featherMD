@@ -8,16 +8,6 @@
     <link rel="stylesheet" href="/src/styles/editor.css" />
     <link rel="stylesheet" href="/src/styles/preview.css" />
     <link rel="stylesheet" href="/src/styles/toolbar.css" />
-    <link rel="stylesheet" href="/src/styles/themes/snow.css" />
-    <link rel="stylesheet" href="/src/styles/themes/solarized-light.css" />
-    <link rel="stylesheet" href="/src/styles/themes/github-light.css" />
-    <link rel="stylesheet" href="/src/styles/themes/sepia.css" />
-    <link rel="stylesheet" href="/src/styles/themes/gruvbox-light.css" />
-    <link rel="stylesheet" href="/src/styles/themes/onyx.css" />
-    <link rel="stylesheet" href="/src/styles/themes/solarized-dark.css" />
-    <link rel="stylesheet" href="/src/styles/themes/github-dark.css" />
-    <link rel="stylesheet" href="/src/styles/themes/monokai.css" />
-    <link rel="stylesheet" href="/src/styles/themes/gruvbox-dark.css" />
     <script type="module" src="/src/main.js"></script>
   </head>
   <body>
@@ -303,9 +293,9 @@
           <p id="unsaved-dialog-message">You have unsaved changes. What would you like to do?</p>
         </div>
         <div class="modal-footer">
-          <button id="unsaved-btn-cancel" class="dialog-btn dialog-btn-secondary">Cancel</button>
-          <button id="unsaved-btn-discard" class="dialog-btn dialog-btn-danger">Don't Save</button>
-          <button id="unsaved-btn-save" class="dialog-btn dialog-btn-primary">Save</button>
+          <button id="unsaved-btn-cancel" class="dialog-btn dialog-btn-secondary" aria-keyshortcuts="C"><span class="kbd-hint">C</span>ancel</button>
+          <button id="unsaved-btn-discard" class="dialog-btn dialog-btn-danger" aria-keyshortcuts="N">Do<span class="kbd-hint">n</span>'t Save</button>
+          <button id="unsaved-btn-save" class="dialog-btn dialog-btn-primary" aria-keyshortcuts="S"><span class="kbd-hint">S</span>ave</button>
         </div>
       </div>
     </div>
