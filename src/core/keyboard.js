@@ -61,6 +61,25 @@ export function initKeyboardShortcuts( editorAPI ) {
     }
   } );
 
+  const badge = document.getElementById( 'zoom-badge' );
+  if ( badge ) {
+    badge.addEventListener( 'mouseenter', () => {
+      badge.textContent = 'Reset';
+    } );
+    badge.addEventListener( 'mouseleave', () => {
+      updateZoomBadge( config.fontSize || 14 );
+    } );
+    badge.addEventListener( 'click', ( e ) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const newSize = 14;
+      document.documentElement.style.setProperty( '--font-size', `${ newSize }px` );
+      config.fontSize = newSize;
+      saveConfig();
+      updateZoomBadge( newSize );
+    } );
+  }
+
   window.addEventListener( 'wheel', ( e ) => {
     if ( e.ctrlKey ) {
       e.preventDefault();
@@ -72,6 +91,7 @@ export function initKeyboardShortcuts( editorAPI ) {
           document.documentElement.style.setProperty( '--font-size', `${ newSize }px` );
           config.fontSize = newSize;
           saveConfig();
+          updateZoomBadge( newSize );
         }
       } else if ( e.deltaY > 0 ) {
         // Scroll Down: Decrease font size
@@ -80,8 +100,16 @@ export function initKeyboardShortcuts( editorAPI ) {
           document.documentElement.style.setProperty( '--font-size', `${ newSize }px` );
           config.fontSize = newSize;
           saveConfig();
+          updateZoomBadge( newSize );
         }
       }
     }
   }, { passive: false } );
+}
+
+export function updateZoomBadge( size ) {
+  const badge = document.getElementById( 'zoom-badge' );
+  if ( !badge ) return;
+  const percent = Math.round( ( size / 14 ) * 100 );
+  badge.textContent = `${ percent }%`;
 }

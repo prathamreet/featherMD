@@ -20,7 +20,7 @@ import {
   newFile,
   onRecentFileSelect,
 } from './core/file-io.js';
-import { initKeyboardShortcuts } from './core/keyboard.js';
+import { initKeyboardShortcuts, updateZoomBadge } from './core/keyboard.js';
 import { initScrollSync, setSyncEnabled } from './core/sync.js';
 
 import { initEditor } from './editor/editor.js';
@@ -312,4 +312,5 @@ function applyFontSettings() {
   if ( config.fontFamily ) {
     document.documentElement.style.setProperty( '--font-mono', config.fontFamily );
   }
+  updateZoomBadge( config.fontSize || 14 );
 }
