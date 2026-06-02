@@ -33,7 +33,6 @@ import {
   setActiveTheme,
   setActiveFontFamily,
   setActiveTabSize,
-  setFontSizeSlider,
   updateRecentFilesMenu,
 } from './ui/toolbar.js';
 import { initShortcutsModal, showUnsavedDialog } from './ui/dialogs.js';
@@ -292,7 +291,7 @@ function applyPersistedConfig() {
   setActiveTheme( config.theme || 'snow' );
   setActiveFontFamily( config.fontFamily || "'JetBrains Mono', monospace" );
   setActiveTabSize( tabSize );
-  setFontSizeSlider( config.fontSize || 14 );
+
 
   const ratio = typeof config.splitRatio === 'number' ? config.splitRatio : 0.5;
   if ( Math.abs( ratio - 0.5 ) > 0.001 ) {

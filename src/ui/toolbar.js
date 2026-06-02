@@ -129,16 +129,7 @@ export function initToolbar( handlers ) {
     } );
   } );
 
-  // Font size slider
-  const slider = document.getElementById( 'header-font-size' );
-  const label = document.getElementById( 'font-size-label' );
-  if ( slider ) {
-    slider.addEventListener( 'input', () => {
-      const val = parseInt( slider.value, 10 );
-      label.textContent = `${ val }px`;
-      handlers.onFontSize( val );
-    } );
-  }
+
 }
 
 function wireAction( action, callback ) {
@@ -200,15 +191,7 @@ export function setActiveTabSize( size ) {
   } );
 }
 
-/**
- * Update the font-size slider value and label
- */
-export function setFontSizeSlider( size ) {
-  const slider = document.getElementById( 'header-font-size' );
-  const label = document.getElementById( 'font-size-label' );
-  if ( slider ) slider.value = size;
-  if ( label ) label.textContent = `${ size }px`;
-}
+
 
 /**
  * Update recent files in the submenu

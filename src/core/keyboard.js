@@ -60,4 +60,28 @@ export function initKeyboardShortcuts( editorAPI ) {
       toggleShortcutsModal();
     }
   } );
+
+  window.addEventListener( 'wheel', ( e ) => {
+    if ( e.ctrlKey ) {
+      e.preventDefault();
+      const currentSize = config.fontSize || 14;
+      if ( e.deltaY < 0 ) {
+        // Scroll Up: Increase font size
+        if ( currentSize < 36 ) {
+          const newSize = currentSize + 1;
+          document.documentElement.style.setProperty( '--font-size', `${ newSize }px` );
+          config.fontSize = newSize;
+          saveConfig();
+        }
+      } else if ( e.deltaY > 0 ) {
+        // Scroll Down: Decrease font size
+        if ( currentSize > 8 ) {
+          const newSize = currentSize - 1;
+          document.documentElement.style.setProperty( '--font-size', `${ newSize }px` );
+          config.fontSize = newSize;
+          saveConfig();
+        }
+      }
+    }
+  }, { passive: false } );
 }
