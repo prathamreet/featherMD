@@ -34,6 +34,8 @@ export function initEditor(domEl, onChange, onCursorActivity) {
   onChangeCallback = onChange;
   onCursorActivityCallback = onCursorActivity || null;
 
+  // Single updateListener handles both doc changes (debounced) and selection
+  // changes (event-driven cursor-position updates).
   const updateListener = EditorView.updateListener.of((update) => {
     if (update.docChanged) {
       const isProgrammatic = isProgrammaticSetting;
@@ -43,6 +45,9 @@ export function initEditor(domEl, onChange, onCursorActivity) {
           onChangeCallback(update.state.doc.toString(), isProgrammatic);
         }
       }, 150);
+    }
+    if (update.selectionSet && onCursorActivityCallback) {
+      onCursorActivityCallback();
     }
   });
 
@@ -76,12 +81,6 @@ export function initEditor(domEl, onChange, onCursorActivity) {
         indentWithTab,
       ]),
       updateListener,
-      // PERF-01: Event-driven cursor position updates (replaces setInterval polling)
-      EditorView.updateListener.of((update) => {
-        if (update.selectionSet && onCursorActivityCallback) {
-          onCursorActivityCallback();
-        }
-      }),
       EditorView.theme({
         '&': { height: '100%' },
         '.cm-scroller': { overflow: 'auto' },

@@ -19,6 +19,14 @@ Object.defineProperty( window, 'lineEnding', {
   configurable: true,
 } );
 
+// PERF-12: short-lived flag set by the save pathway so the native file watcher
+// can ignore its own echo without IPC round-trips to pause/resume watching.
+Object.defineProperty( window, 'isSaving', {
+  get: () => window.__FEATHER_SAVING__ || false,
+  set: ( val ) => { window.__FEATHER_SAVING__ = !!val; },
+  configurable: true,
+} );
+
 let _isTauri = false;
 export const isTauri = () => _isTauri;
 export const setTauri = ( v ) => { _isTauri = !!v; };

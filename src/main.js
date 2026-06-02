@@ -1,6 +1,11 @@
 // Feather MD - application entry. Wires editor, preview, Tauri IPC,
 // menu bar, and settings. Each subsystem lives in its own module; this file is
 // orchestration only.
+//
+// Boot ordering (PERF-14):
+//   Phase 1 — synchronous DOM mount with in-memory defaults. First paint < 50ms.
+//   Phase 2 — async config load, theme apply, Tauri wiring. Welcome text is
+//             shown immediately and overwritten if a CLI file arrives later.
 
 import './core/state.js';
 import { isTauri, setTauri } from './core/state.js';
@@ -22,7 +27,6 @@ import { initEditor } from './editor/editor.js';
 import { initPreview } from './preview/preview.js';
 
 import { initThemes, setTheme } from './ui/themes.js';
-import { updateRecentFiles } from './ui/settings.js';
 import {
   initToolbar,
   setMenuChecked,
@@ -30,26 +34,26 @@ import {
   setActiveFontFamily,
   setActiveTabSize,
   setFontSizeSlider,
+  updateRecentFilesMenu,
 } from './ui/toolbar.js';
 import { initShortcutsModal, showUnsavedDialog } from './ui/dialogs.js';
 import { initStatusBar, updateTitleBar, updateStatusBar, updateCursorPosition } from './ui/status-bar.js';
 import { initDividerDrag } from './ui/divider.js';
 
 import { initUpdater } from './platform/updater.js';
-import { initWindowControls, initWindowSize } from './platform/window.js';
+import { initWindowControls, initWindowSize, ensureWindowVisible } from './platform/window.js';
 
 let editorAPI = null;
 let previewAPI = null;
 
-window.addEventListener( 'DOMContentLoaded', async () => {
-  try {
-    await import( '@tauri-apps/api/core' );
-    setTauri( true );
-  } catch {
-    // Browser mode
-  }
-
-  await loadConfig();
+window.addEventListener( 'DOMContentLoaded', () => {
+  // ---- Phase 1: synchronous mount ----
+  // Apply OS-preferred theme up-front so the first paint matches the user's
+  // preference; saved config (if any) overrides it during Phase 2.
+  document.documentElement.setAttribute(
+    'data-theme',
+    window.matchMedia( '(prefers-color-scheme: dark)' ).matches ? 'onyx' : 'snow',
+  );
 
   editorAPI = initEditor(
     document.getElementById( 'editor-pane' ),
@@ -61,13 +65,47 @@ window.addEventListener( 'DOMContentLoaded', async () => {
   initStatusBar( editorAPI );
   initFileIO( editorAPI );
   initScrollSync( editorAPI, previewAPI );
+  initDividerDrag();
+  initKeyboardShortcuts( editorAPI );
+  initShortcutsModal();
+  // initWindowControls() lives in Phase 2 — it short-circuits on `!isTauri()`,
+  // and `setTauri(true)` only flips during Phase 2 after the Tauri core import.
+
+  editorAPI.setValue( WELCOME_TEXT );
+  editorAPI.focus();
+
+  // ---- Phase 2: async config + Tauri ----
+  bootAsync();
+} );
+
+async function bootAsync() {
+  try {
+    await runBootSequence();
+  } finally {
+    // ISSUE-10: Window is hidden via tauri.conf.json (`visible: false`) to avoid
+    // a brief wrong-size flash on startup. Show it only after persisted size
+    // has been applied. Run in finally so a crash inside boot does not leave
+    // the window invisible forever.
+    await ensureWindowVisible();
+  }
+}
+
+async function runBootSequence() {
+  try {
+    await import( '@tauri-apps/api/core' );
+    setTauri( true );
+  } catch {
+    // Browser mode
+  }
+
+  await loadConfig();
 
   initThemes( config, ( themeName ) => {
     config.theme = themeName;
     saveConfig();
   } );
 
-  updateRecentFiles( config.recentFiles || [], onRecentFileSelect );
+  updateRecentFilesMenu( config.recentFiles || [], onRecentFileSelect );
 
   initToolbar( {
     onOpen: openFile,
@@ -113,24 +151,17 @@ window.addEventListener( 'DOMContentLoaded', async () => {
   } );
 
   applyPersistedConfig();
-  initDividerDrag();
-  initKeyboardShortcuts( editorAPI );
-  initShortcutsModal();
-  initWindowControls();
+  applyFontSettings();
 
   if ( isTauri() ) {
+    await initWindowControls();
     await wireTauriListeners();
     await initWindowSize();
   }
 
   initUpdater().catch( () => {} );
-  applyFontSettings();
+}
 
-  if ( !currentFilePath ) {
-    editorAPI.setValue( WELCOME_TEXT );
-    editorAPI.focus();
-  }
-} );
 
 // ---- Tauri IPC listeners ----
 async function wireTauriListeners() {
@@ -150,7 +181,6 @@ async function wireTauriListeners() {
     appWindow.onCloseRequested( async ( event ) => {
       event.preventDefault();
 
-      // Save window maximized state before closing
       try {
         const maximized = await appWindow.isMaximized();
         config.windowMaximized = maximized;
@@ -184,6 +214,9 @@ async function wireTauriListeners() {
     await listen( 'file-changed-on-disk', async ( event ) => {
       const { path } = event.payload;
       if ( path !== currentFilePath ) return;
+
+      // PERF-12: ignore the watcher echo from our own writeTextFile.
+      if ( isSaving ) return;
 
       if ( !isDirty ) {
         try {
@@ -221,28 +254,9 @@ async function wireTauriListeners() {
   }
 }
 
-// ---- Editor change debouncing ----
-let renderPending = false;
-let nextRenderText = null;
-
+// ---- Editor change handler (synchronous; debounce lives in CodeMirror) ----
 function onContentChange( text, isProgrammatic ) {
-  if ( isProgrammatic ) {
-    renderPending = false;
-    nextRenderText = null;
-    previewAPI.renderMarkdown( text );
-  } else {
-    nextRenderText = text;
-    if ( !renderPending ) {
-      renderPending = true;
-      requestAnimationFrame( () => {
-        if ( nextRenderText !== null ) {
-          previewAPI.renderMarkdown( nextRenderText );
-          nextRenderText = null;
-        }
-        renderPending = false;
-      } );
-    }
-  }
+  previewAPI.renderMarkdown( text );
   updateStatusBar( text );
 
   if ( isProgrammatic ) {
