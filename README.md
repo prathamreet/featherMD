@@ -1,13 +1,3 @@
-<!--
-  Image placeholders used in this README.
-  Drop the file in artifacts/screenshots/ and it will render automatically.
-
-    1. artifacts/screenshots/demo.gif   Hero demo. 8-12s loop. Type Markdown, preview updates, switch theme, scroll sync. ~1400px wide, < 5 MB.
-
-  Logo lives at artifacts/assets/feather-logo.png (already in repo).
-  Additional screenshots are covered on the project landing page (link to be added).
--->
-
 <div align="center">
 
 <img src="artifacts/assets/feather-logo.png" alt="Feather MD" width="120" />
@@ -24,11 +14,7 @@
 [![Tauri 2](https://img.shields.io/badge/Tauri-2-24C8DB?logo=tauri&logoColor=white)](https://tauri.app)
 [![CodeMirror 6](https://img.shields.io/badge/CodeMirror-6-d30707)](https://codemirror.net)
 
-**[Download](https://github.com/prathamreet/featherMD/releases/latest)** · **[What's new](https://github.com/prathamreet/featherMD/releases)** · **[Report a bug](https://github.com/prathamreet/featherMD/issues/new?template=bug_report.md)** · **[Request a feature](https://github.com/prathamreet/featherMD/issues/new?template=feature_request.md)**
-
-<br />
-
-<img src="artifacts/screenshots/demo.gif" alt="Feather MD demo: typing Markdown with a live preview pane and instant theme switching" width="90%" />
+**[Download](https://github.com/prathamreet/featherMD/releases/latest)** · **[What's new](https://github.com/prathamreet/featherMD/releases)** · **[Landing page](https://prathamreet.github.io/featherMD/)** · **[Report a bug](https://github.com/prathamreet/featherMD/issues/new?template=bug_report.md)** · **[Request a feature](https://github.com/prathamreet/featherMD/issues/new?template=feature_request.md)**
 
 </div>
 
@@ -36,7 +22,7 @@
 
 ## The pitch in one line
 
-A 5 MB Windows installer, around 50 MB of RAM, sub-100 ms cold start, and a dual-pane preview that just works. Built on Tauri 2, not Electron.
+A ~5 MB Windows installer, around 50 MB of RAM, sub-100 ms cold start, and a dual-pane preview that just works. Built on Tauri 2, not Electron.
 
 ## Why Feather MD
 
@@ -52,25 +38,23 @@ Feather MD is the small, fast thing that lives between those edges.
 * **Double-click a `.md` file and it opens.** Real OS file association. No "open in VS Code" workaround.
 * **Side-by-side preview with bidirectional scroll sync, out of the box.** Toggle it off with `Alt + S` if you want.
 * **A dedicated window, not another browser tab.** No distraction, no lost cursor.
-* **5 MB Windows installer, around 50 MB resident.** Editing text should not cost a gigabyte of memory.
+* **~5 MB Windows installer, around 50 MB resident.** Editing text should not cost a gigabyte of memory.
 * **Tauri, not Electron.** Uses your OS WebView, ships no browser runtime, signs every update with Ed25519.
 * **No telemetry, no background services, no accounts.** It is a text editor.
 
 ## Install
 
-### Download a release
+### Download
 
-[Latest release (v1.4.1)](https://github.com/prathamreet/featherMD/releases/latest):
+Grab the latest installer for your platform from the [**Releases page**](https://github.com/prathamreet/featherMD/releases/latest):
 
-| Platform | File | Size |
+| Platform | File pattern | Notes |
 | --- | --- | --- |
-| Windows 10 / 11 | `Feather.MD_1.4.1_x64-setup.exe` (NSIS) | 5.0 MB |
-| Debian / Ubuntu | `Feather.MD_1.4.1_amd64.deb` | 7.8 MB |
-| Any Linux distro | `Feather.MD_1.4.1_amd64.AppImage` | 81.4 MB |
+| Windows 10 / 11 | `Feather.MD_*_x64-setup.exe` (NSIS) | Signed Ed25519 auto-update channel |
+| Debian / Ubuntu | `Feather.MD_*_amd64.deb` | Uses system GTK / WebKit |
+| Any Linux distro | `Feather.MD_*_amd64.AppImage` | Bundles its own GTK + WebKit runtime |
 
-> The AppImage bundles its own GTK and WebKit runtime so it works on any Linux distro without system packages. The `.deb` uses your system libraries and stays small.
-
-> Already on v1.2.7 or older? Auto-update was added in v1.3.0. Install the latest release once, manually, and the in-app updater takes over from there.
+> Already on a pre-`v1.3.0` build? Auto-update was added in `v1.3.0`. Install the latest release once, manually, and the in-app updater takes over from there.
 
 ### Build from source
 
@@ -110,36 +94,39 @@ Release bundles land in:
 
 | | |
 | --- | --- |
-| **Premium Unified Header** | Combines legacy title-bar and toolbar into a singular, 40px bar. Mathematically centered active document title horizontally with transparent pointer events. |
-| **Hover Dropdown Menus** | Mouse hover-activated dropdown menus (File, View, Style) with a 180ms hover-intent delay and diagonal pointer bridge to prevent accidental dismissals. |
+| **Unified Header** | A single 40 px bar combines title, menus, font-size slider, and corner-flush Win11-style window controls. Active document title is absolutely centered with transparent pointer events. |
+| **Hover Dropdown Menus** | File / View / Style open on hover with a 180 ms grace timeout and diagonal pointer bridge to prevent accidental dismissals. Theme, Font, and Tab pickers stay open so you can preview multiple options without re-opening. |
 | **Native dual-pane** | Editor on the left, live preview on the right. Resizable from 20% to 80%. Double-click the divider to reset to center. |
-| **Bidirectional scroll sync** | Scroll either pane, the other follows. Ratio-based, no jitter on long documents. Toggleable. |
+| **Bidirectional scroll sync** | Scroll either pane, the other follows. Ratio-based, no jitter on long documents. Toggle with `Alt + S`. |
 | **CodeMirror 6 editor** | Markdown syntax styling, code folding, bracket and quote auto-pair, active-line highlight, find and replace. |
 | **Highlight.js code blocks** | On-demand language loading for fenced blocks. Hundreds of languages, no startup penalty. |
-| **10 built-in themes** | Five light, five dark. Switches in under 1 ms. CSS variables locked to `:root` to preserve text contrast, zero relayout. |
-| **Advanced Printing Engine** | Bypasses browser native headers/footers (hostnames, local times, page URLs) and viewport-clipping limits to support infinite multi-page document prints. |
-| **External-change watcher** | If another program edits your open file, Feather MD reloads it. Asks first if you have unsaved edits. |
-| **Recent files** | Up to ten, one click to re-open from the File -> Recent Files dropdown submenu, updating instantly on new saves. |
+| **10 built-in themes** | Five light, five dark. Switches in under 1 ms via a single `data-theme` attribute. All consolidated into one stylesheet, zero JS overhead. |
+| **Advanced Printing Engine** | Bypasses browser native headers/footers (hostnames, local times, page URLs) and viewport-clipping limits to support clean multi-page document prints. |
+| **External-change watcher** | Event-driven OS file watcher (`ReadDirectoryChangesW` on Windows, `inotify` on Linux). Silently reloads unmodified files; prompts when your buffer is dirty. 0% idle CPU. |
+| **Recent files** | Up to ten, one click to re-open from the File -> Recent Files submenu; updates instantly on new saves. |
+| **Custom unsaved-changes modal** | Save / Don't Save / Cancel with single-key shortcuts (`S` / `N` / `C`), Tab nav, and Enter to confirm. |
 | **CLI launch** | `feathermd <path>` opens a file directly. Useful from a terminal or a shell hotkey. |
 | **OS file associations** | `.md` and `.markdown` open in Feather MD on double-click. |
-| **Signed auto-updates** | Cryptographically secure (Ed25519-signed) auto-update checking on startup with a minimalist slide-in notification banner and one-click installation. |
-| **Persistent preferences** | Restores customizations natively on startup (theme, font family, font size, tab size, line numbers, word wrapping, scroll-sync, split ratio, window size, and windowMaximized state). |
+| **Signed auto-updates** | Ed25519-signed auto-update check on startup with a minimalist slide-in banner and one-click install. |
+| **Persistent preferences** | Theme, font family, font size, tab size, line numbers, word wrap, scroll-sync, split ratio, window size, and maximized state are all restored on launch. |
+| **No startup flash** | Window stays hidden until persisted size is applied — no wrong-size flicker. |
 
 ## Performance budget
 
-Real numbers from `npm run report` on the current build. Targets are PRD constraints the project ships against and CI enforces.
+Targets are PRD constraints the project ships against and CI enforces.
 
 | Metric | Result | Target |
 | --- | --- | --- |
-| Installer size (Windows NSIS) | 5.03 MB | < 10 MB |
+| Installer size (Windows NSIS) | ~5 MB | < 10 MB |
 | Cold start | < 100 ms | < 100 ms |
 | Idle RAM | ~30 MB | < 30 MB |
 | Active RAM (10k-word doc) | ~50 MB | < 60 MB |
-| Keystroke render latency | ~1 ms | < 200 ms |
-| Theme swap | < 0.1 ms | < 16 ms |
+| Keystroke render latency | ~155 ms (150 ms debounce + render) | < 200 ms |
+| Theme swap | < 1 ms | < 16 ms |
 | Background timers at idle | 0 | 0 |
-| CSS bundle (gzip) | 19 KB | < 30 KB |
-| Test suite | 204 / 204 passing | 100% |
+| CSS bundle (gzip) | ~19 KB | < 30 KB |
+
+Run `npm run report` to regenerate these numbers locally.
 
 ## How it compares
 
@@ -181,89 +168,104 @@ If you are managing thousands of linked notes with backlinks and graphs, you wan
 | `Alt + S` | Toggle scroll sync |
 | `Ctrl + ?` | Show all shortcuts |
 
+Inside the unsaved-changes dialog: `S` save, `N` discard, `C` / `Esc` cancel.
+
 ## Architecture
 
 Feather MD is a strictly modular Vite + Tauri app. Each module has one responsibility and no surprise dependencies.
 
 ```
 featherMD/
-├── index.html                       Single HTML entry, custom title bar, settings + dialogs DOM
-├── package.json                     Frontend dependencies and npm scripts
-├── vite.config.js                   Vite build config (Tauri-aware targets, asset prefixes)
-├── vitest.config.js                 Test runner config (jsdom environment)
-├── eslint.config.js                 Flat ESLint config with browser + node globals
+├── index.html                       Single HTML entry, custom header, dialogs DOM.
+├── package.json                     Frontend dependencies and npm scripts.
+├── vite.config.js                   Vite build config (Tauri-aware targets).
+├── vitest.config.js                 Test runner config (jsdom environment).
+├── eslint.config.js                 Flat ESLint config with HMR-safe writable globals.
 │
-├── src/                             Frontend source. All ESM, no transpilation needed.
-│   ├── main.js                      App orchestrator. Wires modules together in DOMContentLoaded.
+├── src/                             Frontend source. All ESM, no transpilation.
+│   ├── main.js                      App orchestrator. Phase 1 sync mount,
+│   │                                Phase 2 async config + window show.
 │   │
 │   ├── editor/
-│   │   └── editor.js                CodeMirror 6 setup. Compartments for line-numbers, wrap,
-│   │                                and tab-size preference.
+│   │   └── editor.js                CodeMirror 6 setup. Single updateListener
+│   │                                covers docChanged + selectionSet.
 │   │
 │   ├── preview/
-│   │   └── preview.js               Marked + DOMPurify pipeline. highlight.js loaded on-demand
-│   │                                per language via import.meta.glob.
+│   │   └── preview.js               marked + DOMPurify pipeline. highlight.js
+│   │                                loaded on-demand per language.
 │   │
 │   ├── ui/
-│   │   ├── toolbar.js               Unified header bar menu dropdowns, font size control, and recent files builder.
-│   │   ├── settings.js              Helper to update the recent files list in the dropdown submenu.
-│   │   ├── themes.js                Theme switching + prefers-color-scheme detection.
-│   │   ├── dialogs.js               Unsaved-changes prompt and shortcuts help modal.
-│   │   ├── status-bar.js            Word count, cursor position, file path, line ending.
+│   │   ├── toolbar.js               Hover-intent menu dropdowns, font-size
+│   │   │                            control, recent-files builder.
+│   │   ├── themes.js                Theme switching + prefers-color-scheme.
+│   │   ├── dialogs.js               Unsaved-changes modal (S/N/C shortcuts)
+│   │   │                            and shortcuts help modal.
+│   │   ├── status-bar.js            Word count, cursor position, file path,
+│   │   │                            line ending.
 │   │   └── divider.js               Editor/preview split-pane drag handle.
 │   │
 │   ├── core/
-│   │   ├── config.js                Defaults + Tauri appConfigDir / localStorage persistence.
-│   │   ├── state.js                 HMR-resistant window state (file path, dirty, line ending).
-│   │   ├── file-io.js               open / save / save-as / new + recent files + unsaved guard.
+│   │   ├── config.js                Defaults + Tauri appConfigDir /
+│   │   │                            localStorage persistence.
+│   │   ├── state.js                 HMR-resistant window state
+│   │   │                            (currentFilePath, isDirty, isSaving,
+│   │   │                            lineEnding).
+│   │   ├── file-io.js               open / save / save-as / new + recent files
+│   │   │                            + unsaved guard. Uses isSaving flag for
+│   │   │                            watcher-echo suppression.
 │   │   ├── keyboard.js              Global keyboard shortcut bindings.
 │   │   ├── sync.js                  Bidirectional ratio-based scroll sync.
 │   │   ├── welcome.js               Default welcome document.
-│   │   └── utils.js                 Shared helpers (escapeHtml).
+│   │   └── utils.js                 escapeHtml (regex-based).
 │   │
 │   ├── platform/
-│   │   ├── window.js                Tauri window controls (minimize, maximize, close) + size persistence.
-│   │   └── updater.js               Ed25519-verified auto-update check on startup.
+│   │   ├── window.js                Tauri window controls, size persistence,
+│   │   │                            deferred show().
+│   │   └── updater.js               Ed25519-verified auto-update banner.
 │   │
 │   └── styles/
-│       ├── base.css                 Layout, title bar, settings panel, modal overlays.
-│       ├── editor.css               CodeMirror customizations.
-│       ├── preview.css              Markdown preview typography and code-block styling.
-│       ├── toolbar.css              Toolbar and status bar.
-│       └── themes/                  10 themes: snow, solarized-light, github-light, sepia,
-│                                    gruvbox-light, onyx, solarized-dark, github-dark,
-│                                    monokai, gruvbox-dark.
+│       ├── base.css                 Layout, header, status bar, modals,
+│       │                            and all 10 themes consolidated.
+│       ├── editor.css               CodeMirror chrome stripping + theme vars.
+│       ├── preview.css              Markdown preview typography + code blocks.
+│       └── toolbar.css              Header menu dropdowns and submenus.
 │
 ├── src-tauri/                       Rust backend.
 │   ├── src/
-│   │   ├── main.rs                  Tauri app entry.
-│   │   └── lib.rs                   IPC commands: watch_file, unwatch_file, get_initial_file.
-│   │                                Spawns an async tokio file watcher for external-change events.
+│   │   ├── main.rs                  Tauri app entry (windows_subsystem guard).
+│   │   └── lib.rs                   IPC commands: get_initial_file,
+│   │                                watch_file, unwatch_file. Event-driven
+│   │                                file watcher via the `notify` crate
+│   │                                (no polling timers).
 │   ├── capabilities/
 │   │   └── default.json             Tauri 2 permission scopes for plugins.
-│   ├── icons/                       Platform icons (Windows .ico, Linux .png, mobile sets).
-│   ├── tauri.conf.json              Window config, bundle targets, updater endpoint + pubkey.
-│   ├── Cargo.toml                   Rust dependencies.
+│   ├── icons/                       Platform icons.
+│   ├── tauri.conf.json              Window config (visible:false on start),
+│   │                                bundle targets, updater endpoint + pubkey.
+│   ├── Cargo.toml                   Rust dependencies (tauri, plugins,
+│   │                                notify, serde).
 │   └── build.rs                     Tauri build script.
 │
-├── tests/                           Vitest suites mirroring src/ layout. 204 specs across 8 files.
-│   ├── editor/editor.test.js        CodeMirror integration: API surface, compartments, cursor.
-│   ├── preview/preview.test.js      Markdown rendering, XSS sanitization, GFM, scroll API.
+├── tests/                           Vitest suites mirroring src/ layout.
+│   ├── editor/editor.test.js        CodeMirror integration.
+│   ├── preview/preview.test.js      Rendering, XSS sanitization, GFM.
 │   ├── ui/
-│   │   ├── toolbar.test.js          Button bindings, dropdown behavior, active state.
-│   │   ├── settings.test.js         Settings panel controls + recent-files rendering.
-│   │   └── themes.test.js           Theme switching, OS detection, all 10 themes.
-│   ├── core/sync.test.js            Bidirectional scroll sync + feedback-loop prevention.
-│   ├── html.test.js                 index.html structure, ARIA, keyboard accessibility.
-│   ├── security.test.js             SEC-01/02/03 + CODE-01 + PERF-01 regression guards.
-│   └── performance.bench.js         Render latency, word count, theme swap benchmarks.
+│   │   ├── toolbar.test.js          Menu wiring, dropdowns, recent files.
+│   │   └── themes.test.js           Theme switching, OS detection.
+│   ├── core/sync.test.js            Scroll sync + feedback-loop prevention.
+│   ├── html.test.js                 index.html structure, ARIA.
+│   ├── security.test.js             XSS, prototype pollution, perm scopes.
+│   └── performance.bench.js         Render, word count, theme swap benchmarks.
 │
 ├── scripts/
-│   ├── generate-report.js           Full audit: build + lint + tests + bench + bundle sizes.
-│   └── version-bump.js              Sync version across package.json / Cargo.toml / tauri.conf.
+│   ├── generate-report.js           Full audit: build + lint + tests + bench.
+│   └── version-bump.js              Sync version across package.json /
+│                                    Cargo.toml / Cargo.lock /
+│                                    tauri.conf.json / base.css.
 │
-├── .github/                         Issue templates, PR template, CI + release workflows.
-└── artifacts/                       Logo, screenshots, PRD spec.
+├── page/                            GitHub Pages landing page.
+├── .github/                         Issue templates, PR templates, CI workflows.
+└── artifacts/                       Logo, PRD spec, release logs.
 ```
 
 | Layer | Choice | Why |
@@ -271,15 +273,16 @@ featherMD/
 | Shell | Tauri 2 (Rust) | Uses the OS WebView. Ships no browser. |
 | Web runtime | WebView2 / WebKitGTK | Already on the user's machine. |
 | Editor | CodeMirror 6 | Tree-shaken to about 300 KB. |
-| Markdown | Marked + DOMPurify | Synchronous, sanitized. |
+| Markdown | marked + DOMPurify | Synchronous, sanitized. |
 | Code highlight | highlight.js | Lazy-loaded per language. |
+| File watcher | `notify` crate | Event-driven OS hooks, 0% idle CPU. |
 | Bundler | Vite 6 | Main bundle plus on-demand chunks. |
 | Updater | Tauri updater + process plugins | Ed25519-signed, in-place relaunch. |
 
 ## Quality checks
 
 ```bash
-npm test            # 204 specs across 8 suites
+npm test            # Vitest specs
 npm run lint        # ESLint
 npm run bench       # Render latency, word count, theme swap benchmarks
 npm run report      # Full audit: build + tests + bench + bundle sizes
@@ -305,7 +308,7 @@ On Tauri builds, the OS config directory under `feathermd/config.json`. On Windo
 Releases are signed with Ed25519. The public key is embedded in the binary. The updater verifies the signature before writing anything. See [SECURITY.md](SECURITY.md).
 
 **How does the advanced printing engine work?**
-Pressing `Ctrl + P` (or selecting File -> Print) bypasses native browser headers and footers (local times, hostnames, page URLs) using page margin overrides. It also resolves viewport clipping issues, allowing you to print clean, infinite multi-page documents seamlessly.
+Pressing `Ctrl + P` (or selecting File -> Print) bypasses native browser headers and footers (local times, hostnames, page URLs) using page margin overrides. It also resolves viewport clipping issues, allowing you to print clean, multi-page documents seamlessly.
 
 **Why is there no plugin system?**
 A plugin system is a commitment to an API surface for a long time. Feather MD is small enough that a focused feature set is the point. If something is missing, open an issue. Frequent requests turn into core features.
@@ -339,8 +342,9 @@ Feather MD stands on the work of others. Thanks to:
 
 * [Tauri](https://tauri.app) for proving you do not need to ship Chromium.
 * [CodeMirror 6](https://codemirror.net) for an editor that respects the bundle budget.
-* [Marked](https://marked.js.org) and [DOMPurify](https://github.com/cure53/DOMPurify) for fast, safe Markdown.
+* [marked](https://marked.js.org) and [DOMPurify](https://github.com/cure53/DOMPurify) for fast, safe Markdown.
 * [highlight.js](https://highlightjs.org) for syntax highlighting that lazy-loads cleanly.
+* [notify](https://docs.rs/notify) for event-driven cross-platform filesystem watching.
 * [Vite](https://vitejs.dev) for a build chain that gets out of the way.
 
 ## Star history
@@ -352,4 +356,3 @@ If Feather MD saved you a few hundred MB of RAM today, a star helps it reach the
 ## License
 
 [MIT](LICENSE). Use it, fork it, ship it.
-
