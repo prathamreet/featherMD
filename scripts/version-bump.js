@@ -30,3 +30,21 @@ if (fs.existsSync(cssPath)) {
   fs.writeFileSync(cssPath, css, 'utf8');
   console.log(`Synced base.css brand-version to ${version}`);
 }
+
+const pageCssPath = 'page/styles.css';
+if (fs.existsSync(pageCssPath)) {
+  let css = fs.readFileSync(pageCssPath, 'utf8');
+  css = css.replace(/content:\s*"v[^"]*";\s*\/\*\s*page-version\s*\*\//g, `content: "v${version}"; /* page-version */`);
+  fs.writeFileSync(pageCssPath, css, 'utf8');
+  console.log(`Synced page/styles.css page-version to ${version}`);
+}
+
+const pageHtmlPath = 'page/index.html';
+if (fs.existsSync(pageHtmlPath)) {
+  let html = fs.readFileSync(pageHtmlPath, 'utf8');
+  html = html.replace(/Feather MD v[0-9.]+(\s*<\/h4>)/g, `Feather MD v${version}$1`);
+  html = html.replace(/(class="download-version" id="dl-(win|deb|app)-ver">)v[0-9.]+(<\/div>)/g, `$1v${version}$3`);
+  fs.writeFileSync(pageHtmlPath, html, 'utf8');
+  console.log(`Synced page/index.html version to ${version}`);
+}
+
