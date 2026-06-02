@@ -30,6 +30,10 @@
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
+  /* Danger palette (ISSUE-8: single source of truth for the Don't-Save action). */
+  --danger: #d93b3b;
+  --danger-soft: color-mix(in srgb, var(--danger) 14%, transparent);
+  --danger-fg: #ffffff;
 }
 
 html, body {
@@ -52,7 +56,10 @@ html, body {
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border);
   user-select: none;
-  padding: 0 12px;
+  /* ISSUE-7: zero right padding so absolutely-positioned #header-controls can
+     sit flush with the bar (and the screen edge when maximized) for a true
+     Fitts-friendly corner target. */
+  padding: 0 0 0 12px;
   z-index: 100;
   position: relative;
 }
@@ -453,20 +460,28 @@ html, body {
   text-overflow: ellipsis;
 }
 
-/* ---- Window Controls ---- */
+/* ---- Window Controls (ISSUE-7: Win11-style, corner-flush, Fitts-friendly) ----
+   Absolutely positioned to escape #header-bar's horizontal padding so the close
+   button reaches the screen's top-right corner when the window is maximized. */
 #header-controls {
+  position: absolute;
+  top: 0;
+  right: 0;
   display: flex;
-  align-items: center;
-  gap: 4px;
+  align-items: stretch;
+  gap: 0;
+  height: 100%;
   -webkit-app-region: no-drag;
   flex-shrink: 0;
-  z-index: 2; /* High z-index to stay above centered title */
+  z-index: 2;
 }
 
 .title-btn {
-  width: 28px; /* Elegant circular shape */
-  height: 28px;
-  border-radius: 50%;
+  width: 46px;
+  height: 100%;
+  border-radius: 0;
+  margin: 0;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -474,7 +489,7 @@ html, body {
   border: none;
   color: var(--text-muted);
   cursor: pointer;
-  transition: background var(--transition-fast) ease, color var(--transition-fast) ease, transform 100ms ease;
+  transition: background var(--transition-fast) ease, color var(--transition-fast) ease;
   position: relative;
 }
 
@@ -484,11 +499,16 @@ html, body {
 }
 
 .title-btn:active {
-  transform: scale(0.95);
+  background: color-mix(in srgb, var(--text) 14%, transparent);
 }
 
 .title-btn-close:hover {
-  background: #ea4335 !important; /* Elegant modern red alert state */
+  background: #e81123 !important; /* Win11 close-hover red */
+  color: #ffffff !important;
+}
+
+.title-btn-close:active {
+  background: #c50f1f !important;
   color: #ffffff !important;
 }
 
@@ -731,6 +751,13 @@ kbd {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
+/* Subtle underlined letter that hints the single-key shortcut (S / N / C). */
+.kbd-hint {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
 .dialog-btn-secondary {
   background: var(--bg);
   color: var(--text-muted);
@@ -745,18 +772,18 @@ kbd {
 
 .dialog-btn-danger {
   background: transparent;
-  color: #e53e3e;
-  border-color: #e53e3e55;
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 35%, transparent);
 }
 
 .dialog-btn-danger:hover {
-  background: #e53e3e15;
-  border-color: #e53e3e;
+  background: var(--danger-soft);
+  border-color: var(--danger);
 }
 
 .dialog-btn-primary {
   background: var(--accent);
-  color: #fff;
+  color: #ffffff;
   border-color: var(--accent);
 }
 
@@ -864,4 +891,190 @@ body.resizing {
 
 .update-btn-secondary:hover {
   background: rgba(255, 255, 255, 0.3);
+}
+
+/* ========================================
+   Themes — consolidated (PERF-09)
+   One stylesheet instead of 10 link tags. Switched via
+   document.documentElement.setAttribute('data-theme', name).
+   ======================================== */
+
+/* Snow - pure white, black text (default light) */
+:root[data-theme="snow"] {
+  --bg: #ffffff;
+  --bg-secondary: #f6f8fa;
+  --bg-editor: #ffffff;
+  --text: #1a1a1a;
+  --text-muted: #6e7781;
+  --border: #d0d7de;
+  --accent: #0969da;
+  --code-bg: #f6f8fa;
+  --heading: #1a1a1a;
+  --link: #0969da;
+  --cm-keyword: #cf222e;
+  --cm-string: #0a3069;
+  --cm-comment: #6e7781;
+  --cm-heading: #0550ae;
+}
+
+/* Solarized Light - warm cream, muted palette */
+:root[data-theme="solarized-light"] {
+  --bg: #fdf6e3;
+  --bg-secondary: #eee8d5;
+  --bg-editor: #fdf6e3;
+  --text: #657b83;
+  --text-muted: #93a1a1;
+  --border: #d6cdb5;
+  --accent: #268bd2;
+  --code-bg: #eee8d5;
+  --heading: #586e75;
+  --link: #268bd2;
+  --cm-keyword: #cb4b16;
+  --cm-string: #2aa198;
+  --cm-comment: #93a1a1;
+  --cm-heading: #268bd2;
+}
+
+/* GitHub Light - GitHub docs style */
+:root[data-theme="github-light"] {
+  --bg: #ffffff;
+  --bg-secondary: #f6f8fa;
+  --bg-editor: #ffffff;
+  --text: #24292f;
+  --text-muted: #57606a;
+  --border: #d0d7de;
+  --accent: #0969da;
+  --code-bg: #f6f8fa;
+  --heading: #24292f;
+  --link: #0969da;
+  --cm-keyword: #cf222e;
+  --cm-string: #0a3069;
+  --cm-comment: #6e7781;
+  --cm-heading: #0550ae;
+}
+
+/* Sepia - warm beige, brown text (low eye strain) */
+:root[data-theme="sepia"] {
+  --bg: #f4ecd8;
+  --bg-secondary: #e8dfc8;
+  --bg-editor: #f4ecd8;
+  --text: #5b4636;
+  --text-muted: #8b7355;
+  --border: #c8b99a;
+  --accent: #9e6b28;
+  --code-bg: #e8dfc8;
+  --heading: #3e2c1c;
+  --link: #9e6b28;
+  --cm-keyword: #a63d40;
+  --cm-string: #4a7c59;
+  --cm-comment: #8b7355;
+  --cm-heading: #5b4636;
+}
+
+/* Gruvbox Light - retro warm light palette */
+:root[data-theme="gruvbox-light"] {
+  --bg: #fbf1c7;
+  --bg-secondary: #ebdbb2;
+  --bg-editor: #fbf1c7;
+  --text: #3c3836;
+  --text-muted: #7c6f64;
+  --border: #d5c4a1;
+  --accent: #b57614;
+  --code-bg: #ebdbb2;
+  --heading: #282828;
+  --link: #076678;
+  --cm-keyword: #9d0006;
+  --cm-string: #79740e;
+  --cm-comment: #928374;
+  --cm-heading: #076678;
+}
+
+/* Onyx - near-black, white text (default dark) */
+:root[data-theme="onyx"] {
+  --bg: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-editor: #0d1117;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --border: #30363d;
+  --accent: #58a6ff;
+  --code-bg: #161b22;
+  --heading: #f0f6fc;
+  --link: #58a6ff;
+  --cm-keyword: #ff7b72;
+  --cm-string: #a5d6ff;
+  --cm-comment: #8b949e;
+  --cm-heading: #79c0ff;
+}
+
+/* Solarized Dark - classic Solarized Dark */
+:root[data-theme="solarized-dark"] {
+  --bg: #002b36;
+  --bg-secondary: #073642;
+  --bg-editor: #002b36;
+  --text: #839496;
+  --text-muted: #586e75;
+  --border: #0a4a5a;
+  --accent: #268bd2;
+  --code-bg: #073642;
+  --heading: #93a1a1;
+  --link: #268bd2;
+  --cm-keyword: #cb4b16;
+  --cm-string: #2aa198;
+  --cm-comment: #586e75;
+  --cm-heading: #268bd2;
+}
+
+/* GitHub Dark - GitHub dark mode */
+:root[data-theme="github-dark"] {
+  --bg: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-editor: #0d1117;
+  --text: #c9d1d9;
+  --text-muted: #8b949e;
+  --border: #30363d;
+  --accent: #58a6ff;
+  --code-bg: #161b22;
+  --heading: #f0f6fc;
+  --link: #58a6ff;
+  --cm-keyword: #ff7b72;
+  --cm-string: #a5d6ff;
+  --cm-comment: #8b949e;
+  --cm-heading: #79c0ff;
+}
+
+/* Monokai - dark background, vivid syntax */
+:root[data-theme="monokai"] {
+  --bg: #272822;
+  --bg-secondary: #1e1f1c;
+  --bg-editor: #272822;
+  --text: #f8f8f2;
+  --text-muted: #75715e;
+  --border: #3e3d32;
+  --accent: #a6e22e;
+  --code-bg: #1e1f1c;
+  --heading: #f8f8f2;
+  --link: #66d9ef;
+  --cm-keyword: #f92672;
+  --cm-string: #e6db74;
+  --cm-comment: #75715e;
+  --cm-heading: #a6e22e;
+}
+
+/* Gruvbox Dark - retro warm dark palette */
+:root[data-theme="gruvbox-dark"] {
+  --bg: #282828;
+  --bg-secondary: #1d2021;
+  --bg-editor: #282828;
+  --text: #ebdbb2;
+  --text-muted: #a89984;
+  --border: #3c3836;
+  --accent: #fabd2f;
+  --code-bg: #1d2021;
+  --heading: #fbf1c7;
+  --link: #83a598;
+  --cm-keyword: #fb4934;
+  --cm-string: #b8bb26;
+  --cm-comment: #928374;
+  --cm-heading: #fabd2f;
 }
