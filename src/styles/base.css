@@ -371,75 +371,7 @@ html, body {
   flex-shrink: 0;
 }
 
-/* ---- Font Size Control (inline in header) ---- */
-#font-size-control {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 4px;
-  flex-shrink: 0;
-  -webkit-app-region: no-drag;
-}
 
-#font-size-label {
-  font-size: 11px;
-  color: var(--text-muted);
-  min-width: 30px;
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-  cursor: default;
-  font-weight: 500;
-}
-
-/* SLEEK IOS/MACOS RANGE INPUT STYLING */
-#header-font-size {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 70px;
-  height: 4px;
-  background: color-mix(in srgb, var(--text) 12%, transparent);
-  border-radius: 2px;
-  outline: none;
-  cursor: pointer;
-  transition: background var(--transition-fast);
-}
-
-#header-font-size:hover {
-  background: color-mix(in srgb, var(--text) 18%, transparent);
-}
-
-#header-font-size::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
-  cursor: pointer;
-  transition: transform 100ms ease, background 100ms ease;
-}
-
-#header-font-size::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
-  background: var(--text);
-}
-
-#header-font-size::-moz-range-thumb {
-  width: 10px;
-  height: 10px;
-  border: none;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
-  cursor: pointer;
-  transition: transform 100ms ease, background 100ms ease;
-}
-
-#header-font-size::-moz-range-thumb:hover {
-  transform: scale(1.2);
-  background: var(--text);
-}
 
 /* ---- Center Title (mathematical absolute centering) ---- */
 #header-title {
