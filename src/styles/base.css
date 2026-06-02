@@ -711,13 +711,26 @@ kbd {
 
 /* ---- Unsaved Changes Dialog ---- */
 .unsaved-dialog-content {
-  min-width: 420px;
-  max-width: 480px;
+  min-width: 340px;
+  max-width: 380px;
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
 .unsaved-dialog-content .modal-header {
-  gap: 10px;
-  justify-content: flex-start;
+  padding: 24px 24px 8px 24px;
+  border-bottom: none;
+}
+
+.unsaved-dialog-content .modal-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.unsaved-dialog-content .modal-body {
+  padding: 8px 24px 20px 24px;
 }
 
 .unsaved-dialog-content .modal-body p {
@@ -735,27 +748,38 @@ kbd {
   border-top: 1px solid var(--border);
 }
 
+.unsaved-dialog-content .modal-footer {
+  padding: 0 24px 24px 24px;
+  border-top: none;
+  background: transparent;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 .dialog-btn {
-  padding: 6px 16px;
+  padding: 7px 16px;
   font-size: 13px;
   font-family: var(--font-ui);
   font-weight: 500;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  transition: all var(--transition-fast) ease;
   outline: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .dialog-btn:focus-visible {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
-/* Subtle underlined letter that hints the single-key shortcut (S / N / C). */
-.kbd-hint {
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
+/* Muted bracketed key hint inside dialog buttons */
+.dialog-btn .btn-hint {
+  opacity: 0.65;
+  font-size: 11px;
+  font-weight: normal;
 }
 
 .dialog-btn-secondary {
