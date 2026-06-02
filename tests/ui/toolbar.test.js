@@ -11,7 +11,6 @@ import {
   setActiveTheme,
   setActiveFontFamily,
   setActiveTabSize,
-  setFontSizeSlider,
   updateRecentFilesMenu,
 } from '../../src/ui/toolbar.js';
 
@@ -96,10 +95,7 @@ function setupMenuBarDOM() {
             </button>
           </div>
         </div>
-        <div id="font-size-control">
-          <label id="font-size-label" for="header-font-size">14px</label>
-          <input type="range" id="header-font-size" min="12" max="20" value="14" />
-        </div>
+
       </div>
     </div>
   `;
@@ -267,31 +263,7 @@ describe('Toolbar -- Theme Selection', () => {
   });
 });
 
-// -- Font Size Slider --
 
-describe('Toolbar -- Font Size Slider', () => {
-  let handlers;
-
-  beforeEach(() => {
-    setupMenuBarDOM();
-    handlers = createHandlers();
-    initToolbar(handlers);
-  });
-
-  it('should fire onFontSize when slider value changes', () => {
-    const slider = document.getElementById('header-font-size');
-    slider.value = '18';
-    slider.dispatchEvent(new Event('input'));
-    expect(handlers.onFontSize).toHaveBeenCalledWith(18);
-  });
-
-  it('should update label when slider value changes', () => {
-    const slider = document.getElementById('header-font-size');
-    slider.value = '16';
-    slider.dispatchEvent(new Event('input'));
-    expect(document.getElementById('font-size-label').textContent).toBe('16px');
-  });
-});
 
 // -- setMenuChecked Utility --
 
@@ -325,17 +297,7 @@ describe('Toolbar -- setActiveTheme Utility', () => {
   });
 });
 
-// -- setFontSizeSlider Utility --
 
-describe('Toolbar -- setFontSizeSlider Utility', () => {
-  beforeEach(() => setupMenuBarDOM());
-
-  it('should update slider value and label', () => {
-    setFontSizeSlider(18);
-    expect(document.getElementById('header-font-size').value).toBe('18');
-    expect(document.getElementById('font-size-label').textContent).toBe('18px');
-  });
-});
 
 // -- updateRecentFilesMenu Utility --
 
