@@ -258,12 +258,12 @@ describe('Toolbar -- Theme Selection', () => {
     expect(handlers.onThemeSelect).toHaveBeenCalledWith('onyx');
   });
 
-  it('should close menu after theme selection', () => {
+  it('should stay open after theme selection', () => {
     // Open style menu first
     document.querySelector('[data-menu="style-menu"]').click();
     expect(document.getElementById('style-menu').hidden).toBe(false);
     document.querySelector('[data-theme="onyx"]').click();
-    expect(document.getElementById('style-menu').hidden).toBe(true);
+    expect(document.getElementById('style-menu').hidden).toBe(false);
   });
 });
 

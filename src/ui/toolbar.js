@@ -104,32 +104,29 @@ export function initToolbar( handlers ) {
     handlers.onWordWrapToggle( checked );
   } );
 
-  // Style menu - theme
+  // Style menu - theme (ISSUE-5: stay open so users can preview multiple themes;
+  // menus close on mouseleave with the standard 180ms grace timeout).
   wireAction( 'set-theme', ( item ) => {
     const theme = item.getAttribute( 'data-theme' );
     handlers.onThemeSelect( theme );
-    closeAllMenus();
   } );
 
-  // Style menu - font family
+  // Style menu - font family (stays open)
   wireAction( 'set-font', ( item ) => {
     const font = item.getAttribute( 'data-font' );
     handlers.onFontFamily( font );
-    // Update checkmarks
     document.querySelectorAll( '.font-item' ).forEach( ( fi ) => {
       fi.setAttribute( 'data-checked', fi === item ? 'true' : 'false' );
     } );
-    closeAllMenus();
   } );
 
-  // Style menu - tab size
+  // Style menu - tab size (stays open)
   wireAction( 'set-tab', ( item ) => {
     const size = parseInt( item.getAttribute( 'data-tab' ), 10 );
     handlers.onTabSize( size );
     document.querySelectorAll( '.tab-item' ).forEach( ( ti ) => {
       ti.setAttribute( 'data-checked', ti === item ? 'true' : 'false' );
     } );
-    closeAllMenus();
   } );
 
   // Font size slider
