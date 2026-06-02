@@ -371,6 +371,32 @@ html, body {
   flex-shrink: 0;
 }
 
+/* ---- Zoom Button (individual navbar item) ---- */
+.zoom-btn {
+  height: 28px;
+  padding: 0 12px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-fast) ease, color var(--transition-fast) ease;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+}
+
+.zoom-btn:hover {
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+  color: var(--text);
+}
+
 
 
 /* ---- Center Title (mathematical absolute centering) ---- */
