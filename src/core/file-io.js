@@ -5,12 +5,26 @@ import { config, saveConfig } from './config.js';
 import { isTauri } from './state.js';
 import { showUnsavedDialog } from '../ui/dialogs.js';
 import { updateTitleBar, updateStatusBar } from '../ui/status-bar.js';
-import { updateRecentFiles } from '../ui/settings.js';
+import { updateRecentFilesMenu } from '../ui/toolbar.js';
 
 let _editorAPI = null;
 
+// PERF-12: keep the isSaving echo-suppression window open long enough for
+// the OS file watcher to emit and the listener to observe it. The native
+// notify watcher fires within a few ms of write completion; 500ms is a
+// generous, conservative ceiling.
+const SAVE_ECHO_WINDOW_MS = 500;
+
 export function initFileIO( editorAPI ) {
   _editorAPI = editorAPI;
+}
+
+function markSaveStart() {
+  isSaving = true;
+}
+
+function markSaveEnd() {
+  setTimeout( () => { isSaving = false; }, SAVE_ECHO_WINDOW_MS );
 }
 
 export async function openFile() {
@@ -48,19 +62,16 @@ export async function openFile() {
 export async function saveFile() {
   if ( isTauri() && currentFilePath ) {
     try {
-      const { invoke } = await import( '@tauri-apps/api/core' );
-      await invoke( 'unwatch_file' );
-
+      markSaveStart();
       const { writeTextFile } = await import( '@tauri-apps/plugin-fs' );
       await writeTextFile( currentFilePath, _editorAPI.getValue() );
       isDirty = false;
       updateTitleBar();
-
       addToRecentFiles( currentFilePath );
-
-      await invoke( 'watch_file', { path: currentFilePath } );
     } catch ( e ) {
       console.error( 'Failed to save file:', e );
+    } finally {
+      markSaveEnd();
     }
   } else {
     await saveFileAs();
@@ -76,17 +87,23 @@ export async function saveFileAs() {
         filters: [ { name: 'Markdown', extensions: [ 'md', 'markdown' ] } ],
       } );
       if ( path ) {
-        const { invoke } = await import( '@tauri-apps/api/core' );
-        await invoke( 'unwatch_file' );
+        markSaveStart();
+        try {
+          await writeTextFile( path, _editorAPI.getValue() );
+          const isSamePath = path === currentFilePath;
+          currentFilePath = path;
+          isDirty = false;
+          updateTitleBar();
+          addToRecentFiles( path );
 
-        await writeTextFile( path, _editorAPI.getValue() );
-        currentFilePath = path;
-        isDirty = false;
-        updateTitleBar();
-
-        addToRecentFiles( path );
-
-        await invoke( 'watch_file', { path } );
+          // If the user picked a different file, start watching the new one.
+          if ( !isSamePath ) {
+            const { invoke } = await import( '@tauri-apps/api/core' );
+            await invoke( 'watch_file', { path } );
+          }
+        } finally {
+          markSaveEnd();
+        }
       }
     } catch ( e ) {
       console.error( 'Failed to save file:', e );
@@ -165,7 +182,7 @@ function addToRecentFiles( path ) {
   config.recentFiles.unshift( path );
   if ( config.recentFiles.length > 10 ) config.recentFiles.pop();
   saveConfig();
-  updateRecentFiles( config.recentFiles, onRecentFileSelect );
+  updateRecentFilesMenu( config.recentFiles, onRecentFileSelect );
 }
 
 /**

@@ -21,6 +21,7 @@ export default [
         document: 'readonly',
         currentFilePath: 'writable',
         isDirty: 'writable',
+        isSaving: 'writable',
         lineEnding: 'writable',
       },
     },

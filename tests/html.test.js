@@ -53,8 +53,7 @@ describe('HTML -- Required Element IDs', () => {
     'btn-minimize', 'btn-maximize', 'btn-close',
     // Menus
     'file-menu', 'view-menu', 'style-menu',
-    // Font size slider
-    'font-size-label', 'header-font-size',
+
     // Recent files submenu
     'recent-files-submenu',
     // Split container
@@ -226,13 +225,5 @@ describe('HTML -- Header Bar', () => {
   it('should have 3 window control buttons', () => {
     const controls = doc.querySelectorAll('#header-controls .title-btn');
     expect(controls.length).toBe(3);
-  });
-
-  it('should have font size slider in header', () => {
-    const slider = doc.getElementById('header-font-size');
-    expect(slider).toBeTruthy();
-    expect(slider.getAttribute('type')).toBe('range');
-    expect(slider.getAttribute('min')).toBe('12');
-    expect(slider.getAttribute('max')).toBe('20');
   });
 });

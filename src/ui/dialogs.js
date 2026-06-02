@@ -2,6 +2,16 @@
 
 /**
  * Show the 3-button unsaved-changes dialog.
+ *
+ * Keyboard contract (ISSUE-8):
+ *   - Tab / Shift+Tab cycle the three buttons (browser default; Save is focused
+ *     on open so Enter activates Save by default).
+ *   - Enter activates the focused button (browser default).
+ *   - Escape cancels.
+ *   - Single-letter shortcuts (no modifiers): S = Save, N = Don't Save,
+ *     C = Cancel. Ignored when a modifier key is held so they do not collide
+ *     with Ctrl+S etc.
+ *
  * @returns {Promise<'save'|'discard'|'cancel'>}
  */
 export function showUnsavedDialog() {
@@ -20,7 +30,7 @@ export function showUnsavedDialog() {
       btnDiscard.removeEventListener( 'click', onDiscard );
       btnCancel.removeEventListener( 'click', onCancel );
       dialog.removeEventListener( 'click', onOverlayClick );
-      document.removeEventListener( 'keydown', onKeydown );
+      document.removeEventListener( 'keydown', onKeydown, true );
       resolve( result );
     }
 
@@ -33,6 +43,26 @@ export function showUnsavedDialog() {
     function onKeydown( e ) {
       if ( e.key === 'Escape' ) {
         e.preventDefault();
+        e.stopPropagation();
+        cleanup( 'cancel' );
+        return;
+      }
+      // Ignore key shortcuts when any modifier is held — protects global
+      // bindings (Ctrl+S, Alt+Z, etc.) from firing while the modal is open.
+      if ( e.ctrlKey || e.metaKey || e.altKey || e.shiftKey ) return;
+
+      const key = e.key.toLowerCase();
+      if ( key === 's' ) {
+        e.preventDefault();
+        e.stopPropagation();
+        cleanup( 'save' );
+      } else if ( key === 'n' ) {
+        e.preventDefault();
+        e.stopPropagation();
+        cleanup( 'discard' );
+      } else if ( key === 'c' ) {
+        e.preventDefault();
+        e.stopPropagation();
         cleanup( 'cancel' );
       }
     }
@@ -41,7 +71,9 @@ export function showUnsavedDialog() {
     btnDiscard.addEventListener( 'click', onDiscard );
     btnCancel.addEventListener( 'click', onCancel );
     dialog.addEventListener( 'click', onOverlayClick );
-    document.addEventListener( 'keydown', onKeydown );
+    // Capture phase so we beat the global keyboard.js listener for unmodified
+    // S / N / C / Escape while the modal is open.
+    document.addEventListener( 'keydown', onKeydown, true );
   } );
 }
 

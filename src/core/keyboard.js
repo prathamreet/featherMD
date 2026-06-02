@@ -60,4 +60,56 @@ export function initKeyboardShortcuts( editorAPI ) {
       toggleShortcutsModal();
     }
   } );
+
+  const badge = document.getElementById( 'zoom-badge' );
+  if ( badge ) {
+    badge.addEventListener( 'mouseenter', () => {
+      badge.textContent = 'Reset';
+    } );
+    badge.addEventListener( 'mouseleave', () => {
+      updateZoomBadge( config.fontSize || 14 );
+    } );
+    badge.addEventListener( 'click', ( e ) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const newSize = 14;
+      document.documentElement.style.setProperty( '--font-size', `${ newSize }px` );
+      config.fontSize = newSize;
+      saveConfig();
+      updateZoomBadge( newSize );
+    } );
+  }
+
+  window.addEventListener( 'wheel', ( e ) => {
+    if ( e.ctrlKey ) {
+      e.preventDefault();
+      const currentSize = config.fontSize || 14;
+      if ( e.deltaY < 0 ) {
+        // Scroll Up: Increase font size
+        if ( currentSize < 36 ) {
+          const newSize = currentSize + 1;
+          document.documentElement.style.setProperty( '--font-size', `${ newSize }px` );
+          config.fontSize = newSize;
+          saveConfig();
+          updateZoomBadge( newSize );
+        }
+      } else if ( e.deltaY > 0 ) {
+        // Scroll Down: Decrease font size
+        if ( currentSize > 8 ) {
+          const newSize = currentSize - 1;
+          document.documentElement.style.setProperty( '--font-size', `${ newSize }px` );
+          config.fontSize = newSize;
+          saveConfig();
+          updateZoomBadge( newSize );
+        }
+      }
+    }
+  }, { passive: false } );
+}
+
+export function updateZoomBadge( size ) {
+  const badge = document.getElementById( 'zoom-badge' );
+  if ( !badge ) return;
+  const percent = Math.round( ( size / 14 ) * 100 );
+  badge.textContent = `${ percent }%`;
 }

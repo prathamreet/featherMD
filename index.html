@@ -8,16 +8,6 @@
     <link rel="stylesheet" href="/src/styles/editor.css" />
     <link rel="stylesheet" href="/src/styles/preview.css" />
     <link rel="stylesheet" href="/src/styles/toolbar.css" />
-    <link rel="stylesheet" href="/src/styles/themes/snow.css" />
-    <link rel="stylesheet" href="/src/styles/themes/solarized-light.css" />
-    <link rel="stylesheet" href="/src/styles/themes/github-light.css" />
-    <link rel="stylesheet" href="/src/styles/themes/sepia.css" />
-    <link rel="stylesheet" href="/src/styles/themes/gruvbox-light.css" />
-    <link rel="stylesheet" href="/src/styles/themes/onyx.css" />
-    <link rel="stylesheet" href="/src/styles/themes/solarized-dark.css" />
-    <link rel="stylesheet" href="/src/styles/themes/github-dark.css" />
-    <link rel="stylesheet" href="/src/styles/themes/monokai.css" />
-    <link rel="stylesheet" href="/src/styles/themes/gruvbox-dark.css" />
     <script type="module" src="/src/main.js"></script>
   </head>
   <body>
@@ -225,12 +215,8 @@
           </div>
         </div>
 
-        <!-- Font Size Slider -->
-        <div class="header-separator"></div>
-        <div id="font-size-control">
-          <label id="font-size-label" for="header-font-size">14px</label>
-          <input type="range" id="header-font-size" min="12" max="20" value="14" />
-        </div>
+        <!-- Zoom Indicator Widget -->
+        <button id="zoom-badge" class="zoom-btn" title="Reset zoom to default">100%</button>
       </div>
 
       <!-- Center Title (drag region) -->
@@ -292,20 +278,13 @@
     <div id="unsaved-dialog" class="modal-overlay" hidden>
       <div class="modal-content unsaved-dialog-content">
         <div class="modal-header">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-            <line x1="12" y1="9" x2="12" y2="13"></line>
-            <line x1="12" y1="17" x2="12.01" y2="17"></line>
-          </svg>
           <h3>Unsaved Changes</h3>
         </div>
-        <div class="modal-body">
-          <p id="unsaved-dialog-message">You have unsaved changes. What would you like to do?</p>
-        </div>
+        <p id="unsaved-dialog-message" hidden></p>
         <div class="modal-footer">
-          <button id="unsaved-btn-cancel" class="dialog-btn dialog-btn-secondary">Cancel</button>
-          <button id="unsaved-btn-discard" class="dialog-btn dialog-btn-danger">Don't Save</button>
-          <button id="unsaved-btn-save" class="dialog-btn dialog-btn-primary">Save</button>
+          <button id="unsaved-btn-cancel" class="dialog-btn dialog-btn-secondary" aria-keyshortcuts="C">Cancel <span class="btn-hint">(c)</span></button>
+          <button id="unsaved-btn-discard" class="dialog-btn dialog-btn-danger" aria-keyshortcuts="N">Don't Save <span class="btn-hint">(n)</span></button>
+          <button id="unsaved-btn-save" class="dialog-btn dialog-btn-primary" aria-keyshortcuts="S">Save <span class="btn-hint">(s)</span></button>
         </div>
       </div>
     </div>

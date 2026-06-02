@@ -27,7 +27,7 @@ loadCore();
 // time and emit a separate chunk per language — satisfying PRD §3.8 < 450KB.
 // The eager:false option keeps them out of the initial bundle.
 const HLJS_LANG_MODULES = import.meta.glob(
-  '/node_modules/highlight.js/lib/languages/*.js',
+  '../../node_modules/highlight.js/es/languages/*.js',
   { eager: false }
 );
 
@@ -72,7 +72,7 @@ function loadLanguage(name) {
   if (failedLangs.has(resolved)) return Promise.resolve(false);
   if (pendingLangs.has(resolved)) return pendingLangs.get(resolved);
 
-  const key = `/node_modules/highlight.js/lib/languages/${resolved}.js`;
+  const key = `../../node_modules/highlight.js/es/languages/${resolved}.js`;
   const loader = HLJS_LANG_MODULES[key];
   if (!loader) {
     failedLangs.add(resolved);
@@ -80,8 +80,9 @@ function loadLanguage(name) {
   }
   const p = loader()
     .then((mod) => {
-      if (mod && mod.default) {
-        hljs.registerLanguage(resolved, mod.default);
+      const langFn = mod && (mod.default || mod);
+      if (typeof langFn === 'function') {
+        hljs.registerLanguage(resolved, langFn);
         loadedLangs.add(resolved);
         return true;
       }

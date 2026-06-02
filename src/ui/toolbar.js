@@ -104,44 +104,32 @@ export function initToolbar( handlers ) {
     handlers.onWordWrapToggle( checked );
   } );
 
-  // Style menu - theme
+  // Style menu - theme (ISSUE-5: stay open so users can preview multiple themes;
+  // menus close on mouseleave with the standard 180ms grace timeout).
   wireAction( 'set-theme', ( item ) => {
     const theme = item.getAttribute( 'data-theme' );
     handlers.onThemeSelect( theme );
-    closeAllMenus();
   } );
 
-  // Style menu - font family
+  // Style menu - font family (stays open)
   wireAction( 'set-font', ( item ) => {
     const font = item.getAttribute( 'data-font' );
     handlers.onFontFamily( font );
-    // Update checkmarks
     document.querySelectorAll( '.font-item' ).forEach( ( fi ) => {
       fi.setAttribute( 'data-checked', fi === item ? 'true' : 'false' );
     } );
-    closeAllMenus();
   } );
 
-  // Style menu - tab size
+  // Style menu - tab size (stays open)
   wireAction( 'set-tab', ( item ) => {
     const size = parseInt( item.getAttribute( 'data-tab' ), 10 );
     handlers.onTabSize( size );
     document.querySelectorAll( '.tab-item' ).forEach( ( ti ) => {
       ti.setAttribute( 'data-checked', ti === item ? 'true' : 'false' );
     } );
-    closeAllMenus();
   } );
 
-  // Font size slider
-  const slider = document.getElementById( 'header-font-size' );
-  const label = document.getElementById( 'font-size-label' );
-  if ( slider ) {
-    slider.addEventListener( 'input', () => {
-      const val = parseInt( slider.value, 10 );
-      label.textContent = `${ val }px`;
-      handlers.onFontSize( val );
-    } );
-  }
+
 }
 
 function wireAction( action, callback ) {
@@ -203,15 +191,7 @@ export function setActiveTabSize( size ) {
   } );
 }
 
-/**
- * Update the font-size slider value and label
- */
-export function setFontSizeSlider( size ) {
-  const slider = document.getElementById( 'header-font-size' );
-  const label = document.getElementById( 'font-size-label' );
-  if ( slider ) slider.value = size;
-  if ( label ) label.textContent = `${ size }px`;
-}
+
 
 /**
  * Update recent files in the submenu

@@ -2,12 +2,19 @@
 // Feather MD — Shared Utilities
 // ========================================
 
+const HTML_ESCAPE_MAP = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+};
+
 /**
- * Minimal HTML escaper — safe for injecting into innerHTML attributes/text nodes.
- * Uses the browser's own serializer so it is always correct.
+ * HTML escaper for injecting untrusted strings into innerHTML attributes/text.
+ * Pure string replacement — no DOM allocation, no GC churn on rapid calls.
  */
 export function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
+  if (str == null) return '';
+  return String(str).replace(/[&<>"']/g, (ch) => HTML_ESCAPE_MAP[ch]);
 }

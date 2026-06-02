@@ -28,6 +28,35 @@ export async function initWindowControls() {
 let windowResizeSaveTimer = null;
 let windowResizeUnlisten = null;
 
+/**
+ * Show the Tauri window. The window starts hidden (`visible: false` in
+ * tauri.conf.json) to avoid the initial wrong-size flash; the orchestrator
+ * must call this once the window has been sized/maximized from persisted
+ * config. Idempotent and safe to call in browser dev mode (the Tauri import
+ * fails silently → no-op).
+ *
+ * Requires `core:window:allow-show` in capabilities/default.json. Without
+ * that permission Tauri 2 silently rejects the IPC and the window stays
+ * hidden, which manifests as "the app launched but never appeared".
+ */
+export async function ensureWindowVisible() {
+  let appWindow;
+  try {
+    const { getCurrentWindow } = await import( '@tauri-apps/api/window' );
+    appWindow = getCurrentWindow();
+  } catch {
+    // Browser mode or Tauri unavailable - nothing to show.
+    return;
+  }
+  try {
+    await appWindow.show();
+  } catch ( err ) {
+    // Loud failure: a hidden window with no recovery path leaves the user
+    // staring at an invisible process. Log so the cause is obvious.
+    console.error( '[window] ensureWindowVisible: show() failed:', err );
+  }
+}
+
 export async function initWindowSize() {
   if ( !isTauri() ) return;
 
