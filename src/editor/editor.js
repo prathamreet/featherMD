@@ -100,6 +100,11 @@ export function initEditor(domEl, onChange, onCursorActivity) {
     getScrollRatio,
     setScrollRatio,
     getCursorPosition,
+    getSelectedText: () => {
+      if (!editorView) return '';
+      const { from, to } = editorView.state.selection.main;
+      return editorView.state.sliceDoc(from, to);
+    },
     setLineNumbers,
     setLineWrapping,
     setTabSize,
