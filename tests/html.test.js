@@ -64,7 +64,7 @@ describe('HTML -- Required Element IDs', () => {
     'unsaved-dialog', 'unsaved-dialog-message',
     'unsaved-btn-cancel', 'unsaved-btn-discard', 'unsaved-btn-save',
     // Status bar
-    'status-bar', 'status-filepath', 'status-wordcount',
+    'status-bar', 'status-filepath', 'status-words', 'status-chars', 'status-paragraphs',
     'status-cursor', 'status-encoding', 'status-line-ending',
   ];
 
@@ -130,9 +130,9 @@ describe('HTML -- Menu Bar Structure', () => {
     });
   });
 
-  it('should have 3 checkable items in view menu', () => {
+  it('should have 4 checkable items in view menu', () => {
     const items = doc.querySelectorAll('#view-menu .menu-item.checkable');
-    expect(items.length).toBe(3);
+    expect(items.length).toBe(4);
   });
 
   it('should have file menu actions with keyboard shortcuts displayed', () => {
@@ -165,8 +165,10 @@ describe('HTML -- Status Bar Initial Content', () => {
     expect(doc.getElementById('status-filepath').textContent).toBe('Untitled');
   });
 
-  it('should show "0 words" as default word count', () => {
-    expect(doc.getElementById('status-wordcount').textContent).toBe('0 words');
+  it('should show default stats text', () => {
+    expect(doc.getElementById('status-words').textContent).toBe('0 words');
+    expect(doc.getElementById('status-chars').textContent).toBe('0 chars');
+    expect(doc.getElementById('status-paragraphs').textContent).toBe('0 paragraphs');
   });
 
   it('should show "Ln 1, Col 1" as default cursor position', () => {
