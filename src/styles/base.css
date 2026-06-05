@@ -62,6 +62,7 @@ html, body {
   padding: 0 0 0 12px;
   z-index: 100;
   position: relative;
+  -webkit-app-region: drag;
 }
 
 #header-left {
