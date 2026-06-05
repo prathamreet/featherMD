@@ -104,6 +104,12 @@ export function initToolbar( handlers ) {
     handlers.onWordWrapToggle( checked );
   } );
 
+  wireAction( 'toggle-pb-visibility', ( item ) => {
+    const checked = item.getAttribute( 'data-checked' ) !== 'true';
+    item.setAttribute( 'data-checked', checked ? 'true' : 'false' );
+    handlers.onPageBreaksToggle( checked );
+  } );
+
   // Style menu - theme (ISSUE-5: stay open so users can preview multiple themes;
   // menus close on mouseleave with the standard 180ms grace timeout).
   wireAction( 'set-theme', ( item ) => {
