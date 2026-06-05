@@ -93,6 +93,7 @@ window.addEventListener('DOMContentLoaded', () => {
 async function bootAsync() {
   try {
     await runBootSequence();
+    pingAnalytics();
   } finally {
     // ISSUE-10: Window is hidden via tauri.conf.json (`visible: false`) to avoid
     // a brief wrong-size flash on startup. Show it only after persisted size
@@ -328,4 +329,26 @@ function applyFontSettings() {
     document.documentElement.style.setProperty('--font-mono', config.fontFamily);
   }
   updateZoomBadge(config.fontSize || 14);
+}
+
+async function pingAnalytics() {
+  if (navigator.onLine === false) return; // Silent exit if completely offline
+
+  try {
+    const versionEl = document.querySelector('#header-icon .version-text');
+    const version = versionEl ? versionEl.textContent.trim().replace(/^v/, '') : '0.0.0';
+
+    const platform = encodeURIComponent(navigator.platform || 'unknown');
+    const language = encodeURIComponent(navigator.language || 'unknown');
+    const resolution = encodeURIComponent(`${window.screen.width}x${window.screen.height}`);
+
+    const ANALYTICS_URL = 'https://feather-md-analytics.up.railway.app';
+
+    await fetch(`${ANALYTICS_URL}/ping?version=${version}&platform=${platform}&language=${language}&resolution=${resolution}`, {
+      method: 'POST',
+      mode: 'no-cors'
+    });
+  } catch (err) {
+    // Silent fail to ensure user experience is not affected when backend is unreachable/offline
+  }
 }
