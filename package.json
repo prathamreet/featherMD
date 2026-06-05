@@ -16,7 +16,7 @@
     "rm-dist": "rimraf dist",
     "rm-target": "cd src-tauri && cargo clean",
     "rm-nm": "rimraf node_modules",
-    "version": "node scripts/version-bump.js && git add src-tauri/tauri.conf.json src-tauri/Cargo.toml src-tauri/Cargo.lock src/styles/base.css page/index.html page/styles.css"
+    "version": "node scripts/version-bump.js && git add src-tauri/tauri.conf.json src-tauri/Cargo.toml src-tauri/Cargo.lock index.html page/index.html page/styles.css"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.20.2",
