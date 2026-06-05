@@ -7,6 +7,7 @@ export default [
       'node_modules/**',
       'dist/**',
       'src-tauri/**',
+      'target/**',
     ],
   },
   js.configs.recommended,
