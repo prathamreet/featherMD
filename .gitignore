@@ -15,7 +15,7 @@ coverage/
 *.local
 
 # Rust / Tauri build artifacts
-src-tauri/target/
+target/
 src-tauri/gen/schemas/*.json
 src-tauri/WixTools/
 src-tauri/.cargo/
@@ -56,4 +56,5 @@ desktop.ini
 *.orig
 
 # Agent workspace
-.agent/
+.agents
+~
