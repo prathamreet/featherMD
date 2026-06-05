@@ -342,7 +342,7 @@ async function pingAnalytics() {
     const language = encodeURIComponent(navigator.language || 'unknown');
     const resolution = encodeURIComponent(`${window.screen.width}x${window.screen.height}`);
 
-    const ANALYTICS_URL = 'https://feather-md-analytics.up.railway.app';
+    const ANALYTICS_URL = 'https://feather-md-analytics-production.up.railway.app';
 
     await fetch(`${ANALYTICS_URL}/ping?version=${version}&platform=${platform}&language=${language}&resolution=${resolution}`, {
       method: 'POST',
