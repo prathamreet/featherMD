@@ -16,6 +16,7 @@ export const config = {
   windowWidth: 1200,
   windowHeight: 800,
   windowMaximized: false,
+  showPageBreaks: true,
 };
 
 export async function loadConfig() {
