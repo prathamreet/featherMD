@@ -45,37 +45,50 @@ import { initWindowControls, initWindowSize, ensureWindowVisible } from './platf
 let editorAPI = null;
 let previewAPI = null;
 
-window.addEventListener( 'DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', () => {
   // ---- Phase 1: synchronous mount ----
   // Apply OS-preferred theme up-front so the first paint matches the user's
   // preference; saved config (if any) overrides it during Phase 2.
   document.documentElement.setAttribute(
     'data-theme',
-    window.matchMedia( '(prefers-color-scheme: dark)' ).matches ? 'onyx' : 'snow',
+    window.matchMedia('(prefers-color-scheme: dark)').matches ? 'onyx' : 'snow',
   );
 
   editorAPI = initEditor(
-    document.getElementById( 'editor-pane' ),
+    document.getElementById('editor-pane'),
     onContentChange,
     () => updateCursorPosition(),
   );
-  previewAPI = initPreview( document.getElementById( 'preview-content' ) );
+  previewAPI = initPreview(document.getElementById('preview-content'));
 
-  initStatusBar( editorAPI );
-  initFileIO( editorAPI );
-  initScrollSync( editorAPI, previewAPI );
+  initStatusBar(editorAPI);
+  initFileIO(editorAPI);
+  initScrollSync(editorAPI, previewAPI);
   initDividerDrag();
-  initKeyboardShortcuts( editorAPI );
+  initKeyboardShortcuts(editorAPI);
   initShortcutsModal();
+
+  const headerIcon = document.getElementById('header-icon');
+  if (headerIcon) {
+    headerIcon.addEventListener('click', async () => {
+      const url = 'https://github.com/prathamreet/featherMD';
+      try {
+        const { invoke } = await import('@tauri-apps/api/core');
+        await invoke('plugin:opener|open_url', { url });
+      } catch {
+        window.open(url, '_blank');
+      }
+    });
+  }
   // initWindowControls() lives in Phase 2 — it short-circuits on `!isTauri()`,
   // and `setTauri(true)` only flips during Phase 2 after the Tauri core import.
 
-  editorAPI.setValue( WELCOME_TEXT );
+  editorAPI.setValue(WELCOME_TEXT);
   editorAPI.focus();
 
   // ---- Phase 2: async config + Tauri ----
   bootAsync();
-} );
+});
 
 async function bootAsync() {
   try {
@@ -91,93 +104,95 @@ async function bootAsync() {
 
 async function runBootSequence() {
   try {
-    await import( '@tauri-apps/api/core' );
-    setTauri( true );
+    await import('@tauri-apps/api/core');
+    setTauri(true);
   } catch {
     // Browser mode
   }
 
   await loadConfig();
 
-  initThemes( config, ( themeName ) => {
+  initThemes(config, (themeName) => {
     config.theme = themeName;
     saveConfig();
-  } );
+  });
 
-  updateRecentFilesMenu( config.recentFiles || [], onRecentFileSelect );
+  updateRecentFilesMenu(config.recentFiles || [], onRecentFileSelect);
 
-  initToolbar( {
+  initToolbar({
     onOpen: openFile,
     onSave: saveFile,
     onSaveAs: saveFileAs,
     onNew: newFile,
     onPrint: () => window.print(),
-    onSyncToggle: ( enabled ) => {
-      setSyncEnabled( enabled );
+    onSyncToggle: (enabled) => {
+      setSyncEnabled(enabled);
       config.syncScroll = enabled;
       saveConfig();
     },
-    onThemeSelect: ( theme ) => {
-      setTheme( theme );
+    onThemeSelect: (theme) => {
+      setTheme(theme);
       config.theme = theme;
       saveConfig();
     },
-    onLineNumbersToggle: ( show ) => {
-      editorAPI.setLineNumbers( show );
+    onLineNumbersToggle: (show) => {
+      editorAPI.setLineNumbers(show);
       config.lineNumbers = show;
       saveConfig();
     },
-    onWordWrapToggle: ( wrap ) => {
-      editorAPI.setLineWrapping( wrap );
+    onWordWrapToggle: (wrap) => {
+      editorAPI.setLineWrapping(wrap);
       config.wordWrap = wrap;
       saveConfig();
     },
-    onFontSize: ( size ) => {
-      document.documentElement.style.setProperty( '--font-size', `${ size }px` );
+    onFontSize: (size) => {
+      document.documentElement.style.setProperty('--font-size', `${size}px`);
       config.fontSize = size;
       saveConfig();
+      editorAPI.requestMeasure();
     },
-    onFontFamily: ( font ) => {
-      document.documentElement.style.setProperty( '--font-mono', font );
+    onFontFamily: (font) => {
+      document.documentElement.style.setProperty('--font-mono', font);
       config.fontFamily = font;
       saveConfig();
+      editorAPI.requestMeasure();
     },
-    onTabSize: ( size ) => {
-      editorAPI.setTabSize( size );
+    onTabSize: (size) => {
+      editorAPI.setTabSize(size);
       config.tabSize = size;
       saveConfig();
     },
-  } );
+  });
 
   applyPersistedConfig();
   applyFontSettings();
 
-  if ( isTauri() ) {
+  if (isTauri()) {
     await initWindowControls();
     await wireTauriListeners();
     await initWindowSize();
   }
 
-  initUpdater().catch( () => {} );
+  initUpdater().catch(() => { });
 }
 
 
 // ---- Tauri IPC listeners ----
 async function wireTauriListeners() {
   try {
-    const { invoke } = await import( '@tauri-apps/api/core' );
-    const initialFile = await invoke( 'get_initial_file' );
-    if ( initialFile ) {
-      loadFileContent( initialFile.path, initialFile.content );
+    const { invoke } = await import('@tauri-apps/api/core');
+    const initialFile = await invoke('get_initial_file');
+    if (initialFile) {
+      loadFileContent(initialFile.path, initialFile.content);
     }
-  } catch ( err ) {
-    console.error( 'Failed to retrieve initial file:', err );
+  } catch (err) {
+    console.error('Failed to retrieve initial file:', err);
   }
 
   try {
-    const { getCurrentWindow } = await import( '@tauri-apps/api/window' );
+    const { getCurrentWindow } = await import('@tauri-apps/api/window');
     const appWindow = getCurrentWindow();
-    appWindow.onCloseRequested( async ( event ) => {
+    appWindow.onCloseRequested(async (event) => {
       event.preventDefault();
 
       try {
@@ -188,49 +203,49 @@ async function wireTauriListeners() {
         // ignore
       }
 
-      if ( isDirty ) {
+      if (isDirty) {
         const response = await showUnsavedDialog();
 
-        if ( response === 'save' ) {
+        if (response === 'save') {
           await saveFile();
-          if ( !isDirty ) {
+          if (!isDirty) {
             await appWindow.destroy();
           }
-        } else if ( response === 'discard' ) {
+        } else if (response === 'discard') {
           isDirty = false;
           await appWindow.destroy();
         }
       } else {
         await appWindow.destroy();
       }
-    } );
+    });
   } catch {
-    console.log( 'Tauri API not available - running in browser mode' );
+    console.log('Tauri API not available - running in browser mode');
   }
 
   try {
-    const { listen } = await import( '@tauri-apps/api/event' );
-    await listen( 'file-changed-on-disk', async ( event ) => {
+    const { listen } = await import('@tauri-apps/api/event');
+    await listen('file-changed-on-disk', async (event) => {
       const { path } = event.payload;
-      if ( path !== currentFilePath ) return;
+      if (path !== currentFilePath) return;
 
       // PERF-12: ignore the watcher echo from our own writeTextFile.
-      if ( isSaving ) return;
+      if (isSaving) return;
 
-      if ( !isDirty ) {
+      if (!isDirty) {
         try {
-          const { readTextFile } = await import( '@tauri-apps/plugin-fs' );
-          const content = await readTextFile( path );
-          loadFileContent( path, content );
-        } catch ( e ) {
-          console.error( 'Failed to auto-reload file after disk change:', e );
+          const { readTextFile } = await import('@tauri-apps/plugin-fs');
+          const content = await readTextFile(path);
+          loadFileContent(path, content);
+        } catch (e) {
+          console.error('Failed to auto-reload file after disk change:', e);
         }
         return;
       }
 
-      const { ask } = await import( '@tauri-apps/plugin-dialog' );
+      const { ask } = await import('@tauri-apps/plugin-dialog');
       const reload = await ask(
-        `The file "${ path }" has been modified on disk by another program.\n\nWould you like to reload it from disk? Unsaved editor changes will be overwritten.`,
+        `The file "${path}" has been modified on disk by another program.\n\nWould you like to reload it from disk? Unsaved editor changes will be overwritten.`,
         {
           title: 'File Modified Externally',
           kind: 'warning',
@@ -238,30 +253,30 @@ async function wireTauriListeners() {
           cancelLabel: 'Keep Editor Version',
         }
       );
-      if ( reload ) {
+      if (reload) {
         try {
-          const { readTextFile } = await import( '@tauri-apps/plugin-fs' );
-          const content = await readTextFile( path );
-          loadFileContent( path, content );
-        } catch ( e ) {
-          console.error( 'Failed to reload file after disk change:', e );
+          const { readTextFile } = await import('@tauri-apps/plugin-fs');
+          const content = await readTextFile(path);
+          loadFileContent(path, content);
+        } catch (e) {
+          console.error('Failed to reload file after disk change:', e);
         }
       }
-    } );
-  } catch ( err ) {
-    console.error( 'Failed to set up disk file watcher listener:', err );
+    });
+  } catch (err) {
+    console.error('Failed to set up disk file watcher listener:', err);
   }
 }
 
 // ---- Editor change handler (synchronous; debounce lives in CodeMirror) ----
-function onContentChange( text, isProgrammatic ) {
-  previewAPI.renderMarkdown( text );
-  updateStatusBar( text );
+function onContentChange(text, isProgrammatic) {
+  previewAPI.renderMarkdown(text);
+  updateStatusBar(text);
 
-  if ( isProgrammatic ) {
+  if (isProgrammatic) {
     isDirty = false;
     updateTitleBar();
-  } else if ( !isDirty ) {
+  } else if (!isDirty) {
     isDirty = true;
     updateTitleBar();
   }
@@ -269,48 +284,48 @@ function onContentChange( text, isProgrammatic ) {
 
 // ---- Apply persisted preferences on startup ----
 function applyPersistedConfig() {
-  if ( !editorAPI ) return;
+  if (!editorAPI) return;
 
   const lineNumbers = config.lineNumbers !== false;
   const wordWrap = config.wordWrap !== false;
   const syncScroll = config.syncScroll !== false;
   const tabSize = config.tabSize || 4;
 
-  editorAPI.setLineNumbers( lineNumbers );
-  editorAPI.setLineWrapping( wordWrap );
-  editorAPI.setTabSize( tabSize );
+  editorAPI.setLineNumbers(lineNumbers);
+  editorAPI.setLineWrapping(wordWrap);
+  editorAPI.setTabSize(tabSize);
 
-  setSyncEnabled( syncScroll );
+  setSyncEnabled(syncScroll);
 
   // Reflect state in View menu
-  setMenuChecked( 'toggle-line-numbers', lineNumbers );
-  setMenuChecked( 'toggle-word-wrap', wordWrap );
-  setMenuChecked( 'toggle-sync', syncScroll );
+  setMenuChecked('toggle-line-numbers', lineNumbers);
+  setMenuChecked('toggle-word-wrap', wordWrap);
+  setMenuChecked('toggle-sync', syncScroll);
 
   // Reflect state in Style menu
-  setActiveTheme( config.theme || 'snow' );
-  setActiveFontFamily( config.fontFamily || "'JetBrains Mono', monospace" );
-  setActiveTabSize( tabSize );
+  setActiveTheme(config.theme || 'snow');
+  setActiveFontFamily(config.fontFamily || "'JetBrains Mono', monospace");
+  setActiveTabSize(tabSize);
 
 
   const ratio = typeof config.splitRatio === 'number' ? config.splitRatio : 0.5;
-  if ( Math.abs( ratio - 0.5 ) > 0.001 ) {
-    const editorPane = document.getElementById( 'editor-pane' );
-    const previewPane = document.getElementById( 'preview-pane' );
-    if ( editorPane && previewPane ) {
-      const clamped = Math.max( 0.2, Math.min( 0.8, ratio ) );
-      editorPane.style.width = `${ clamped * 100 }%`;
-      previewPane.style.width = `${ ( 1 - clamped ) * 100 }%`;
+  if (Math.abs(ratio - 0.5) > 0.001) {
+    const editorPane = document.getElementById('editor-pane');
+    const previewPane = document.getElementById('preview-pane');
+    if (editorPane && previewPane) {
+      const clamped = Math.max(0.2, Math.min(0.8, ratio));
+      editorPane.style.width = `${clamped * 100}%`;
+      previewPane.style.width = `${(1 - clamped) * 100}%`;
     }
   }
 }
 
 function applyFontSettings() {
-  if ( config.fontSize ) {
-    document.documentElement.style.setProperty( '--font-size', `${ config.fontSize }px` );
+  if (config.fontSize) {
+    document.documentElement.style.setProperty('--font-size', `${config.fontSize}px`);
   }
-  if ( config.fontFamily ) {
-    document.documentElement.style.setProperty( '--font-mono', config.fontFamily );
+  if (config.fontFamily) {
+    document.documentElement.style.setProperty('--font-mono', config.fontFamily);
   }
-  updateZoomBadge( config.fontSize || 14 );
+  updateZoomBadge(config.fontSize || 14);
 }

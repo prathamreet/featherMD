@@ -23,12 +23,12 @@ if (fs.existsSync(lockPath)) {
   console.log(`Synced Cargo.lock version to ${version}`);
 }
 
-const cssPath = 'src/styles/base.css';
-if (fs.existsSync(cssPath)) {
-  let css = fs.readFileSync(cssPath, 'utf8');
-  css = css.replace(/content:\s*"v[^"]*";\s*\/\*\s*brand-version\s*\*\//g, `content: "v${version}"; /* brand-version */`);
-  fs.writeFileSync(cssPath, css, 'utf8');
-  console.log(`Synced base.css brand-version to ${version}`);
+const indexHtmlPath = 'index.html';
+if (fs.existsSync(indexHtmlPath)) {
+  let html = fs.readFileSync(indexHtmlPath, 'utf8');
+  html = html.replace(/(<span class="version-text">)v[^<]*(<\/span>)/g, `$1v${version}$2`);
+  fs.writeFileSync(indexHtmlPath, html, 'utf8');
+  console.log(`Synced index.html brand-version to ${version}`);
 }
 
 const pageCssPath = 'page/styles.css';
@@ -42,8 +42,8 @@ if (fs.existsSync(pageCssPath)) {
 const pageHtmlPath = 'page/index.html';
 if (fs.existsSync(pageHtmlPath)) {
   let html = fs.readFileSync(pageHtmlPath, 'utf8');
-  html = html.replace(/Feather MD v[0-9.]+(\s*<\/h4>)/g, `Feather MD v${version}$1`);
-  html = html.replace(/(class="download-version" id="dl-(win|deb|app)-ver">)v[0-9.]+(<\/div>)/g, `$1v${version}$3`);
+  html = html.replace(/Feather MD v[^<]*(\s*<\/h4>)/g, `Feather MD v${version}$1`);
+  html = html.replace(/(class="download-version" id="dl-(win|deb|app)-ver">)v[^<]*(<\/div>)/g, `$1v${version}$3`);
   fs.writeFileSync(pageHtmlPath, html, 'utf8');
   console.log(`Synced page/index.html version to ${version}`);
 }

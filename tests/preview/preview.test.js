@@ -53,11 +53,22 @@ describe('Preview -- Core Markdown Rendering', () => {
     expect(code.textContent).toBe('const x = 1');
   });
 
-  it('should render fenced code blocks', () => {
-    api.renderMarkdown('```javascript\nconsole.log("test");\n```');
+  it('should render and highlight javascript fenced code blocks', async () => {
+    api.renderMarkdown('```javascript\nconst x = 1;\n```');
     const pre = previewEl.querySelector('pre');
     expect(pre).toBeTruthy();
-    expect(pre.textContent).toContain('console.log("test");');
+    // Wait for the async highlight.js language chunk to load and apply
+    await new Promise(resolve => setTimeout(resolve, 50));
+    expect(pre.innerHTML).toContain('hljs-keyword');
+  });
+
+  it('should render and highlight python fenced code blocks', async () => {
+    api.renderMarkdown('```python\ndef foo():\n    return 42\n```');
+    const pre = previewEl.querySelector('pre');
+    expect(pre).toBeTruthy();
+    // Wait for the async highlight.js language chunk to load and apply
+    await new Promise(resolve => setTimeout(resolve, 50));
+    expect(pre.innerHTML).toContain('hljs-keyword');
   });
 
   it('should render blockquotes', () => {

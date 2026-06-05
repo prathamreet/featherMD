@@ -110,11 +110,9 @@
 /* Inline code */
 #preview-content code {
   font-family: var(--font-mono);
-  font-size: 0.875em;
   background: var(--code-bg, #f6f8fa);
-  padding: 2px 6px;
+  padding: 1px 3px;
   border-radius: 3px;
-  color: var(--cm-keyword, #cf222e);
 }
 
 /* Code blocks */
@@ -209,7 +207,9 @@
 #preview-content pre code .hljs-keyword,
 #preview-content pre code .hljs-selector-tag,
 #preview-content pre code .hljs-built_in,
-#preview-content pre code .hljs-name {
+#preview-content pre code .hljs-name,
+#preview-content pre code .hljs-literal,
+#preview-content pre code .hljs-tag {
   color: var(--cm-keyword);
   font-weight: 500;
 }
@@ -236,8 +236,26 @@
 #preview-content pre code .hljs-type,
 #preview-content pre code .hljs-attr,
 #preview-content pre code .hljs-variable,
-#preview-content pre code .hljs-template-variable {
+#preview-content pre code .hljs-template-variable,
+#preview-content pre code .hljs-attribute,
+#preview-content pre code .hljs-selector-id,
+#preview-content pre code .hljs-selector-class {
   color: var(--cm-heading);
   font-weight: 500;
 }
+
+#preview-content pre code .hljs-addition {
+  color: #2ea44f;
+  background-color: color-mix(in srgb, #2ea44f 15%, transparent);
+  padding: 1px 2px;
+  border-radius: 2px;
+}
+
+#preview-content pre code .hljs-deletion {
+  color: var(--danger);
+  background-color: var(--danger-soft);
+  padding: 1px 2px;
+  border-radius: 2px;
+}
+
 

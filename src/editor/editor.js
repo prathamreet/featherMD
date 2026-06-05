@@ -7,9 +7,10 @@ import { EditorState, Compartment } from '@codemirror/state';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { languages } from '@codemirror/language-data';
 import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands';
-import { syntaxHighlighting, defaultHighlightStyle, indentOnInput, bracketMatching, foldGutter, foldKeymap, indentUnit } from '@codemirror/language';
+import { syntaxHighlighting, indentOnInput, bracketMatching, foldGutter, foldKeymap, indentUnit } from '@codemirror/language';
 import { searchKeymap, highlightSelectionMatches } from '@codemirror/search';
 import { closeBrackets, closeBracketsKeymap, autocompletion } from '@codemirror/autocomplete';
+import { classHighlighter } from '@lezer/highlight';
 
 // Compartments for dynamic reconfiguration
 const lineNumbersCompartment = new Compartment();
@@ -62,7 +63,7 @@ export function initEditor(domEl, onChange, onCursorActivity) {
       drawSelection(),
       dropCursor(),
       indentOnInput(),
-      syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+      syntaxHighlighting(classHighlighter, { fallback: true }),
       bracketMatching(),
       closeBrackets(),
       autocompletion(),
@@ -104,6 +105,7 @@ export function initEditor(domEl, onChange, onCursorActivity) {
     setTabSize,
     focus: () => editorView.focus(),
     getScrollDOM: () => editorView.scrollDOM,
+    requestMeasure: () => { if (editorView) editorView.requestMeasure(); },
   };
 }
 

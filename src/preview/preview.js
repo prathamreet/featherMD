@@ -36,33 +36,79 @@ const pendingLangs = new Map();
 const failedLangs = new Set();
 
 const LANG_ALIASES = {
+  // JavaScript & TypeScript
   js: 'javascript',
+  jsx: 'javascript',
+  mjs: 'javascript',
+  cjs: 'javascript',
   ts: 'typescript',
+  tsx: 'typescript',
+  // Python & Ruby
   py: 'python',
+  python3: 'python',
   rb: 'ruby',
+  ruby: 'ruby',
+  // Shell scripts
   sh: 'bash',
+  bash: 'bash',
   shell: 'bash',
   zsh: 'bash',
+  // Markup / Styles
   yml: 'yaml',
+  yaml: 'yaml',
   md: 'markdown',
-  rs: 'rust',
-  kt: 'kotlin',
-  cs: 'csharp',
+  markdown: 'markdown',
   htm: 'xml',
   html: 'xml',
+  xhtml: 'xml',
   svg: 'xml',
+  xml: 'xml',
+  css: 'css',
+  scss: 'scss',
+  sass: 'scss',
+  less: 'less',
+  stylus: 'stylus',
+  styl: 'stylus',
+  // Systems / Compilation
+  rs: 'rust',
+  rust: 'rust',
+  go: 'go',
+  golang: 'go',
+  c: 'c',
+  cpp: 'cpp',
   'c++': 'cpp',
   'c#': 'csharp',
-  'objective-c': 'objectivec',
-  'objc': 'objectivec',
+  cs: 'csharp',
+  csharp: 'csharp',
+  java: 'java',
+  kotlin: 'kotlin',
+  kt: 'kotlin',
+  swift: 'swift',
+  dart: 'dart',
+  // Other databases & configs
+  sql: 'sql',
+  json: 'json',
+  json5: 'json',
+  toml: 'ini',
+  ini: 'ini',
+  docker: 'dockerfile',
+  dockerfile: 'dockerfile',
+  diff: 'diff',
+  patch: 'diff',
   ps1: 'powershell',
   ps: 'powershell',
+  powershell: 'powershell',
 };
 
 function resolveLangName(name) {
   if (!name) return null;
   const lower = name.toLowerCase();
   return LANG_ALIASES[lower] || lower;
+}
+
+function isLanguageLoaded(name) {
+  const resolved = resolveLangName(name);
+  return !!resolved && loadedLangs.has(resolved);
 }
 
 function loadLanguage(name) {
@@ -152,23 +198,30 @@ function renderMarkdown(mdString) {
 
   previewEl.innerHTML = clean;
 
-  // Asynchronously highlight code blocks via lazy language loading.
-  // We don't await — the preview shows unstyled code briefly, then
-  // re-paints once the per-language chunk arrives.
+  // Highlight code blocks. If a language is already loaded, apply it synchronously
+  // to avoid jank/flash of unstyled content. Otherwise, load it asynchronously.
   const codeBlocks = previewEl.querySelectorAll('pre code');
   codeBlocks.forEach((block) => {
     const cls = block.className || '';
     const match = cls.match(/language-([\w+-]+)/);
     if (!match) return;
     const lang = match[1];
-    loadLanguage(lang).then((ok) => {
-      if (!ok || !block.isConnected) return;
+    if (isLanguageLoaded(lang)) {
       try {
         hljs.highlightElement(block);
       } catch (err) {
         console.warn('Highlight.js failed to highlight block:', err);
       }
-    });
+    } else {
+      loadLanguage(lang).then((ok) => {
+        if (!ok || !previewEl.contains(block)) return;
+        try {
+          hljs.highlightElement(block);
+        } catch (err) {
+          console.warn('Highlight.js failed to highlight block:', err);
+        }
+      });
+    }
   });
 
   // Resolve relative image paths via Tauri's asset protocol

@@ -118,7 +118,7 @@
   background: var(--border);
 }
 
-/* Markdown syntax highlighting via CSS vars */
+/* Markdown and Syntax highlighting via CSS vars */
 .cm-editor .tok-heading { color: var(--cm-heading, #0550ae); font-weight: 600; }
 .cm-editor .tok-heading1 { font-size: 1.3em; }
 .cm-editor .tok-heading2 { font-size: 1.15em; }
@@ -126,13 +126,47 @@
 .cm-editor .tok-strong { font-weight: 700; }
 .cm-editor .tok-link { color: var(--link, #0969da); text-decoration: underline; }
 .cm-editor .tok-url { color: var(--link, #0969da); text-decoration: underline; opacity: 0.7; }
-.cm-editor .tok-keyword { color: var(--cm-keyword, #cf222e); }
-.cm-editor .tok-string { color: var(--cm-string, #0a3069); }
-.cm-editor .tok-comment { color: var(--cm-comment, #6e7781); font-style: italic; }
-.cm-editor .tok-meta { color: var(--cm-comment, #6e7781); }
-.cm-editor .tok-atom { color: var(--cm-keyword, #cf222e); }
-.cm-editor .tok-number { color: var(--cm-string, #0a3069); }
-.cm-editor .tok-processingInstruction { color: var(--cm-keyword, #cf222e); }
+
+/* CodeMirror 6 classHighlighter mappings to match Highlight.js (preview.css) */
+.cm-editor .tok-keyword,
+.cm-editor .tok-atom,
+.cm-editor .tok-bool,
+.cm-editor .tok-null,
+.cm-editor .tok-modifier,
+.cm-editor .tok-operatorKeyword,
+.cm-editor .tok-processingInstruction,
+.cm-editor .tok-tagName {
+  color: var(--cm-keyword, #cf222e);
+  font-weight: 500;
+}
+
+.cm-editor .tok-string,
+.cm-editor .tok-number,
+.cm-editor .tok-regexp,
+.cm-editor .tok-escape,
+.cm-editor .tok-character {
+  color: var(--cm-string, #0a3069);
+}
+
+.cm-editor .tok-comment,
+.cm-editor .tok-meta,
+.cm-editor .tok-quote {
+  color: var(--cm-comment, #6e7781);
+  font-style: italic;
+}
+
+.cm-editor .tok-name,
+.cm-editor .tok-variableName,
+.cm-editor .tok-propertyName,
+.cm-editor .tok-attributeName,
+.cm-editor .tok-className,
+.cm-editor .tok-labelName,
+.cm-editor .tok-namespace,
+.cm-editor .tok-macroName,
+.cm-editor .tok-typeName {
+  color: var(--cm-heading, #0550ae);
+  font-weight: 500;
+}
 
 /* Code span / inline code */
 .cm-editor .tok-monospace {
@@ -140,11 +174,6 @@
   background: var(--code-bg, #f6f8fa);
   border-radius: 3px;
   padding: 1px 3px;
-}
-
-/* Blockquote markers */
-.cm-editor .tok-quote {
-  color: var(--cm-comment, #6e7781);
 }
 
 /* Focus state */
