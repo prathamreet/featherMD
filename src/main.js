@@ -372,7 +372,7 @@ async function pingAnalytics() {
       method: 'POST',
       mode: 'no-cors'
     });
-  } catch (err) {
+  } catch {
     // Silent fail to ensure user experience is not affected when backend is unreachable/offline
   }
 }
