@@ -40,7 +40,7 @@
     --code-bg: #f6f8fa !important;
     --heading: #1a1a1a !important;
     --link: #0969da !important;
-    
+
     /* Syntax highlighting print variables */
     --cm-keyword: #cf222e !important;
     --cm-string: #0a3069 !important;
@@ -48,7 +48,8 @@
     --cm-heading: #0550ae !important;
   }
 
-  html, body {
+  html,
+  body {
     background: #ffffff !important;
     color: #1a1a1a !important;
     font-size: 12pt !important;
@@ -86,6 +87,41 @@
     font-size: 12pt !important;
     height: auto !important;
     overflow: visible !important;
+  }
+
+  /* Force discrete page breaks on <pb> elements */
+  #preview-content pb {
+    display: block !important;
+    page-break-before: always !important;
+    break-before: page !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+  }
+
+  #preview-content pb::after {
+    display: none !important;
+  }
+
+  /* Prevent blocks and tables from splitting across pages */
+  #preview-content table,
+  #preview-content pre,
+  #preview-content blockquote,
+  #preview-content img {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Prevent headings from being orphaned at the bottom of a page */
+  #preview-content h1,
+  #preview-content h2,
+  #preview-content h3,
+  #preview-content h4,
+  #preview-content h5,
+  #preview-content h6 {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
   }
 
   * {

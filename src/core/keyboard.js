@@ -55,6 +55,21 @@ export function initKeyboardShortcuts( editorAPI ) {
       config.syncScroll = next;
       saveConfig();
       setMenuChecked( 'toggle-sync', next );
+    } else if ( e.altKey && e.key === 'p' ) {
+      e.preventDefault();
+      const current = config.showPageBreaks !== false;
+      const next = !current;
+      config.showPageBreaks = next;
+      saveConfig();
+      setMenuChecked( 'toggle-pb-visibility', next );
+      const previewPane = document.getElementById( 'preview-pane' );
+      if ( previewPane ) {
+        if ( next ) {
+          previewPane.classList.remove( 'hide-pb-markers' );
+        } else {
+          previewPane.classList.add( 'hide-pb-markers' );
+        }
+      }
     } else if ( ctrl && ( e.key === '?' || ( shift && e.key === '/' ) ) ) {
       e.preventDefault();
       toggleShortcutsModal();

@@ -18,7 +18,12 @@ Format your text dynamically using:
 
 > **Quote blocks** are structured with a vertical margin line to highlight references, warnings, or detailed side notes.
 
-### 2. Lists & Checklists
+### 2. Page Breaks
+You can control page breaks when printing/saving to PDF by inserting the \`<pb>\` tag. This creates a clean page boundary in PDF output. You can toggle the marker visibility in the preview pane using the **View** menu or by pressing \`Alt + P\` for distraction-free reading.
+
+<pb>
+
+### 3. Lists & Checklists
 Organize your tasks or outlines:
 1. First structured item
    - Bulleted sub-point
@@ -28,7 +33,7 @@ Organize your tasks or outlines:
 - [x] Completed task item
 - [ ] Remaining task item
 
-### 3. Syntax-Highlighted Code
+### 4. Syntax-Highlighted Code
 Write block code snippet elements with language syntax mapping:
 
 \`\`\`javascript
@@ -39,7 +44,7 @@ function renderTemplate() {
 }
 \`\`\`
 
-### 4. Structured Tables
+### 5. Structured Tables
 Summarize datasets easily:
 
 | Element Type | Syntax Example | Render Output |

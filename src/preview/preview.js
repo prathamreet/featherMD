@@ -194,9 +194,22 @@ function renderMarkdown(mdString) {
   const clean = DOMPurify.sanitize(rawHtml, {
     USE_PROFILES: { html: true },
     ADD_ATTR: ['target'],
+    ADD_TAGS: ['pb'],
   });
 
   previewEl.innerHTML = clean;
+
+  // Flatten <pb> elements: the browser's HTML parser treats unknown elements as
+  // containers, nesting all subsequent sibling content inside them. Move any
+  // children back out so <pb> acts as an empty block-level page-break marker.
+  previewEl.querySelectorAll('pb').forEach((pb) => {
+    const parent = pb.parentNode;
+    if (!parent) return;
+    const ref = pb.nextSibling;
+    while (pb.firstChild) {
+      parent.insertBefore(pb.firstChild, ref);
+    }
+  });
 
   // Highlight code blocks. If a language is already loaded, apply it synchronously
   // to avoid jank/flash of unstyled content. Otherwise, load it asynchronously.

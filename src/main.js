@@ -93,6 +93,7 @@ window.addEventListener('DOMContentLoaded', () => {
 async function bootAsync() {
   try {
     await runBootSequence();
+    pingAnalytics();
   } finally {
     // ISSUE-10: Window is hidden via tauri.conf.json (`visible: false`) to avoid
     // a brief wrong-size flash on startup. Show it only after persisted size
@@ -144,6 +145,18 @@ async function runBootSequence() {
       editorAPI.setLineWrapping(wrap);
       config.wordWrap = wrap;
       saveConfig();
+    },
+    onPageBreaksToggle: (show) => {
+      config.showPageBreaks = show;
+      saveConfig();
+      const previewPane = document.getElementById('preview-pane');
+      if (previewPane) {
+        if (show) {
+          previewPane.classList.remove('hide-pb-markers');
+        } else {
+          previewPane.classList.add('hide-pb-markers');
+        }
+      }
     },
     onFontSize: (size) => {
       document.documentElement.style.setProperty('--font-size', `${size}px`);
@@ -297,10 +310,22 @@ function applyPersistedConfig() {
 
   setSyncEnabled(syncScroll);
 
+  const showPageBreaks = config.showPageBreaks !== false;
+
   // Reflect state in View menu
   setMenuChecked('toggle-line-numbers', lineNumbers);
   setMenuChecked('toggle-word-wrap', wordWrap);
   setMenuChecked('toggle-sync', syncScroll);
+  setMenuChecked('toggle-pb-visibility', showPageBreaks);
+
+  const previewPane = document.getElementById('preview-pane');
+  if (previewPane) {
+    if (showPageBreaks) {
+      previewPane.classList.remove('hide-pb-markers');
+    } else {
+      previewPane.classList.add('hide-pb-markers');
+    }
+  }
 
   // Reflect state in Style menu
   setActiveTheme(config.theme || 'snow');
@@ -328,4 +353,26 @@ function applyFontSettings() {
     document.documentElement.style.setProperty('--font-mono', config.fontFamily);
   }
   updateZoomBadge(config.fontSize || 14);
+}
+
+async function pingAnalytics() {
+  if (navigator.onLine === false) return; // Silent exit if completely offline
+
+  try {
+    const versionEl = document.querySelector('#header-icon .version-text');
+    const version = versionEl ? versionEl.textContent.trim().replace(/^v/, '') : '0.0.0';
+
+    const platform = encodeURIComponent(navigator.platform || 'unknown');
+    const language = encodeURIComponent(navigator.language || 'unknown');
+    const resolution = encodeURIComponent(`${window.screen.width}x${window.screen.height}`);
+
+    const ANALYTICS_URL = 'https://feather-md-analytics-production.up.railway.app';
+
+    await fetch(`${ANALYTICS_URL}/ping?version=${version}&platform=${platform}&language=${language}&resolution=${resolution}`, {
+      method: 'POST',
+      mode: 'no-cors'
+    });
+  } catch {
+    // Silent fail to ensure user experience is not affected when backend is unreachable/offline
+  }
 }
