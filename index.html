@@ -97,6 +97,15 @@
             <span class="menu-item-label">Word Wrap</span>
             <span class="menu-item-shortcut">Alt+Z</span>
           </button>
+          <button class="menu-item checkable" data-action="toggle-pb-visibility" data-checked="true">
+            <span class="menu-check">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="2,6 5,9 10,3" />
+              </svg>
+            </span>
+            <span class="menu-item-label">Show Page Breaks</span>
+            <span class="menu-item-shortcut">Alt+P</span>
+          </button>
         </div>
       </div>
 
@@ -354,6 +363,10 @@
               <td>Toggle sync scroll</td>
             </tr>
             <tr>
+              <td><kbd>Alt</kbd>+<kbd>P</kbd></td>
+              <td>Toggle page breaks</td>
+            </tr>
+            <tr>
               <td><kbd>Ctrl</kbd>+<kbd>?</kbd></td>
               <td>This dialog</td>
             </tr>
@@ -385,9 +398,13 @@
   <div id="status-bar">
     <span id="status-filepath" title="">Untitled</span>
     <div id="status-right">
-      <span id="status-selected" style="display: none;">0 selected</span>
+      <span id="status-selected" style="display: none;"></span>
       <span class="status-separator" id="status-selected-separator" style="display: none;">|</span>
-      <span id="status-wordcount">0 words</span>
+      <span id="status-words">0 words</span>
+      <span class="status-separator">|</span>
+      <span id="status-chars">0 chars</span>
+      <span class="status-separator">|</span>
+      <span id="status-paragraphs">0 paragraphs</span>
       <span class="status-separator">|</span>
       <span id="status-cursor">Ln 1, Col 1</span>
       <span class="status-separator">|</span>
