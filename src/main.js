@@ -146,6 +146,18 @@ async function runBootSequence() {
       config.wordWrap = wrap;
       saveConfig();
     },
+    onPageBreaksToggle: (show) => {
+      config.showPageBreaks = show;
+      saveConfig();
+      const previewPane = document.getElementById('preview-pane');
+      if (previewPane) {
+        if (show) {
+          previewPane.classList.remove('hide-pb-markers');
+        } else {
+          previewPane.classList.add('hide-pb-markers');
+        }
+      }
+    },
     onFontSize: (size) => {
       document.documentElement.style.setProperty('--font-size', `${size}px`);
       config.fontSize = size;
@@ -298,10 +310,22 @@ function applyPersistedConfig() {
 
   setSyncEnabled(syncScroll);
 
+  const showPageBreaks = config.showPageBreaks !== false;
+
   // Reflect state in View menu
   setMenuChecked('toggle-line-numbers', lineNumbers);
   setMenuChecked('toggle-word-wrap', wordWrap);
   setMenuChecked('toggle-sync', syncScroll);
+  setMenuChecked('toggle-pb-visibility', showPageBreaks);
+
+  const previewPane = document.getElementById('preview-pane');
+  if (previewPane) {
+    if (showPageBreaks) {
+      previewPane.classList.remove('hide-pb-markers');
+    } else {
+      previewPane.classList.add('hide-pb-markers');
+    }
+  }
 
   // Reflect state in Style menu
   setActiveTheme(config.theme || 'snow');
