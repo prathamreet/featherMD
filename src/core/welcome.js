@@ -19,7 +19,7 @@ Format your text dynamically using:
 > **Quote blocks** are structured with a vertical margin line to highlight references, warnings, or detailed side notes.
 
 ### 2. Page Breaks
-You can control page breaks when printing/saving to PDF by inserting the `<pb>` tag. This creates a clean page boundary in PDF output. You can toggle the marker visibility in the preview pane using the **View** menu or by pressing \`Alt + P\` for distraction-free reading.
+You can control page breaks when printing/saving to PDF by inserting the \`<pb>\` tag. This creates a clean page boundary in PDF output. You can toggle the marker visibility in the preview pane using the **View** menu or by pressing \`Alt + P\` for distraction-free reading.
 
 <pb>
 
