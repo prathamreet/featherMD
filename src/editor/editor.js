@@ -105,6 +105,7 @@ export function initEditor(domEl, onChange, onCursorActivity) {
     setTabSize,
     focus: () => editorView.focus(),
     getScrollDOM: () => editorView.scrollDOM,
+    requestMeasure: () => { if (editorView) editorView.requestMeasure(); },
   };
 }
 

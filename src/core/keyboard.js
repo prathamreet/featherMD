@@ -77,6 +77,7 @@ export function initKeyboardShortcuts( editorAPI ) {
       config.fontSize = newSize;
       saveConfig();
       updateZoomBadge( newSize );
+      _editorAPI.requestMeasure();
     } );
   }
 
@@ -92,6 +93,7 @@ export function initKeyboardShortcuts( editorAPI ) {
           config.fontSize = newSize;
           saveConfig();
           updateZoomBadge( newSize );
+          _editorAPI.requestMeasure();
         }
       } else if ( e.deltaY > 0 ) {
         // Scroll Down: Decrease font size
@@ -101,6 +103,7 @@ export function initKeyboardShortcuts( editorAPI ) {
           config.fontSize = newSize;
           saveConfig();
           updateZoomBadge( newSize );
+          _editorAPI.requestMeasure();
         }
       }
     }

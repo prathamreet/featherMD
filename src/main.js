@@ -149,11 +149,13 @@ async function runBootSequence() {
       document.documentElement.style.setProperty('--font-size', `${size}px`);
       config.fontSize = size;
       saveConfig();
+      editorAPI.requestMeasure();
     },
     onFontFamily: (font) => {
       document.documentElement.style.setProperty('--font-mono', font);
       config.fontFamily = font;
       saveConfig();
+      editorAPI.requestMeasure();
     },
     onTabSize: (size) => {
       editorAPI.setTabSize(size);
