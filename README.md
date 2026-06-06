@@ -36,7 +36,7 @@ You probably already have a Markdown workflow, and it probably costs you 300 MB 
 Feather MD is the small, fast thing that lives between those edges.
 
 * **Double-click a `.md` file and it opens.** Real OS file association. No "open in VS Code" workaround.
-* **Side-by-side preview with bidirectional scroll sync, out of the box.** Toggle it off with `Alt + S` if you want.
+* **Side-by-side preview with bidirectional scroll sync, out of the box.** Toggle it off with `Alt + X` if you want.
 * **A dedicated window, not another browser tab.** No distraction, no lost cursor.
 * **~5 MB Windows installer, around 50 MB resident.** Editing text should not cost a gigabyte of memory.
 * **Tauri, not Electron.** Uses your OS WebView, ships no browser runtime, signs every update with Ed25519.
@@ -97,7 +97,7 @@ Release bundles land in:
 | **Unified Header** | A single 40 px bar combines title, menus, font-size slider, and corner-flush Win11-style window controls. Active document title is absolutely centered with transparent pointer events. |
 | **Hover Dropdown Menus** | File / View / Style open on hover with a 180 ms grace timeout and diagonal pointer bridge to prevent accidental dismissals. Theme, Font, and Tab pickers stay open so you can preview multiple options without re-opening. |
 | **Native dual-pane** | Editor on the left, live preview on the right. Resizable from 20% to 80%. Double-click the divider to reset to center. |
-| **Bidirectional scroll sync** | Scroll either pane, the other follows. Ratio-based, no jitter on long documents. Toggle with `Alt + S`. |
+| **Bidirectional scroll sync** | Scroll either pane, the other follows. Ratio-based, no jitter on long documents. Toggle with `Alt + X`. |
 | **CodeMirror 6 editor** | Markdown syntax styling, code folding, bracket and quote auto-pair, active-line highlight, find and replace. |
 | **Highlight.js code blocks** | On-demand language loading for fenced blocks. Hundreds of languages, no startup penalty. |
 | **10 built-in themes** | Five light, five dark. Switches in under 1 ms via a single `data-theme` attribute. All consolidated into one stylesheet, zero JS overhead. |
@@ -160,13 +160,23 @@ If you are managing thousands of linked notes with backlinks and graphs, you wan
 | `Ctrl + O` | Open file |
 | `Ctrl + S` | Save |
 | `Ctrl + Shift + S` | Save as |
+| `Ctrl + R` | Recent files |
 | `Ctrl + P` | Print document |
 | `Ctrl + F` | Find |
 | `Ctrl + H` | Find and replace |
-| `Ctrl + L` | Toggle line numbers |
 | `Alt + Z` | Toggle word wrap |
-| `Alt + S` | Toggle scroll sync |
+| `Alt + X` | Toggle scroll sync |
+| `Alt + C` | Toggle line numbers |
+| `Alt + P` | Toggle page breaks |
+| `Alt + T` then `↑` / `↓` | Cycle theme forward / back |
+| `Alt + F` then `↑` / `↓` | Cycle font forward / back |
+| `Alt + D` then `↑` / `↓` | Cycle tab size forward / back |
+| `F11` | Fullscreen preview (`Esc` exits) |
+| `Ctrl + Q` | Quit |
+| `Ctrl + Shift + R` | Reload |
 | `Ctrl + ?` | Show all shortcuts |
+
+The theme/font/tab-size chords are a leader sequence: tap `Alt + T` (or `F` / `D`), then `↑` / `↓` to cycle within a short window.
 
 Inside the unsaved-changes dialog: `S` save, `N` discard, `C` / `Esc` cancel.
 
