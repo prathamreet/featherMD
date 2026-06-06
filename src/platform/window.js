@@ -57,6 +57,56 @@ export async function ensureWindowVisible() {
   }
 }
 
+/**
+ * Read the current maximized state. Returns false in browser dev mode or on
+ * error so callers can treat it as "not maximized".
+ */
+export async function getWindowMaximized() {
+  if ( !isTauri() ) return false;
+  try {
+    const { getCurrentWindow } = await import( '@tauri-apps/api/window' );
+    return await getCurrentWindow().isMaximized();
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Maximize / unmaximize the window. Used by fullscreen preview mode (F11):
+ * maximizing fills the work area (taskbar stays visible) and reliably resizes
+ * the WebView, unlike OS borderless fullscreen which leaves a native-background
+ * gap where the WebView lags the window. No-op in browser dev mode.
+ */
+export async function setWindowMaximized( on ) {
+  if ( !isTauri() ) return;
+  try {
+    const { getCurrentWindow } = await import( '@tauri-apps/api/window' );
+    const appWindow = getCurrentWindow();
+    if ( on ) {
+      await appWindow.maximize();
+    } else {
+      await appWindow.unmaximize();
+    }
+  } catch ( err ) {
+    console.warn( 'Failed to toggle window maximize:', err );
+  }
+}
+
+/**
+ * Request a window close (Ctrl+Q). Routes through Tauri's close, which fires
+ * the onCloseRequested handler wired in main.js so the unsaved-changes guard
+ * still runs. No-op in browser dev mode.
+ */
+export async function closeWindow() {
+  if ( !isTauri() ) return;
+  try {
+    const { getCurrentWindow } = await import( '@tauri-apps/api/window' );
+    await getCurrentWindow().close();
+  } catch ( err ) {
+    console.warn( 'Failed to close window:', err );
+  }
+}
+
 export async function initWindowSize() {
   if ( !isTauri() ) return;
 
