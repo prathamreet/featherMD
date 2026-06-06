@@ -5,7 +5,7 @@
 //         theme validation, menu active state sync, all 10 themes enumeration
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { initThemes, setTheme, applyTheme } from '../../src/ui/themes.js';
+import { initThemes, setTheme, applyTheme, cycleTheme } from '../../src/ui/themes.js';
 
 const THEMES = ['snow', 'solarized-light', 'github-light', 'sepia', 'gruvbox-light', 'onyx', 'solarized-dark', 'github-dark', 'monokai', 'gruvbox-dark'];
 
@@ -179,6 +179,40 @@ describe('Themes -- Menu Active State Sync', () => {
     setTheme('gruvbox-dark');
     expect(document.querySelector('.theme-item[data-theme="sepia"]').getAttribute('data-checked')).toBe('false');
     expect(document.querySelector('.theme-item[data-theme="gruvbox-dark"]').getAttribute('data-checked')).toBe('true');
+  });
+});
+
+// -- Theme Cycling (Alt+T leader chord) --
+
+describe('Themes -- Cycling', () => {
+  beforeEach(() => setupThemeDOM(false));
+
+  it('should advance to the next theme when cycling forward', () => {
+    initThemes(null); // snow (index 0)
+    const next = cycleTheme(1);
+    expect(next).toBe('solarized-light');
+    expect(document.documentElement.getAttribute('data-theme')).toBe('solarized-light');
+  });
+
+  it('should wrap to the last theme when cycling backward from the first', () => {
+    initThemes(null); // snow (index 0)
+    const prev = cycleTheme(-1);
+    expect(prev).toBe('gruvbox-dark');
+    expect(document.documentElement.getAttribute('data-theme')).toBe('gruvbox-dark');
+  });
+
+  it('should wrap to the first theme when cycling forward from the last', () => {
+    initThemes({ theme: 'gruvbox-dark' });
+    const next = cycleTheme(1);
+    expect(next).toBe('snow');
+  });
+
+  it('should persist the cycled theme via the change callback', () => {
+    const spy = vi.fn();
+    initThemes(null, spy);
+    spy.mockClear();
+    cycleTheme(1);
+    expect(spy).toHaveBeenCalledWith('solarized-light');
   });
 });
 
