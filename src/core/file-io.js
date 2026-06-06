@@ -5,7 +5,7 @@ import { config, saveConfig } from './config.js';
 import { isTauri } from './state.js';
 import { showUnsavedDialog } from '../ui/dialogs.js';
 import { updateTitleBar, updateStatusBar } from '../ui/status-bar.js';
-import { updateRecentFilesMenu } from '../ui/toolbar.js';
+import { updateRecentFilesList } from '../ui/toolbar.js';
 
 let _editorAPI = null;
 
@@ -182,7 +182,7 @@ function addToRecentFiles( path ) {
   config.recentFiles.unshift( path );
   if ( config.recentFiles.length > 10 ) config.recentFiles.pop();
   saveConfig();
-  updateRecentFilesMenu( config.recentFiles, onRecentFileSelect );
+  updateRecentFilesList( config.recentFiles, onRecentFileSelect );
 }
 
 /**

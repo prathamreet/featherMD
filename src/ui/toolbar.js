@@ -83,6 +83,7 @@ export function initToolbar( handlers ) {
   wireAction( 'open-file', () => { handlers.onOpen(); closeAllMenus(); } );
   wireAction( 'save-file', () => { handlers.onSave(); closeAllMenus(); } );
   wireAction( 'save-as', () => { handlers.onSaveAs(); closeAllMenus(); } );
+  wireAction( 'recent-files', () => { handlers.onRecentFiles(); closeAllMenus(); } );
   wireAction( 'print', () => { handlers.onPrint(); closeAllMenus(); } );
 
   // View menu toggles
@@ -200,10 +201,11 @@ export function setActiveTabSize( size ) {
 
 
 /**
- * Update recent files in the submenu
+ * Render the recent-files list into the Recent Files modal. Selecting an item
+ * closes the modal and invokes the open-file callback.
  */
-export function updateRecentFilesMenu( recentFiles, onFileSelect ) {
-  const container = document.getElementById( 'recent-files-submenu' );
+export function updateRecentFilesList( recentFiles, onFileSelect ) {
+  const container = document.getElementById( 'recent-files-list' );
   if ( !container ) return;
 
   if ( !recentFiles || recentFiles.length === 0 ) {
@@ -217,15 +219,16 @@ export function updateRecentFilesMenu( recentFiles, onFileSelect ) {
     const name = parts.pop() || 'Untitled';
 
     const btn = document.createElement( 'button' );
-    btn.className = 'recent-submenu-item';
+    btn.className = 'recent-file-item';
     btn.innerHTML = `
-      <span class="recent-submenu-name" title="${ escapeHtml( name ) }">${ escapeHtml( name ) }</span>
-      <span class="recent-submenu-path" title="${ escapeHtml( filePath ) }">${ escapeHtml( filePath ) }</span>
+      <span class="recent-file-name" title="${ escapeHtml( name ) }">${ escapeHtml( name ) }</span>
+      <span class="recent-file-path" title="${ escapeHtml( filePath ) }">${ escapeHtml( filePath ) }</span>
     `;
     btn.addEventListener( 'click', ( e ) => {
       e.stopPropagation();
+      const modal = document.getElementById( 'recent-files-modal' );
+      if ( modal ) modal.hidden = true;
       if ( onFileSelect ) onFileSelect( filePath );
-      closeAllMenus();
     } );
     container.appendChild( btn );
   } );

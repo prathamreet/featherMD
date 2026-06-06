@@ -92,3 +92,29 @@ export function initShortcutsModal() {
     if ( e.target === modal ) modal.hidden = true;
   } );
 }
+
+export function openRecentFilesModal() {
+  const modal = document.getElementById( 'recent-files-modal' );
+  if ( modal ) modal.hidden = false;
+}
+
+export function closeRecentFilesModal() {
+  const modal = document.getElementById( 'recent-files-modal' );
+  if ( modal ) modal.hidden = true;
+}
+
+export function initRecentFilesModal() {
+  const modal = document.getElementById( 'recent-files-modal' );
+  const closeBtn = document.getElementById( 'btn-close-recent' );
+  closeBtn?.addEventListener( 'click', closeRecentFilesModal );
+  modal?.addEventListener( 'click', ( e ) => {
+    if ( e.target === modal ) closeRecentFilesModal();
+  } );
+  // Keyboard-first: Escape dismisses the modal while it is open.
+  document.addEventListener( 'keydown', ( e ) => {
+    if ( e.key === 'Escape' && modal && !modal.hidden ) {
+      e.preventDefault();
+      closeRecentFilesModal();
+    }
+  } );
+}

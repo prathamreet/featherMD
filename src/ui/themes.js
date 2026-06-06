@@ -78,3 +78,16 @@ export function setTheme( name ) {
   userPickedTheme = true;
   applyTheme( name );
 }
+
+/**
+ * Cycle to the next/previous theme in THEMES order and apply it.
+ * @param {number} direction - +1 forward, -1 backward
+ * @returns {string} the newly applied theme name
+ */
+export function cycleTheme( direction ) {
+  const idx = THEMES.indexOf( currentTheme );
+  const start = idx === -1 ? 0 : idx;
+  const next = THEMES[ ( start + direction + THEMES.length ) % THEMES.length ];
+  setTheme( next );
+  return next;
+}

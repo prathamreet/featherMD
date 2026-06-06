@@ -33,9 +33,9 @@ import {
   setActiveTheme,
   setActiveFontFamily,
   setActiveTabSize,
-  updateRecentFilesMenu,
+  updateRecentFilesList,
 } from './ui/toolbar.js';
-import { initShortcutsModal, showUnsavedDialog } from './ui/dialogs.js';
+import { initShortcutsModal, initRecentFilesModal, openRecentFilesModal, showUnsavedDialog } from './ui/dialogs.js';
 import { initStatusBar, updateTitleBar, updateStatusBar, updateCursorPosition } from './ui/status-bar.js';
 import { initDividerDrag } from './ui/divider.js';
 
@@ -67,6 +67,7 @@ window.addEventListener('DOMContentLoaded', () => {
   initDividerDrag();
   initKeyboardShortcuts(editorAPI);
   initShortcutsModal();
+  initRecentFilesModal();
 
   const headerIcon = document.getElementById('header-icon');
   if (headerIcon) {
@@ -118,13 +119,14 @@ async function runBootSequence() {
     saveConfig();
   });
 
-  updateRecentFilesMenu(config.recentFiles || [], onRecentFileSelect);
+  updateRecentFilesList(config.recentFiles || [], onRecentFileSelect);
 
   initToolbar({
     onOpen: openFile,
     onSave: saveFile,
     onSaveAs: saveFileAs,
     onNew: newFile,
+    onRecentFiles: openRecentFilesModal,
     onPrint: () => window.print(),
     onSyncToggle: (enabled) => {
       setSyncEnabled(enabled);
