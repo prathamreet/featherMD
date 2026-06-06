@@ -18,6 +18,10 @@ function render(markdown) {
 }
 \`\`\`
 
+## Math and diagrams
+
+Type \`$E = mc^2$\` for inline math, or wrap a block in \`$$ … $$\` for a centred equation. Open a \`mermaid\` code fence to turn a flowchart description into a rendered diagram. Each engine loads only the first time you use it, so startup stays instant.
+
 ## Make it yours
 
 Cycle settings without touching the mouse: tap a leader key, then \`↑\` / \`↓\`.
