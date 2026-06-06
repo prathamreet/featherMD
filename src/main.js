@@ -117,6 +117,7 @@ async function runBootSequence() {
   initThemes(config, (themeName) => {
     config.theme = themeName;
     saveConfig();
+    previewAPI.refreshForThemeChange();
   });
 
   updateRecentFilesList(config.recentFiles || [], onRecentFileSelect);
