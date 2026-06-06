@@ -11,7 +11,7 @@ import {
   setActiveTheme,
   setActiveFontFamily,
   setActiveTabSize,
-  updateRecentFilesMenu,
+  updateRecentFilesList,
 } from '../../src/ui/toolbar.js';
 
 /**
@@ -36,14 +36,9 @@ function setupMenuBarDOM() {
             <button class="menu-item" data-action="save-as">
               <span class="menu-item-label">Save As</span>
             </button>
-            <div class="menu-submenu">
-              <button class="menu-item has-submenu" data-action="recent-files">
-                <span class="menu-item-label">Recent Files</span>
-              </button>
-              <div class="submenu-panel" id="recent-files-submenu">
-                <div class="menu-item-empty">No recent files</div>
-              </div>
-            </div>
+            <button class="menu-item" data-action="recent-files">
+              <span class="menu-item-label">Recent Files</span>
+            </button>
             <button class="menu-item" data-action="print">
               <span class="menu-item-label">Print</span>
             </button>
@@ -98,6 +93,11 @@ function setupMenuBarDOM() {
 
       </div>
     </div>
+    <div id="recent-files-modal" class="modal-overlay" hidden>
+      <div id="recent-files-list">
+        <div class="menu-item-empty">No recent files</div>
+      </div>
+    </div>
   `;
 }
 
@@ -107,6 +107,7 @@ function createHandlers() {
     onSave: vi.fn(),
     onSaveAs: vi.fn(),
     onNew: vi.fn(),
+    onRecentFiles: vi.fn(),
     onPrint: vi.fn(),
     onSyncToggle: vi.fn(),
     onThemeSelect: vi.fn(),
@@ -152,6 +153,11 @@ describe('Toolbar -- File Menu Actions', () => {
   it('should fire onPrint when Print action is clicked', () => {
     document.querySelector('[data-action="print"]').click();
     expect(handlers.onPrint).toHaveBeenCalledOnce();
+  });
+
+  it('should fire onRecentFiles when Recent Files action is clicked', () => {
+    document.querySelector('[data-action="recent-files"]').click();
+    expect(handlers.onRecentFiles).toHaveBeenCalledOnce();
   });
 });
 
@@ -299,30 +305,38 @@ describe('Toolbar -- setActiveTheme Utility', () => {
 
 
 
-// -- updateRecentFilesMenu Utility --
+// -- updateRecentFilesList Utility --
 
-describe('Toolbar -- updateRecentFilesMenu', () => {
+describe('Toolbar -- updateRecentFilesList', () => {
   beforeEach(() => setupMenuBarDOM());
 
   it('should show empty message when no recent files', () => {
-    updateRecentFilesMenu([], vi.fn());
-    const container = document.getElementById('recent-files-submenu');
+    updateRecentFilesList([], vi.fn());
+    const container = document.getElementById('recent-files-list');
     expect(container.querySelector('.menu-item-empty')).toBeTruthy();
   });
 
   it('should render recent file items', () => {
-    updateRecentFilesMenu(['/path/to/file.md', '/path/to/other.md'], vi.fn());
-    const container = document.getElementById('recent-files-submenu');
-    const items = container.querySelectorAll('.recent-submenu-item');
+    updateRecentFilesList(['/path/to/file.md', '/path/to/other.md'], vi.fn());
+    const container = document.getElementById('recent-files-list');
+    const items = container.querySelectorAll('.recent-file-item');
     expect(items.length).toBe(2);
   });
 
   it('should fire callback when a recent file is clicked', () => {
     const spy = vi.fn();
-    updateRecentFilesMenu(['/path/to/file.md'], spy);
-    const container = document.getElementById('recent-files-submenu');
-    container.querySelector('.recent-submenu-item').click();
+    updateRecentFilesList(['/path/to/file.md'], spy);
+    const container = document.getElementById('recent-files-list');
+    container.querySelector('.recent-file-item').click();
     expect(spy).toHaveBeenCalledWith('/path/to/file.md');
+  });
+
+  it('should close the recent files modal when an item is selected', () => {
+    const modal = document.getElementById('recent-files-modal');
+    modal.hidden = false;
+    updateRecentFilesList(['/path/to/file.md'], vi.fn());
+    document.getElementById('recent-files-list').querySelector('.recent-file-item').click();
+    expect(modal.hidden).toBe(true);
   });
 });
 

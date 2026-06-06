@@ -54,8 +54,8 @@ describe('HTML -- Required Element IDs', () => {
     // Menus
     'file-menu', 'view-menu', 'style-menu',
 
-    // Recent files submenu
-    'recent-files-submenu',
+    // Recent files modal
+    'recent-files-modal', 'recent-files-list', 'btn-close-recent',
     // Split container
     'split-container', 'editor-pane', 'divider', 'preview-pane', 'preview-content',
     // Shortcuts modal
@@ -83,6 +83,7 @@ describe('HTML -- Accessibility (ARIA labels)', () => {
     { id: 'btn-maximize', label: 'Maximize' },
     { id: 'btn-close', label: 'Close' },
     { id: 'btn-close-shortcuts', label: 'Close shortcuts' },
+    { id: 'btn-close-recent', label: 'Close recent files' },
   ];
 
   labelledButtons.forEach(({ id, label }) => {
@@ -155,6 +156,10 @@ describe('HTML -- Modals Initial State', () => {
 
   it('should start with unsaved dialog hidden', () => {
     expect(doc.getElementById('unsaved-dialog').hasAttribute('hidden')).toBe(true);
+  });
+
+  it('should start with recent files modal hidden', () => {
+    expect(doc.getElementById('recent-files-modal').hasAttribute('hidden')).toBe(true);
   });
 });
 

@@ -1,59 +1,51 @@
-export const WELCOME_TEXT = `# Welcome to the Markdown Editor
+export const WELCOME_TEXT = `# Welcome to Feather MD
 
-This editor is a lightweight Markdown writer designed for clean formatting. You can write using standard Markdown syntax, and it will render real-time HTML formatting on the fly.
+A fast, native dual-pane editor: you write on the left, the live preview renders on the right with scroll sync. You already know Markdown — here is what is specific to this app.
 
----
+## Page breaks
 
-## Getting Started
-
-Use this default sandbox document to experiment with Markdown formatting. Here is a demonstration of the major supported elements:
-
-### 1. Typography & Inline Styles
-Format your text dynamically using:
-* **Bold text** for emphasis
-* *Italicized text* for styling
-* ~~Strikethrough~~ to cross out items
-* \`Inline code blocks\` for technical variables
-* [Hyperlinks](https://en.wikipedia.org/wiki/Markdown) pointing to web addresses
-
-> **Quote blocks** are structured with a vertical margin line to highlight references, warnings, or detailed side notes.
-
-### 2. Page Breaks
-You can control page breaks when printing/saving to PDF by inserting the \`<pb>\` tag. This creates a clean page boundary in PDF output. You can toggle the marker visibility in the preview pane using the **View** menu or by pressing \`Alt + P\` for distraction-free reading.
+Drop a \`<pb>\` tag anywhere to force a clean page boundary when printing or exporting to PDF. Toggle the marker's visibility with \`Alt + P\` for distraction-free reading.
 
 <pb>
 
-### 3. Lists & Checklists
-Organize your tasks or outlines:
-1. First structured item
-   - Bulleted sub-point
-   - Secondary sub-point
-2. Second structured item
+## Syntax highlighting
 
-- [x] Completed task item
-- [ ] Remaining task item
+Fenced code blocks are highlighted on demand — hundreds of languages, each loaded only the first time you use it, so startup stays instant.
 
-### 4. Syntax-Highlighted Code
-Write block code snippet elements with language syntax mapping:
-
-\`\`\`javascript
-// Live preview rendering loop
-function renderTemplate() {
-  const content = "Hello world!";
-  console.log(content);
+\`\`\`js
+function render(markdown) {
+  return preview(markdown); // updates as you type
 }
 \`\`\`
 
-### 5. Structured Tables
-Summarize datasets easily:
+## Make it yours
 
-| Element Type | Syntax Example | Render Output |
-| :--- | :--- | :--- |
-| Headers | \`# Header 1\` | Styled Title Heading |
-| Accent | \`*Text*\` | Slanted Typography |
-| Highlight | \`\`Code\`\` | Monospaced Text |
+Cycle settings without touching the mouse: tap a leader key, then \`↑\` / \`↓\`.
+
+| Shortcut | Action |
+| :--- | :--- |
+| \`Alt + T\` then ↑ / ↓ | Cycle theme (5 light, 5 dark) |
+| \`Alt + F\` then ↑ / ↓ | Cycle font |
+| \`Alt + D\` then ↑ / ↓ | Cycle tab size |
+| \`Ctrl\` + scroll | Zoom text in / out |
+
+## Get around
+
+| Shortcut | Action |
+| :--- | :--- |
+| \`Ctrl + O\` / \`Ctrl + R\` | Open / Recent files |
+| \`Ctrl + S\` / \`Ctrl + Shift + S\` | Save / Save As |
+| \`Alt + Z\` · \`Alt + X\` · \`Alt + C\` | Word wrap · Sync scroll · Line numbers |
+| \`F11\` | Fullscreen preview (\`Esc\` exits) |
+| \`Ctrl + P\` | Print / export to PDF |
+| \`Ctrl + ?\` | Every shortcut |
+
+## Good to know
+
+- Edit the open file in another program and Feather MD reloads it for you — it asks first if you have unsaved changes.
+- Everything stays local. No accounts, no telemetry, no background services.
 
 ---
 
-*Press \`Ctrl + ?\` at any time to view all available system keyboard shortcuts.*
+*This is just a scratch pad — clear it and start writing.*
 `;

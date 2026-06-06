@@ -314,12 +314,20 @@ html, body {
   transform: translateX(2px);
 }
 
-/* Recent file items in submenu */
-.recent-submenu-item {
+/* Recent file items (Recent Files modal) */
+#recent-files-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.recent-file-item {
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding: 6px 10px;
+  padding: 8px 10px;
   background: transparent;
   border: none;
   color: var(--text);
@@ -332,18 +340,18 @@ html, body {
   gap: 2px;
 }
 
-.recent-submenu-item:hover {
+.recent-file-item:hover {
   background: color-mix(in srgb, var(--text) 8%, transparent);
 }
 
-.recent-submenu-name {
+.recent-file-name {
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.recent-submenu-path {
+.recent-file-path {
   font-size: 10px;
   color: var(--text-muted);
   white-space: nowrap;
@@ -865,6 +873,55 @@ body.resizing {
 
 .update-btn-secondary:hover {
   background: rgba(255, 255, 255, 0.3);
+}
+
+/* ---- Fullscreen Preview Mode (F11) ----
+   Distraction-free, preview-only surface: hide all chrome and let the preview
+   pane fill the window. Toggled by adding `fullscreen-preview` to <body>. */
+body.fullscreen-preview #header-bar,
+body.fullscreen-preview #editor-pane,
+body.fullscreen-preview #divider,
+body.fullscreen-preview #status-bar {
+  display: none !important;
+}
+
+/* Pin to the real viewport (not 100vh, which goes stale when the window grows
+   to OS fullscreen and leaves a native-background gap at the bottom) and paint
+   the theme background so no unpainted region can show through. */
+body.fullscreen-preview #split-container {
+  position: fixed;
+  inset: 0;
+  height: auto;
+  background: var(--bg);
+}
+
+body.fullscreen-preview #preview-pane {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+#fullscreen-hint {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: color-mix(in srgb, var(--text) 85%, transparent);
+  color: var(--bg);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  z-index: 400;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  transition: opacity 300ms ease;
+}
+
+#fullscreen-hint.show {
+  opacity: 1;
 }
 
 /* ========================================

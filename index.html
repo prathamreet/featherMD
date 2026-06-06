@@ -47,17 +47,10 @@
             <span class="menu-item-shortcut">Ctrl+Shift+S</span>
           </button>
           <div class="menu-separator"></div>
-          <div class="menu-submenu">
-            <button class="menu-item has-submenu" data-action="recent-files">
-              <span class="menu-item-label">Recent Files</span>
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5">
-                <polyline points="3,2 7,5 3,8" />
-              </svg>
-            </button>
-            <div class="submenu-panel" id="recent-files-submenu">
-              <div class="menu-item-empty">No recent files</div>
-            </div>
-          </div>
+          <button class="menu-item" data-action="recent-files">
+            <span class="menu-item-label">Recent Files</span>
+            <span class="menu-item-shortcut">Ctrl+R</span>
+          </button>
           <div class="menu-separator"></div>
           <button class="menu-item" data-action="print">
             <span class="menu-item-label">Print</span>
@@ -70,24 +63,6 @@
       <div class="menu-dropdown">
         <button class="menu-btn" data-menu="view-menu">View</button>
         <div id="view-menu" class="menu-panel" hidden>
-          <button class="menu-item checkable" data-action="toggle-sync" data-checked="true">
-            <span class="menu-check">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="2,6 5,9 10,3" />
-              </svg>
-            </span>
-            <span class="menu-item-label">Sync Scroll</span>
-            <span class="menu-item-shortcut">Alt+S</span>
-          </button>
-          <button class="menu-item checkable" data-action="toggle-line-numbers" data-checked="true">
-            <span class="menu-check">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="2,6 5,9 10,3" />
-              </svg>
-            </span>
-            <span class="menu-item-label">Line Numbers</span>
-            <span class="menu-item-shortcut">Ctrl+L</span>
-          </button>
           <button class="menu-item checkable" data-action="toggle-word-wrap" data-checked="true">
             <span class="menu-check">
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
@@ -96,6 +71,24 @@
             </span>
             <span class="menu-item-label">Word Wrap</span>
             <span class="menu-item-shortcut">Alt+Z</span>
+          </button>
+          <button class="menu-item checkable" data-action="toggle-sync" data-checked="true">
+            <span class="menu-check">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="2,6 5,9 10,3" />
+              </svg>
+            </span>
+            <span class="menu-item-label">Sync Scroll</span>
+            <span class="menu-item-shortcut">Alt+X</span>
+          </button>
+          <button class="menu-item checkable" data-action="toggle-line-numbers" data-checked="true">
+            <span class="menu-check">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="2,6 5,9 10,3" />
+              </svg>
+            </span>
+            <span class="menu-item-label">Line Numbers</span>
+            <span class="menu-item-shortcut">Alt+C</span>
           </button>
           <button class="menu-item checkable" data-action="toggle-pb-visibility" data-checked="true">
             <span class="menu-check">
@@ -339,6 +332,10 @@
               <td>Save As</td>
             </tr>
             <tr>
+              <td><kbd>Ctrl</kbd>+<kbd>R</kbd></td>
+              <td>Recent files</td>
+            </tr>
+            <tr>
               <td><kbd>Ctrl</kbd>+<kbd>P</kbd></td>
               <td>Print</td>
             </tr>
@@ -351,20 +348,44 @@
               <td>Find and Replace</td>
             </tr>
             <tr>
-              <td><kbd>Ctrl</kbd>+<kbd>L</kbd></td>
-              <td>Toggle line numbers</td>
-            </tr>
-            <tr>
               <td><kbd>Alt</kbd>+<kbd>Z</kbd></td>
               <td>Toggle word wrap</td>
             </tr>
             <tr>
-              <td><kbd>Alt</kbd>+<kbd>S</kbd></td>
+              <td><kbd>Alt</kbd>+<kbd>X</kbd></td>
               <td>Toggle sync scroll</td>
+            </tr>
+            <tr>
+              <td><kbd>Alt</kbd>+<kbd>C</kbd></td>
+              <td>Toggle line numbers</td>
             </tr>
             <tr>
               <td><kbd>Alt</kbd>+<kbd>P</kbd></td>
               <td>Toggle page breaks</td>
+            </tr>
+            <tr>
+              <td><kbd>Alt</kbd>+<kbd>T</kbd> then <kbd>&uarr;</kbd>/<kbd>&darr;</kbd></td>
+              <td>Cycle theme</td>
+            </tr>
+            <tr>
+              <td><kbd>Alt</kbd>+<kbd>F</kbd> then <kbd>&uarr;</kbd>/<kbd>&darr;</kbd></td>
+              <td>Cycle font</td>
+            </tr>
+            <tr>
+              <td><kbd>Alt</kbd>+<kbd>D</kbd> then <kbd>&uarr;</kbd>/<kbd>&darr;</kbd></td>
+              <td>Cycle tab size</td>
+            </tr>
+            <tr>
+              <td><kbd>F11</kbd></td>
+              <td>Fullscreen preview</td>
+            </tr>
+            <tr>
+              <td><kbd>Ctrl</kbd>+<kbd>Q</kbd></td>
+              <td>Quit</td>
+            </tr>
+            <tr>
+              <td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd></td>
+              <td>Reload</td>
             </tr>
             <tr>
               <td><kbd>Ctrl</kbd>+<kbd>?</kbd></td>
@@ -372,6 +393,26 @@
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Files Modal -->
+  <div id="recent-files-modal" class="modal-overlay" hidden>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Recent Files</h3>
+        <button id="btn-close-recent" class="settings-close" aria-label="Close recent files">
+          <svg width="16" height="16" viewBox="0 0 12 12">
+            <line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.5" />
+            <line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.5" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="recent-files-list">
+          <div class="menu-item-empty">No recent files</div>
+        </div>
       </div>
     </div>
   </div>
