@@ -19,7 +19,12 @@ const TAB_SIZES = [ 2, 4 ];
 // Leader-key state for the Alt+T / Alt+F / Alt+D "then Up/Down" chords.
 let leader = null;
 let leaderTimer = null;
+// Initial Alt+T window — generous so the user has time to reach for ↑/↓.
 const LEADER_WINDOW_MS = 2000;
+// Post-cycle re-arm (ISSUE-10) — short so the chord dies almost as soon as the
+// user stops cycling. Without this, every cycle reset the 2s window, leaving
+// ↑/↓ wired to theme cycling long after the user thought they were done.
+const LEADER_CYCLE_REARM_MS = 800;
 
 export function initKeyboardShortcuts( editorAPI ) {
   _editorAPI = editorAPI;
@@ -132,7 +137,7 @@ export function initKeyboardShortcuts( editorAPI ) {
     } else if ( e.altKey && e.key === 'd' ) {
       e.preventDefault();
       armLeader( 'tab' );
-    } else if ( ctrl && ( e.key === '?' || ( shift && e.key === '/' ) ) ) {
+    } else if ( ctrl && !shift && e.key === '.' ) {
       e.preventDefault();
       toggleShortcutsModal();
     }
@@ -189,10 +194,10 @@ export function initKeyboardShortcuts( editorAPI ) {
 
 // ---- Alt-leader chord helpers (theme / font / tab cycling) ----
 
-function armLeader( name ) {
+function armLeader( name, durationMs = LEADER_WINDOW_MS ) {
   leader = name;
   clearTimeout( leaderTimer );
-  leaderTimer = setTimeout( () => { leader = null; }, LEADER_WINDOW_MS );
+  leaderTimer = setTimeout( () => { leader = null; }, durationMs );
 }
 
 function disarmLeader() {
@@ -208,8 +213,10 @@ function cycleActiveLeader( direction ) {
   } else if ( leader === 'tab' ) {
     cycleTab( direction );
   }
-  // Re-arm so the user can keep pressing Up/Down within the window.
-  armLeader( leader );
+  // Re-arm with the SHORT window (ISSUE-10). Rapid tap-cycling still feels
+  // instant (each cycle resets to 800 ms), but pausing for ~1 s ends the chord
+  // and ↑/↓ go back to being plain arrow keys.
+  armLeader( leader, LEADER_CYCLE_REARM_MS );
 }
 
 function cycleFont( direction ) {
