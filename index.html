@@ -315,82 +315,46 @@
       <div class="modal-body">
         <table class="shortcuts-table">
           <tbody>
-            <tr>
-              <td><kbd>Ctrl</kbd>+<kbd>N</kbd></td>
-              <td>New file</td>
-            </tr>
-            <tr>
-              <td><kbd>Ctrl</kbd>+<kbd>O</kbd></td>
-              <td>Open file</td>
-            </tr>
-            <tr>
-              <td><kbd>Ctrl</kbd>+<kbd>S</kbd></td>
-              <td>Save</td>
-            </tr>
-            <tr>
-              <td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd></td>
-              <td>Save As</td>
-            </tr>
-            <tr>
-              <td><kbd>Ctrl</kbd>+<kbd>R</kbd></td>
-              <td>Recent files</td>
-            </tr>
-            <tr>
-              <td><kbd>Ctrl</kbd>+<kbd>P</kbd></td>
-              <td>Print</td>
-            </tr>
-            <tr>
-              <td><kbd>Ctrl</kbd>+<kbd>F</kbd></td>
-              <td>Find</td>
-            </tr>
-            <tr>
-              <td><kbd>Ctrl</kbd>+<kbd>H</kbd></td>
-              <td>Find and Replace</td>
-            </tr>
-            <tr>
-              <td><kbd>Alt</kbd>+<kbd>Z</kbd></td>
-              <td>Toggle word wrap</td>
-            </tr>
-            <tr>
-              <td><kbd>Alt</kbd>+<kbd>X</kbd></td>
-              <td>Toggle sync scroll</td>
-            </tr>
-            <tr>
-              <td><kbd>Alt</kbd>+<kbd>C</kbd></td>
-              <td>Toggle line numbers</td>
-            </tr>
-            <tr>
-              <td><kbd>Alt</kbd>+<kbd>P</kbd></td>
-              <td>Toggle page breaks</td>
-            </tr>
-            <tr>
-              <td><kbd>Alt</kbd>+<kbd>T</kbd> then <kbd>&uarr;</kbd>/<kbd>&darr;</kbd></td>
-              <td>Cycle theme</td>
-            </tr>
-            <tr>
-              <td><kbd>Alt</kbd>+<kbd>F</kbd> then <kbd>&uarr;</kbd>/<kbd>&darr;</kbd></td>
-              <td>Cycle font</td>
-            </tr>
-            <tr>
-              <td><kbd>Alt</kbd>+<kbd>D</kbd> then <kbd>&uarr;</kbd>/<kbd>&darr;</kbd></td>
-              <td>Cycle tab size</td>
-            </tr>
-            <tr>
-              <td><kbd>F11</kbd></td>
-              <td>Fullscreen preview</td>
-            </tr>
-            <tr>
-              <td><kbd>Ctrl</kbd>+<kbd>Q</kbd></td>
-              <td>Quit</td>
-            </tr>
-            <tr>
-              <td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd></td>
-              <td>Reload</td>
-            </tr>
-            <tr>
-              <td><kbd>Ctrl</kbd>+<kbd>?</kbd></td>
-              <td>This dialog</td>
-            </tr>
+            <tr class="shortcuts-section"><th colspan="2">File</th></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>N</kbd></td><td>New file</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>O</kbd></td><td>Open file</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>S</kbd></td><td>Save</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd></td><td>Save As</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>R</kbd></td><td>Recent files</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>P</kbd></td><td>Print / Export PDF</td></tr>
+
+            <tr class="shortcuts-section"><th colspan="2">View</th></tr>
+            <tr><td><kbd>Alt</kbd>+<kbd>Z</kbd></td><td>Toggle word wrap</td></tr>
+            <tr><td><kbd>Alt</kbd>+<kbd>X</kbd></td><td>Toggle sync scroll</td></tr>
+            <tr><td><kbd>Alt</kbd>+<kbd>C</kbd></td><td>Toggle line numbers</td></tr>
+            <tr><td><kbd>Alt</kbd>+<kbd>P</kbd></td><td>Toggle page-break markers</td></tr>
+            <tr><td><kbd>F11</kbd></td><td>Toggle fullscreen preview</td></tr>
+            <tr><td><kbd>Esc</kbd></td><td>Exit fullscreen / close dialog</td></tr>
+
+            <tr class="shortcuts-section"><th colspan="2">Style (chord — tap the leader, then <kbd>&uarr;</kbd>/<kbd>&darr;</kbd>)</th></tr>
+            <tr><td><kbd>Alt</kbd>+<kbd>T</kbd></td><td>Cycle theme (5 light, 5 dark)</td></tr>
+            <tr><td><kbd>Alt</kbd>+<kbd>F</kbd></td><td>Cycle font</td></tr>
+            <tr><td><kbd>Alt</kbd>+<kbd>D</kbd></td><td>Cycle tab size</td></tr>
+            <tr><td><kbd>Ctrl</kbd> + scroll</td><td>Zoom text in / out</td></tr>
+
+            <tr class="shortcuts-section"><th colspan="2">Editor</th></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>F</kbd></td><td>Find</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>H</kbd></td><td>Find &amp; replace</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>G</kbd> / <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd></td><td>Find next / previous</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>/</kbd></td><td>Toggle line comment</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd></td><td>Undo / Redo</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>A</kbd></td><td>Select all</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>D</kbd></td><td>Select next occurrence</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>L</kbd></td><td>Select current line</td></tr>
+            <tr><td><kbd>Alt</kbd>+<kbd>&uarr;</kbd> / <kbd>Alt</kbd>+<kbd>&darr;</kbd></td><td>Move line up / down</td></tr>
+            <tr><td><kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>&uarr;</kbd> / <kbd>&darr;</kbd></td><td>Copy line up / down</td></tr>
+            <tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Indent / Outdent</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>Home</kbd> / <kbd>End</kbd></td><td>Jump to document start / end</td></tr>
+
+            <tr class="shortcuts-section"><th colspan="2">App</th></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>.</kbd></td><td>Show this dialog</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd></td><td>Reload</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>Q</kbd></td><td>Quit</td></tr>
           </tbody>
         </table>
       </div>

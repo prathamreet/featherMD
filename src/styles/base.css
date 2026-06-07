@@ -591,7 +591,10 @@ html, body {
   border-radius: var(--radius-lg);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
   min-width: 400px;
-  max-width: 500px;
+  max-width: 560px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
   animation: modal-in 150ms ease;
 }
 
@@ -616,6 +619,7 @@ html, body {
 
 .modal-body {
   padding: 16px 20px;
+  overflow-y: auto;
 }
 
 .shortcuts-table {
@@ -624,15 +628,35 @@ html, body {
 }
 
 .shortcuts-table td {
-  padding: 6px 0;
+  padding: 5px 0;
   font-size: 13px;
   color: var(--text);
+  vertical-align: top;
 }
 
 .shortcuts-table td:first-child {
   text-align: left;
   white-space: nowrap;
   padding-right: 24px;
+}
+
+/* Section header rows inside the shortcuts table. The first section doesn't
+   need a top divider; subsequent sections get a subtle separator and uppercase
+   label so the modal reads as grouped, not as one long flat list. */
+.shortcuts-table .shortcuts-section th {
+  text-align: left;
+  padding: 16px 0 6px 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+}
+
+.shortcuts-table .shortcuts-section:first-child th {
+  padding-top: 0;
+  border-top: none;
 }
 
 kbd {
