@@ -2,6 +2,12 @@
    Feather MD — Preview Pane Typography
    ======================================== */
 
+/* KaTeX stylesheet for math rendering (~7 KB gzip). The heavy font files it
+   references are fetched by the browser only when a glyph is actually rendered,
+   so math stays effectively lazy; the KaTeX engine itself is still code-split and
+   loaded on demand in preview.js. */
+@import 'katex/dist/katex.min.css';
+
 #preview-content {
   font-family: var(--font-ui);
   font-size: var(--font-size);
@@ -161,10 +167,16 @@
 
 #preview-content thead th {
   font-weight: 600;
-  text-align: left;
   padding: 8px 12px;
   border-bottom: 2px solid var(--border);
   background: var(--bg-secondary);
+}
+
+/* Only force a left default when the markdown didn't specify alignment —
+   otherwise `:---:` / `---:` syntax was being ignored on header rows while
+   body rows obeyed it, producing visibly misaligned columns. */
+#preview-content thead th:not([align]) {
+  text-align: left;
 }
 
 #preview-content tbody td {
@@ -305,5 +317,161 @@
   background-color: var(--danger-soft);
   padding: 1px 2px;
   border-radius: 2px;
+}
+
+/* ========================================
+   Math (KaTeX) and Diagrams (Mermaid)
+   ======================================== */
+
+/* Inline math rides the text baseline; display math is centred on its own row and
+   scrolls horizontally if an equation is wider than the pane. KaTeX inherits the
+   preview text colour, so it tracks every theme automatically. */
+#preview-content .fmd-math-inline {
+  display: inline-block;
+}
+
+#preview-content .fmd-math-display {
+  display: block;
+  margin: 1em 0;
+  text-align: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+#preview-content .fmd-math .katex {
+  color: var(--text);
+  font-size: 1.05em;
+}
+
+#preview-content .fmd-math-display .katex-display {
+  margin: 0;
+  padding: 2px 0;
+}
+
+#preview-content .fmd-math-error {
+  font-family: var(--font-mono, monospace);
+  color: var(--danger);
+  background: var(--danger-soft);
+  padding: 1px 4px;
+  border-radius: var(--radius-sm);
+}
+
+/* Mermaid diagrams: centred and responsive — the SVG scales to the pane width
+   while its viewBox preserves the aspect ratio. In dual-pane mode the diagram
+   height is capped (and tall diagrams scroll inside their own container) so the
+   editor↔preview scroll-sync ratio stays roughly proportional to source line
+   counts; otherwise a 3-line mermaid block compiling to a 1000 px SVG would
+   inflate preview scrollHeight far beyond the editor's, throwing off sync. */
+#preview-content .fmd-mermaid {
+  margin: 1em 0;
+  text-align: center;
+  max-height: 60vh;
+  overflow: auto;
+}
+
+#preview-content .fmd-mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Fullscreen preview has no editor to sync against, so the height cap has no
+   reason to exist there — let diagrams render at their natural size with no
+   internal scrollbars. The preview pane's own scroll handles overflow, and the
+   SVG's `max-width: 100%` keeps width-wise overflow impossible regardless. */
+body.fullscreen-preview #preview-content .fmd-mermaid {
+  max-height: none;
+  overflow: visible;
+}
+
+/* ========================================
+   Print / PDF Export
+   ========================================
+   The screen layout pins the preview to a fixed-height scrollable container
+   and Mermaid diagrams are capped at 60 vh inside that. Both constraints
+   exist for editor↔preview scroll-sync; in print there's no editor, so they
+   simply crop the printed document to the viewport (visible scrollbar inside
+   the PDF, only ~100 vh of content per page).
+   These rules release every scroll-clipping ancestor so the FULL document and
+   FULL diagrams paginate naturally across the printed pages, from both
+   dual-pane and fullscreen modes.
+   Theme handling lives in main.js (initPrintThemeOverride): it flips
+   data-theme to "snow" and re-renders Mermaid in the light variant before
+   opening the print dialog. */
+@media print {
+  /* Strip the app chrome — the print is the rendered document, nothing else. */
+  #header-bar,
+  #status-bar,
+  #editor-pane,
+  #divider {
+    display: none !important;
+  }
+
+  /* Release the viewport pinning so content can flow across multiple pages
+     instead of being clipped to one screen height. */
+  html, body {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  #split-container,
+  #preview-pane {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    position: static !important;
+  }
+
+  #preview-content {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Lift the Mermaid 60 vh cap and any other internal scroll so the entire
+     diagram prints, not just the portion that happened to be scrolled into
+     view at the moment the dialog opened. */
+  #preview-content .fmd-mermaid {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  #preview-content .fmd-math-display {
+    overflow: visible !important;
+  }
+}
+
+/* Restrained "callout" style for an unrenderable diagram — neutral surface
+   with a left-border accent and a small inline glyph. The 60vh cap from
+   .fmd-mermaid is lifted so an error block flows naturally instead of
+   scrolling inside its own cage. */
+#preview-content .fmd-mermaid-error {
+  max-height: none;
+  overflow: visible;
+  text-align: left;
+  background: color-mix(in srgb, var(--text) 4%, var(--bg));
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--danger);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+}
+
+#preview-content .fmd-mermaid-error-msg {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  font-size: 0.875em;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+#preview-content .fmd-mermaid-error-msg svg {
+  flex-shrink: 0;
+  color: var(--danger);
+}
+
+#preview-content .fmd-mermaid-error pre {
+  margin: 0;
+  font-size: 0.85em;
 }
 

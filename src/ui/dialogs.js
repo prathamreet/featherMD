@@ -91,6 +91,14 @@ export function initShortcutsModal() {
   modal?.addEventListener( 'click', ( e ) => {
     if ( e.target === modal ) modal.hidden = true;
   } );
+  // Keyboard-first: Escape dismisses the modal while it is open.
+  document.addEventListener( 'keydown', ( e ) => {
+    if ( e.key === 'Escape' && modal && !modal.hidden ) {
+      e.preventDefault();
+      e.stopPropagation();
+      modal.hidden = true;
+    }
+  } );
 }
 
 export function openRecentFilesModal() {

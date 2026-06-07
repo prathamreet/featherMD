@@ -37,7 +37,9 @@
     "@tauri-apps/plugin-updater": "^2",
     "dompurify": "^3.2.6",
     "highlight.js": "^11.9.0",
-    "marked": "^15.0.0"
+    "katex": "^0.16.11",
+    "marked": "^15.0.0",
+    "mermaid": "^11.4.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.16.0",
