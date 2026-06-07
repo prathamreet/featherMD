@@ -1,28 +1,15 @@
-export const WELCOME_TEXT = `>*This is just a scratch pad - clear it (ctrl + n) and start writing.*
+export const WELCOME_TEXT = `>*This is just a scratch pad - clear it with \`Ctrl + N\` and start writing.*
 
->*Press F11 for fullscreen preview.*
+>*Press \`F11\` for fullscreen preview.*
+
+>*Press \`Ctrl + .\` to view every shortcut.*
 
 
 ## Page breaks
 
-Drop a \`<pb>\` tag anywhere to force a clean page boundary when printing or exporting to PDF. Toggle the marker's visibility with \`Alt + P\` for distraction-free reading.
+Drop a \`<pb>\` tag anywhere to force a clean page boundary when printing or exporting to PDF. The dashed line is only visible on screen - it disappears in the printed output.
 
 <pb>
-
-## Keyboard shortcuts
-
-| Shortcut | Action |
-| :--- | :--- |
-| \`Ctrl + O\` / \`Ctrl + R\` | Open / Recent files |
-| \`Ctrl + S\` / \`Ctrl + Shift + S\` | Save / Save As |
-| \`Alt + Z\` · \`Alt + X\` · \`Alt + C\` | Word wrap · Sync scroll · Line numbers |
-| \`F11\` | Fullscreen preview (\`Esc\` exits) |
-| \`Ctrl + P\` | Print / export to PDF |
-| \`Alt + T\` then ↑ / ↓ | Cycle theme (5 light, 5 dark) |
-| \`Alt + F\` then ↑ / ↓ | Cycle font |
-| \`Alt + D\` then ↑ / ↓ | Cycle tab size |
-| \`Ctrl\` + scroll | Zoom text in / out |
-| \`Ctrl + ?\` | Every shortcut |
 
 ## Math & diagrams
 
@@ -73,7 +60,29 @@ function render(markdown) {
 }
 \`\`\`
 
-## Good to know
+## Tasks, tables, the usual
 
-- Edit the open file in another program and Feather MD reloads it for you - it asks first if you have unsaved changes.
-- Everything stays local. No accounts, no telemetry, no background services.`;
+Standard GitHub Flavored Markdown is all here - checkboxes, tables, strikethrough, footnotes:
+
+- [x] Math via KaTeX
+- [x] Diagrams via Mermaid
+- [ ] Try it on your own notes
+
+| What | Cost |
+| :--- | ---: |
+| Installer | ~6 MB |
+| Cold start | < 100 ms |
+| RAM (idle) | < 30 MB |
+| Telemetry | none |
+
+## Tuned for keyboard
+
+Ten themes, three fonts, two tab sizes - every preference is one chord away. No menu hunting, no settings panel, no mouse.
+
+The leader chords work like this: tap \`Alt + T\` (or \`F\`, or \`D\`), then \`↑\` / \`↓\` to cycle. Pause for a second and the chord ends - your arrow keys go back to being arrow keys.
+
+## Stays local
+
+Everything lives on your machine. No accounts, no cloud sync, no telemetry, no background services. The only outbound request is the signed update check on startup, and you decide when to install it.
+
+Edit the file in another program and Feather MD reloads it for you - it asks first if there are unsaved changes.`;
