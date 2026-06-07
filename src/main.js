@@ -87,9 +87,64 @@ window.addEventListener('DOMContentLoaded', () => {
   editorAPI.setValue(WELCOME_TEXT);
   editorAPI.focus();
 
+  initPrintThemeOverride();
+
   // ---- Phase 2: async config + Tauri ----
   bootAsync();
 });
+
+// ISSUE-11: Print output should always use the snow theme so the PDF stays
+// legible regardless of the active editor theme.
+//
+// Two layers are needed because the print pipeline has two kinds of "themed"
+// content:
+//
+//   1. CSS-variable-driven elements (text, backgrounds, code blocks, tables,
+//      blockquotes, KaTeX). Switching `data-theme="snow"` on <html> re-themes
+//      all of these in a single attribute write — every variable in the
+//      document reads through that attribute. No re-render needed.
+//
+//   2. Mermaid diagrams. Their colours are *baked into the SVG* at render
+//      time, so a CSS swap cannot touch them. They have to be re-rendered.
+//      previewAPI.refreshForThemeChange() reads the current data-theme and
+//      re-renders every diagram in place — calling it after the data-theme
+//      swap above makes Mermaid emit snow-equivalent (default light) SVGs.
+//
+// `beforeprint` can't await async work (the print dialog opens before the
+// handler resolves), so we wrap window.print() itself. Both the Ctrl+P
+// shortcut and the File→Print menu funnel through window.print(), so a single
+// wrap covers every print entry point. `afterprint` restores both layers
+// once the dialog closes. The user's saved theme is never written to disk.
+function initPrintThemeOverride() {
+  let savedTheme = null;
+  const originalPrint = window.print.bind(window);
+
+  window.print = async function snowThemedPrint() {
+    const current = document.documentElement.getAttribute('data-theme');
+    if (current && current !== 'snow') {
+      savedTheme = current;
+      document.documentElement.setAttribute('data-theme', 'snow');
+      // Re-render diagrams in the light Mermaid theme. No-ops instantly if
+      // the document has no diagrams (refreshForThemeChange checks for that).
+      if (previewAPI && typeof previewAPI.refreshForThemeChange === 'function') {
+        try { await previewAPI.refreshForThemeChange(); } catch { /* keep printing */ }
+      }
+      // One paint frame so the swapped SVGs are fully laid out before the
+      // print dialog takes its DOM snapshot.
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    }
+    originalPrint();
+  };
+
+  window.addEventListener('afterprint', () => {
+    if (!savedTheme) return;
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    savedTheme = null;
+    if (previewAPI && typeof previewAPI.refreshForThemeChange === 'function') {
+      previewAPI.refreshForThemeChange();
+    }
+  });
+}
 
 async function bootAsync() {
   try {

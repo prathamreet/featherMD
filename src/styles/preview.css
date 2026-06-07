@@ -167,10 +167,16 @@
 
 #preview-content thead th {
   font-weight: 600;
-  text-align: left;
   padding: 8px 12px;
   border-bottom: 2px solid var(--border);
   background: var(--bg-secondary);
+}
+
+/* Only force a left default when the markdown didn't specify alignment —
+   otherwise `:---:` / `---:` syntax was being ignored on header rows while
+   body rows obeyed it, producing visibly misaligned columns. */
+#preview-content thead th:not([align]) {
+  text-align: left;
 }
 
 #preview-content tbody td {
@@ -351,11 +357,11 @@
 }
 
 /* Mermaid diagrams: centred and responsive — the SVG scales to the pane width
-   while its viewBox preserves the aspect ratio. Height is capped so a short
-   mermaid source that compiles to a tall diagram doesn't dominate the preview
-   pane; that keeps the editor↔preview scroll-sync ratio roughly proportional to
-   line counts. Oversized diagrams scroll inside their own container instead of
-   expanding the whole pane. */
+   while its viewBox preserves the aspect ratio. In dual-pane mode the diagram
+   height is capped (and tall diagrams scroll inside their own container) so the
+   editor↔preview scroll-sync ratio stays roughly proportional to source line
+   counts; otherwise a 3-line mermaid block compiling to a 1000 px SVG would
+   inflate preview scrollHeight far beyond the editor's, throwing off sync. */
 #preview-content .fmd-mermaid {
   margin: 1em 0;
   text-align: center;
@@ -366,6 +372,72 @@
 #preview-content .fmd-mermaid svg {
   max-width: 100%;
   height: auto;
+}
+
+/* Fullscreen preview has no editor to sync against, so the height cap has no
+   reason to exist there — let diagrams render at their natural size with no
+   internal scrollbars. The preview pane's own scroll handles overflow, and the
+   SVG's `max-width: 100%` keeps width-wise overflow impossible regardless. */
+body.fullscreen-preview #preview-content .fmd-mermaid {
+  max-height: none;
+  overflow: visible;
+}
+
+/* ========================================
+   Print / PDF Export
+   ========================================
+   The screen layout pins the preview to a fixed-height scrollable container
+   and Mermaid diagrams are capped at 60 vh inside that. Both constraints
+   exist for editor↔preview scroll-sync; in print there's no editor, so they
+   simply crop the printed document to the viewport (visible scrollbar inside
+   the PDF, only ~100 vh of content per page).
+   These rules release every scroll-clipping ancestor so the FULL document and
+   FULL diagrams paginate naturally across the printed pages, from both
+   dual-pane and fullscreen modes.
+   Theme handling lives in main.js (initPrintThemeOverride): it flips
+   data-theme to "snow" and re-renders Mermaid in the light variant before
+   opening the print dialog. */
+@media print {
+  /* Strip the app chrome — the print is the rendered document, nothing else. */
+  #header-bar,
+  #status-bar,
+  #editor-pane,
+  #divider {
+    display: none !important;
+  }
+
+  /* Release the viewport pinning so content can flow across multiple pages
+     instead of being clipped to one screen height. */
+  html, body {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  #split-container,
+  #preview-pane {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    position: static !important;
+  }
+
+  #preview-content {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Lift the Mermaid 60 vh cap and any other internal scroll so the entire
+     diagram prints, not just the portion that happened to be scrolled into
+     view at the moment the dialog opened. */
+  #preview-content .fmd-mermaid {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  #preview-content .fmd-math-display {
+    overflow: visible !important;
+  }
 }
 
 /* Restrained "callout" style for an unrenderable diagram — neutral surface
