@@ -24,7 +24,11 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' asset: https: data:; connect-src 'self' https://github.com https://objects.githubusercontent.com https://*.github.com https://feather-md-analytics-production.up.railway.app"
+      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' asset: http://asset.localhost https: data:; connect-src 'self' https://github.com https://objects.githubusercontent.com https://*.github.com https://feather-md-analytics-production.up.railway.app",
+      "assetProtocol": {
+        "enable": true,
+        "scope": ["**"]
+      }
     }
   },
   "bundle": {
