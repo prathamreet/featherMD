@@ -182,7 +182,20 @@ function addToRecentFiles( path ) {
   config.recentFiles.unshift( path );
   if ( config.recentFiles.length > 10 ) config.recentFiles.pop();
   saveConfig();
-  updateRecentFilesList( config.recentFiles, onRecentFileSelect );
+  updateRecentFilesList( config.recentFiles, onRecentFileSelect, removeRecentFile, clearRecentFiles );
+}
+
+export function removeRecentFile( path ) {
+  if ( !config.recentFiles ) return;
+  config.recentFiles = config.recentFiles.filter( p => p !== path );
+  saveConfig();
+  updateRecentFilesList( config.recentFiles, onRecentFileSelect, removeRecentFile, clearRecentFiles );
+}
+
+export function clearRecentFiles() {
+  config.recentFiles = [];
+  saveConfig();
+  updateRecentFilesList( config.recentFiles, onRecentFileSelect, removeRecentFile, clearRecentFiles );
 }
 
 /**
