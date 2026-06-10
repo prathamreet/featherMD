@@ -202,9 +202,10 @@ export function setActiveTabSize( size ) {
 
 /**
  * Render the recent-files list into the Recent Files modal. Selecting an item
- * closes the modal and invokes the open-file callback.
+ * closes the modal and invokes the open-file callback. Each item has a remove
+ * button, and a "Clear All" footer appears when the list is non-empty.
  */
-export function updateRecentFilesList( recentFiles, onFileSelect ) {
+export function updateRecentFilesList( recentFiles, onFileSelect, onRemove, onClear ) {
   const container = document.getElementById( 'recent-files-list' );
   if ( !container ) return;
 
@@ -220,10 +221,29 @@ export function updateRecentFilesList( recentFiles, onFileSelect ) {
 
     const btn = document.createElement( 'button' );
     btn.className = 'recent-file-item';
-    btn.innerHTML = `
+
+    const info = document.createElement( 'div' );
+    info.className = 'recent-file-info';
+    info.innerHTML = `
       <span class="recent-file-name" title="${ escapeHtml( name ) }">${ escapeHtml( name ) }</span>
       <span class="recent-file-path" title="${ escapeHtml( filePath ) }">${ escapeHtml( filePath ) }</span>
     `;
+
+    const removeBtn = document.createElement( 'span' );
+    removeBtn.className = 'recent-file-remove';
+    removeBtn.title = 'Remove from list';
+    removeBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+      <line x1="3" y1="3" x2="9" y2="9"/>
+      <line x1="9" y1="3" x2="3" y2="9"/>
+    </svg>`;
+    removeBtn.addEventListener( 'click', ( e ) => {
+      e.stopPropagation();
+      if ( onRemove ) onRemove( filePath );
+    } );
+
+    btn.appendChild( info );
+    btn.appendChild( removeBtn );
+
     btn.addEventListener( 'click', ( e ) => {
       e.stopPropagation();
       const modal = document.getElementById( 'recent-files-modal' );
@@ -232,4 +252,13 @@ export function updateRecentFilesList( recentFiles, onFileSelect ) {
     } );
     container.appendChild( btn );
   } );
+
+  const clearBtn = document.createElement( 'button' );
+  clearBtn.className = 'recent-files-clear';
+  clearBtn.textContent = 'Clear All';
+  clearBtn.addEventListener( 'click', ( e ) => {
+    e.stopPropagation();
+    if ( onClear ) onClear();
+  } );
+  container.appendChild( clearBtn );
 }
