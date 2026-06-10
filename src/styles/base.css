@@ -325,7 +325,7 @@ html, body {
 
 .recent-file-item {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   width: 100%;
   padding: 8px 10px;
   background: transparent;
@@ -337,11 +337,19 @@ html, body {
   cursor: pointer;
   border-radius: var(--radius-sm);
   transition: background var(--transition-fast) ease;
-  gap: 2px;
+  gap: 8px;
 }
 
 .recent-file-item:hover {
   background: color-mix(in srgb, var(--text) 8%, transparent);
+}
+
+.recent-file-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
 .recent-file-name {
@@ -360,6 +368,52 @@ html, body {
   direction: rtl;
   text-align: left;
   opacity: 0.7;
+}
+
+.recent-file-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity var(--transition-fast) ease, background var(--transition-fast) ease, color var(--transition-fast) ease;
+  cursor: pointer;
+}
+
+.recent-file-item:hover .recent-file-remove {
+  opacity: 1;
+}
+
+.recent-file-remove:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.recent-files-clear {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  margin-top: 4px;
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  transition: background var(--transition-fast) ease, color var(--transition-fast) ease;
+}
+
+.recent-files-clear:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
 }
 
 /* ---- Header Separator ---- */
