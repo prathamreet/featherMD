@@ -303,6 +303,7 @@ export function initPreview(domEl) {
     setScrollRatio,
     getScrollDOM: () => previewEl.parentElement,
     refreshForThemeChange,
+    initPreviewClickToEdit,
   };
 }
 
@@ -674,4 +675,44 @@ function setScrollRatio(ratio) {
   const scrollEl = previewEl.parentElement;
   const max = scrollEl.scrollHeight - scrollEl.clientHeight;
   scrollEl.scrollTop = ratio * max;
+}
+
+/**
+ * ISSUE-16: Triple-click in preview jumps to the corresponding source in the
+ * editor. Detects detail===3 (triple-click), walks up to the nearest block
+ * element, extracts its text content, and fires the callback.
+ */
+function initPreviewClickToEdit(callback) {
+  if (!previewEl || !callback) return;
+
+  previewEl.addEventListener('click', (e) => {
+    if (e.detail !== 3) return;
+
+    // Walk up from the click target to the nearest block-level element inside
+    // the preview. This gives us a meaningful chunk of text (a paragraph, list
+    // item, heading, etc.) rather than a single inline span.
+    const blockTags = new Set([
+      'P', 'LI', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6',
+      'BLOCKQUOTE', 'TD', 'TH', 'DT', 'DD',
+      'DIV', 'PRE', 'SECTION', 'FIGURE',
+    ]);
+
+    let target = e.target;
+    while (target && target !== previewEl) {
+      if (blockTags.has(target.tagName)) break;
+      target = target.parentElement;
+    }
+
+    // Fallback: if we walked all the way up to previewEl without finding a
+    // block tag, use the original click target itself (handles inline-only
+    // text nodes, spans inside unknown wrappers, etc.).
+    if (!target || target === previewEl) {
+      target = e.target;
+    }
+
+    const text = target.textContent || '';
+    if (text.trim().length === 0) return;
+
+    callback(text.trim());
+  });
 }
