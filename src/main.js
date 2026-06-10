@@ -19,6 +19,8 @@ import {
   saveFileAs,
   newFile,
   onRecentFileSelect,
+  removeRecentFile,
+  clearRecentFiles,
 } from './core/file-io.js';
 import { initKeyboardShortcuts, updateZoomBadge } from './core/keyboard.js';
 import { initScrollSync, setSyncEnabled } from './core/sync.js';
@@ -69,6 +71,11 @@ window.addEventListener('DOMContentLoaded', () => {
   initShortcutsModal();
   initRecentFilesModal();
 
+  // ISSUE-16: Triple-click in preview jumps to the source in the editor.
+  previewAPI.initPreviewClickToEdit((text) => {
+    editorAPI.searchAndHighlight(text);
+  });
+
   const headerIcon = document.getElementById('header-icon');
   if (headerIcon) {
     headerIcon.addEventListener('click', async () => {
@@ -117,7 +124,12 @@ window.addEventListener('DOMContentLoaded', () => {
 // once the dialog closes. The user's saved theme is never written to disk.
 function initPrintThemeOverride() {
   let savedTheme = null;
+  let printTimeoutId = null;
   const originalPrint = window.print.bind(window);
+
+  // ISSUE-1: Track printing state so the close handler can delay destruction
+  // until the OS print subsystem has finished writing the PDF to disk.
+  window.__FEATHER_PRINTING__ = false;
 
   window.print = async function snowThemedPrint() {
     const current = document.documentElement.getAttribute('data-theme');
@@ -133,16 +145,28 @@ function initPrintThemeOverride() {
       // print dialog takes its DOM snapshot.
       await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     }
+    window.__FEATHER_PRINTING__ = true;
     originalPrint();
   };
 
   window.addEventListener('afterprint', () => {
-    if (!savedTheme) return;
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    savedTheme = null;
-    if (previewAPI && typeof previewAPI.refreshForThemeChange === 'function') {
-      previewAPI.refreshForThemeChange();
+    if (savedTheme) {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      savedTheme = null;
+      if (previewAPI && typeof previewAPI.refreshForThemeChange === 'function') {
+        previewAPI.refreshForThemeChange();
+      }
     }
+    // ISSUE-1: Keep the flag high for a few seconds so the OS file write
+    // completes before any pending close request destroys the webview.
+    // Clear any previous print timeout to prevent premature resets on consecutive prints.
+    if (printTimeoutId) {
+      clearTimeout(printTimeoutId);
+    }
+    printTimeoutId = setTimeout(() => {
+      window.__FEATHER_PRINTING__ = false;
+      printTimeoutId = null;
+    }, 10000);
   });
 }
 
@@ -175,7 +199,7 @@ async function runBootSequence() {
     previewAPI.refreshForThemeChange();
   });
 
-  updateRecentFilesList(config.recentFiles || [], onRecentFileSelect);
+  updateRecentFilesList(config.recentFiles || [], onRecentFileSelect, removeRecentFile, clearRecentFiles);
 
   initToolbar({
     onOpen: openFile,
@@ -272,6 +296,21 @@ async function wireTauriListeners() {
         await saveConfig();
       } catch {
         // ignore
+      }
+
+      // ISSUE-1: If a print job just finished, wait for the OS to flush the
+      // PDF file before destroying the webview (which kills the process).
+      if (window.__FEATHER_PRINTING__) {
+        const overlay = document.getElementById('print-overlay');
+        if (overlay) overlay.hidden = false;
+        await new Promise((resolve) => {
+          const check = () => {
+            if (!window.__FEATHER_PRINTING__) { resolve(); return; }
+            setTimeout(check, 500);
+          };
+          check();
+        });
+        if (overlay) overlay.hidden = true;
       }
 
       if (isDirty) {
