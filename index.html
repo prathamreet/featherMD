@@ -398,7 +398,14 @@
       </div>
     </div>
   </div>
-
+  <!-- Print Overlay (Shown if app is closed during print finalization) -->
+  <div id="print-overlay" class="modal-overlay" hidden style="z-index: 9999; backdrop-filter: blur(4px);">
+    <div class="modal-content" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; gap: 15px;">
+      <div class="print-spinner" style="width: 30px; height: 30px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+      <h3 style="margin: 0;">Compiling PDF</h3>
+      <p style="margin: 0; color: var(--text-muted); font-size: 14px;">Generating high-quality print render...</p>
+    </div>
+  </div>
   <!-- Status Bar -->
   <div id="status-bar">
     <span id="status-filepath" title="">Untitled</span>
