@@ -3,7 +3,7 @@
 // ========================================
 
 import { EditorView, lineNumbers, highlightActiveLine, highlightActiveLineGutter, keymap, drawSelection, dropCursor, rectangularSelection, crosshairCursor } from '@codemirror/view';
-import { EditorState, Compartment } from '@codemirror/state';
+import { EditorState, Compartment, Annotation } from '@codemirror/state';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { languages } from '@codemirror/language-data';
 import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands';
@@ -22,7 +22,13 @@ let onChangeCallback = null;
 let onCursorActivityCallback = null;
 let debounceTimer = null;
 
-let isProgrammaticSetting = false;
+// CF-1: tag programmatic edits (setValue) on the transaction itself rather than
+// a shared boolean. A module-level flag flipped synchronously around dispatch()
+// could be read stale by the 150ms-debounced callback, letting a user keystroke
+// that landed in the window be misclassified as programmatic (isDirty never
+// flips -> silent data loss). An annotation travels with its transaction, so the
+// classification is always read from the exact change that triggered it.
+const programmaticChange = Annotation.define();
 
 /**
  * Initialize the CodeMirror 6 editor
@@ -39,7 +45,7 @@ export function initEditor(domEl, onChange, onCursorActivity) {
   // changes (event-driven cursor-position updates).
   const updateListener = EditorView.updateListener.of((update) => {
     if (update.docChanged) {
-      const isProgrammatic = isProgrammaticSetting;
+      const isProgrammatic = update.transactions.some((tr) => tr.annotation(programmaticChange));
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => {
         if (onChangeCallback) {
@@ -120,16 +126,14 @@ export function initEditor(domEl, onChange, onCursorActivity) {
  */
 function setValue(text) {
   if (!editorView) return;
-  isProgrammaticSetting = true;
-  const transaction = editorView.state.update({
+  editorView.dispatch({
     changes: {
       from: 0,
       to: editorView.state.doc.length,
       insert: text,
     },
+    annotations: programmaticChange.of(true),
   });
-  editorView.dispatch(transaction);
-  isProgrammaticSetting = false;
 }
 
 /**
