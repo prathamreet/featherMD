@@ -72,13 +72,13 @@ function setupMenuBarDOM() {
               <span class="menu-check"><svg></svg></span>
               <span class="menu-item-label">Onyx</span>
             </button>
-            <button class="menu-item checkable font-item" data-action="set-font" data-font="'JetBrains Mono', monospace" data-checked="true">
+            <button class="menu-item checkable font-item" data-action="set-font" data-font="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" data-checked="true">
               <span class="menu-check"><svg></svg></span>
-              <span class="menu-item-label">JetBrains Mono</span>
+              <span class="menu-item-label">Inter</span>
             </button>
-            <button class="menu-item checkable font-item" data-action="set-font" data-font="monospace">
+            <button class="menu-item checkable font-item" data-action="set-font" data-font="Georgia, Cambria, 'Times New Roman', serif">
               <span class="menu-check"><svg></svg></span>
-              <span class="menu-item-label">System Monospace</span>
+              <span class="menu-item-label">Georgia</span>
             </button>
             <button class="menu-item checkable tab-item" data-action="set-tab" data-tab="2">
               <span class="menu-check"><svg></svg></span>
@@ -346,9 +346,11 @@ describe('Toolbar -- setActiveFontFamily Utility', () => {
   beforeEach(() => setupMenuBarDOM());
 
   it('should mark the correct font family as checked', () => {
-    setActiveFontFamily('monospace');
-    expect(document.querySelector('.font-item[data-font="monospace"]').getAttribute('data-checked')).toBe('true');
-    expect(document.querySelector('.font-item[data-font="\'JetBrains Mono\', monospace"]').getAttribute('data-checked')).toBe('false');
+    const georgia = "Georgia, Cambria, 'Times New Roman', serif";
+    setActiveFontFamily(georgia);
+    const [inter, geo] = document.querySelectorAll('.font-item');
+    expect(geo.getAttribute('data-checked')).toBe('true');
+    expect(inter.getAttribute('data-checked')).toBe('false');
   });
 });
 
