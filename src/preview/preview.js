@@ -588,6 +588,15 @@ async function refreshForThemeChange() {
   }
 }
 
+// ISSUE-18: Local images don't load through the app origin (tauri://localhost),
+// so any on-disk path has to be rewritten to Tauri's asset protocol via
+// convertFileSrc. This handles three shapes that all failed before:
+//   - absolute OS paths (C:\…, C:/…, /unix/…, \\unc\…) — now work with or
+//     without an open file;
+//   - file:// URLs;
+//   - relative paths (./, ../, bare) resolved against the open file's folder.
+// Remote (http/https), data:, blob:, and already-converted asset: URLs are left
+// untouched for the browser to load directly.
 function resolveImagePaths(container) {
   const images = container.querySelectorAll('img[src]');
   if (images.length === 0) return;
@@ -596,41 +605,64 @@ function resolveImagePaths(container) {
     images.forEach((img) => {
       const src = img.getAttribute('src');
       if (!src) return;
-      if (src.startsWith('http://') || src.startsWith('https://')
-        || src.startsWith('data:') || src.startsWith('asset:')) return;
-      if (!window.currentFilePath) return;
+      if (/^(https?:|data:|blob:|asset:)/i.test(src)) return;
 
-      const parentDir = getParentDirectory(window.currentFilePath);
-      let absolutePath = '';
-      if (src.startsWith('./')) {
-        absolutePath = parentDir + src.substring(2);
-      } else if (src.startsWith('../')) {
-        let currentDir = parentDir;
-        let tempSrc = src;
-        while (tempSrc.startsWith('../')) {
-          const dirParts = currentDir.replace(/\/$/, '').split('/');
-          dirParts.pop();
-          currentDir = dirParts.join('/') + '/';
-          tempSrc = tempSrc.substring(3);
-        }
-        absolutePath = currentDir + tempSrc;
-      } else {
-        absolutePath = parentDir + src;
-      }
+      const absolutePath = toAbsoluteImagePath(src);
+      if (!absolutePath) return;
 
       try {
-        let normalisedPath = absolutePath;
-        if (normalisedPath.match(/^[A-Za-z]:/)) {
-          normalisedPath = normalisedPath.replace(/\//g, '\\');
-        }
+        // convertFileSrc expects native separators; Windows drive paths use "\".
+        const normalisedPath = /^[A-Za-z]:/.test(absolutePath)
+          ? absolutePath.replace(/\//g, '\\')
+          : absolutePath;
         if (img.isConnected) {
           img.setAttribute('src', core.convertFileSrc(normalisedPath));
         }
       } catch (err) {
-        console.warn('Failed to resolve relative image path:', err);
+        console.warn('Failed to resolve image path:', err);
       }
     });
   });
+}
+
+// Resolve an <img> src to an absolute on-disk path, or '' if it can't be
+// resolved (e.g. a relative path with no file open yet).
+function toAbsoluteImagePath(src) {
+  // file:// URL → strip the scheme to a plain OS path.
+  if (/^file:\/\//i.test(src)) {
+    try {
+      let p = decodeURIComponent(src.replace(/^file:\/\/\/?/i, ''));
+      // "C:/x" came through as-is; a leading "/C:/x" needs the slash dropped.
+      if (/^\/[A-Za-z]:/.test(p)) p = p.slice(1);
+      return p;
+    } catch {
+      return '';
+    }
+  }
+
+  // Absolute path: Windows drive (C:\ or C:/), POSIX (/…), or UNC (\\server).
+  if (/^[A-Za-z]:[\\/]/.test(src) || src.startsWith('/') || src.startsWith('\\\\')) {
+    return src;
+  }
+
+  // Relative path: needs the open file's directory as an anchor.
+  if (!window.currentFilePath) return '';
+  const parentDir = getParentDirectory(window.currentFilePath);
+  if (src.startsWith('./')) {
+    return parentDir + src.substring(2);
+  }
+  if (src.startsWith('../')) {
+    let currentDir = parentDir;
+    let tempSrc = src;
+    while (tempSrc.startsWith('../')) {
+      const dirParts = currentDir.replace(/\/$/, '').split('/');
+      dirParts.pop();
+      currentDir = dirParts.join('/') + '/';
+      tempSrc = tempSrc.substring(3);
+    }
+    return currentDir + tempSrc;
+  }
+  return parentDir + src;
 }
 
 function attachExternalLinkHandlers(container) {
