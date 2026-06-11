@@ -73,7 +73,7 @@ Standard GitHub Flavored Markdown is all here - checkboxes, tables, strikethroug
 | Installer | ~6 MB |
 | Cold start | < 100 ms |
 | RAM (idle) | < 30 MB |
-| Telemetry | none |
+| Telemetry | anonymous |
 
 ## Tuned for keyboard
 
@@ -83,6 +83,6 @@ The leader chords work like this: tap \`Alt + T\` (or \`F\`, or \`D\`), then \`â
 
 ## Stays local
 
-Everything lives on your machine. No accounts, no cloud sync, no telemetry, no background services. The only outbound request is the signed update check on startup, and you decide when to install it.
+Everything lives on your machine. No accounts, no cloud sync, no background services. Two anonymous requests go out on startup: a signed update check (you choose when to install) and a basic usage ping - app version, OS, language, and screen size - so we know which platforms to support.
 
 Edit the file in another program and Feather MD reloads it for you - it asks first if there are unsaved changes.`;
