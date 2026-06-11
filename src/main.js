@@ -12,15 +12,16 @@ import { isTauri, setTauri } from './core/state.js';
 import { config, loadConfig, saveConfig } from './core/config.js';
 import { WELCOME_TEXT } from './core/welcome.js';
 import {
-  initFileIO,
-  loadFileContent,
-  openFile,
-  saveFile,
-  saveFileAs,
-  newFile,
-  onRecentFileSelect,
-  removeRecentFile,
-  clearRecentFiles,
+    initFileIO,
+    loadFileContent,
+    openFile,
+    saveFile,
+    saveFileAs,
+    newFile,
+    onRecentFileSelect,
+    removeRecentFile,
+    clearRecentFiles,
+    confirmDiscardChanges,
 } from './core/file-io.js';
 import { initKeyboardShortcuts, updateZoomBadge } from './core/keyboard.js';
 import { initScrollSync, setSyncEnabled } from './core/sync.js';
@@ -30,74 +31,74 @@ import { initPreview } from './preview/preview.js';
 
 import { initThemes, setTheme } from './ui/themes.js';
 import {
-  initToolbar,
-  setMenuChecked,
-  setActiveTheme,
-  setActiveFontFamily,
-  setActiveTabSize,
-  updateRecentFilesList,
+    initToolbar,
+    setMenuChecked,
+    setActiveTheme,
+    setActiveFontFamily,
+    setActiveTabSize,
+    updateRecentFilesList,
 } from './ui/toolbar.js';
-import { initShortcutsModal, initRecentFilesModal, openRecentFilesModal, showUnsavedDialog } from './ui/dialogs.js';
+import { initShortcutsModal, initRecentFilesModal, openRecentFilesModal } from './ui/dialogs.js';
 import { initStatusBar, updateTitleBar, updateStatusBar, updateCursorPosition } from './ui/status-bar.js';
 import { initDividerDrag } from './ui/divider.js';
 
 import { initUpdater } from './platform/updater.js';
-import { initWindowControls, initWindowSize, ensureWindowVisible } from './platform/window.js';
+import { initWindowControls, initWindowSize, ensureWindowVisible, requestQuit, hideToTray, isTrayActive, refreshTrayActive } from './platform/window.js';
 
 let editorAPI = null;
 let previewAPI = null;
 
 window.addEventListener('DOMContentLoaded', () => {
-  // ---- Phase 1: synchronous mount ----
-  // Apply OS-preferred theme up-front so the first paint matches the user's
-  // preference; saved config (if any) overrides it during Phase 2.
-  document.documentElement.setAttribute(
-    'data-theme',
-    window.matchMedia('(prefers-color-scheme: dark)').matches ? 'onyx' : 'snow',
-  );
+    // ---- Phase 1: synchronous mount ----
+    // Apply OS-preferred theme up-front so the first paint matches the user's
+    // preference; saved config (if any) overrides it during Phase 2.
+    document.documentElement.setAttribute(
+        'data-theme',
+        window.matchMedia('(prefers-color-scheme: dark)').matches ? 'onyx' : 'snow',
+    );
 
-  editorAPI = initEditor(
-    document.getElementById('editor-pane'),
-    onContentChange,
-    () => updateCursorPosition(),
-  );
-  previewAPI = initPreview(document.getElementById('preview-content'));
+    editorAPI = initEditor(
+        document.getElementById('editor-pane'),
+        onContentChange,
+        () => updateCursorPosition(),
+    );
+    previewAPI = initPreview(document.getElementById('preview-content'));
 
-  initStatusBar(editorAPI);
-  initFileIO(editorAPI);
-  initScrollSync(editorAPI, previewAPI);
-  initDividerDrag();
-  initKeyboardShortcuts(editorAPI);
-  initShortcutsModal();
-  initRecentFilesModal();
+    initStatusBar(editorAPI);
+    initFileIO(editorAPI);
+    initScrollSync(editorAPI, previewAPI);
+    initDividerDrag();
+    initKeyboardShortcuts(editorAPI);
+    initShortcutsModal();
+    initRecentFilesModal();
 
-  // ISSUE-16: Triple-click in preview jumps to the source in the editor.
-  previewAPI.initPreviewClickToEdit((text) => {
-    editorAPI.searchAndHighlight(text);
-  });
-
-  const headerIcon = document.getElementById('header-icon');
-  if (headerIcon) {
-    headerIcon.addEventListener('click', async () => {
-      const url = 'https://github.com/prathamreet/featherMD';
-      try {
-        const { invoke } = await import('@tauri-apps/api/core');
-        await invoke('plugin:opener|open_url', { url });
-      } catch {
-        window.open(url, '_blank');
-      }
+    // ISSUE-16: Triple-click in preview jumps to the source in the editor.
+    previewAPI.initPreviewClickToEdit((text) => {
+        editorAPI.searchAndHighlight(text);
     });
-  }
-  // initWindowControls() lives in Phase 2 — it short-circuits on `!isTauri()`,
-  // and `setTauri(true)` only flips during Phase 2 after the Tauri core import.
 
-  editorAPI.setValue(WELCOME_TEXT);
-  editorAPI.focus();
+    const headerIcon = document.getElementById('header-icon');
+    if (headerIcon) {
+        headerIcon.addEventListener('click', async () => {
+            const url = 'https://github.com/prathamreet/featherMD';
+            try {
+                const { invoke } = await import('@tauri-apps/api/core');
+                await invoke('plugin:opener|open_url', { url });
+            } catch {
+                window.open(url, '_blank');
+            }
+        });
+    }
+    // initWindowControls() lives in Phase 2 — it short-circuits on `!isTauri()`,
+    // and `setTauri(true)` only flips during Phase 2 after the Tauri core import.
 
-  initPrintThemeOverride();
+    editorAPI.setValue(WELCOME_TEXT);
+    editorAPI.focus();
 
-  // ---- Phase 2: async config + Tauri ----
-  bootAsync();
+    initPrintThemeOverride();
+
+    // ---- Phase 2: async config + Tauri ----
+    bootAsync();
 });
 
 // ISSUE-11: Print output should always use the snow theme so the PDF stays
@@ -123,353 +124,360 @@ window.addEventListener('DOMContentLoaded', () => {
 // wrap covers every print entry point. `afterprint` restores both layers
 // once the dialog closes. The user's saved theme is never written to disk.
 function initPrintThemeOverride() {
-  let savedTheme = null;
-  let printTimeoutId = null;
-  const originalPrint = window.print.bind(window);
+    let savedTheme = null;
+    const originalPrint = window.print.bind(window);
 
-  // ISSUE-1: Track printing state so the close handler can delay destruction
-  // until the OS print subsystem has finished writing the PDF to disk.
-  window.__FEATHER_PRINTING__ = false;
+    window.print = async function snowThemedPrint() {
+        const current = document.documentElement.getAttribute('data-theme');
+        if (current && current !== 'snow') {
+            savedTheme = current;
+            document.documentElement.setAttribute('data-theme', 'snow');
+            // Re-render diagrams in the light Mermaid theme. No-ops instantly if
+            // the document has no diagrams (refreshForThemeChange checks for that).
+            if (previewAPI && typeof previewAPI.refreshForThemeChange === 'function') {
+                try { await previewAPI.refreshForThemeChange(); } catch { /* keep printing */ }
+            }
+            // One paint frame so the swapped SVGs are fully laid out before the
+            // print dialog takes its DOM snapshot.
+            await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        }
 
-  window.print = async function snowThemedPrint() {
-    const current = document.documentElement.getAttribute('data-theme');
-    if (current && current !== 'snow') {
-      savedTheme = current;
-      document.documentElement.setAttribute('data-theme', 'snow');
-      // Re-render diagrams in the light Mermaid theme. No-ops instantly if
-      // the document has no diagrams (refreshForThemeChange checks for that).
-      if (previewAPI && typeof previewAPI.refreshForThemeChange === 'function') {
-        try { await previewAPI.refreshForThemeChange(); } catch { /* keep printing */ }
-      }
-      // One paint frame so the swapped SVGs are fully laid out before the
-      // print dialog takes its DOM snapshot.
-      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-    }
-    window.__FEATHER_PRINTING__ = true;
-    originalPrint();
-  };
-
-  window.addEventListener('afterprint', () => {
-    if (savedTheme) {
-      document.documentElement.setAttribute('data-theme', savedTheme);
-      savedTheme = null;
-      if (previewAPI && typeof previewAPI.refreshForThemeChange === 'function') {
-        previewAPI.refreshForThemeChange();
-      }
-    }
-    // ISSUE-1: Keep the flag high for a few seconds so the OS file write
-    // completes before any pending close request destroys the webview.
-    // Clear any previous print timeout to prevent premature resets on consecutive prints.
-    if (printTimeoutId) {
-      clearTimeout(printTimeoutId);
-    }
-    printTimeoutId = setTimeout(() => {
-      window.__FEATHER_PRINTING__ = false;
-      printTimeoutId = null;
-    }, 10000);
-  });
+        try {
+            originalPrint();
+        } finally {
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                savedTheme = null;
+                if (previewAPI && typeof previewAPI.refreshForThemeChange === 'function') {
+                    previewAPI.refreshForThemeChange();
+                }
+            }
+        }
+    };
 }
 
+
 async function bootAsync() {
-  try {
-    await runBootSequence();
-    pingAnalytics();
-  } finally {
-    // ISSUE-10: Window is hidden via tauri.conf.json (`visible: false`) to avoid
-    // a brief wrong-size flash on startup. Show it only after persisted size
-    // has been applied. Run in finally so a crash inside boot does not leave
-    // the window invisible forever.
-    await ensureWindowVisible();
-  }
+    try {
+        await runBootSequence();
+        pingAnalytics();
+    } finally {
+        // ISSUE-10: Window is hidden via tauri.conf.json (`visible: false`) to avoid
+        // a brief wrong-size flash on startup. Show it only after persisted size
+        // has been applied. Run in finally so a crash inside boot does not leave
+        // the window invisible forever.
+        await ensureWindowVisible();
+    }
 }
 
 async function runBootSequence() {
-  try {
-    await import('@tauri-apps/api/core');
-    setTauri(true);
-  } catch {
-    // Browser mode
-  }
+    try {
+        await import('@tauri-apps/api/core');
+        setTauri(true);
+    } catch {
+        // Browser mode
+    }
 
-  await loadConfig();
+    await loadConfig();
 
-  initThemes(config, (themeName) => {
-    config.theme = themeName;
-    saveConfig();
-    previewAPI.refreshForThemeChange();
-  });
+    initThemes(config, (themeName) => {
+        config.theme = themeName;
+        saveConfig();
+        previewAPI.refreshForThemeChange();
+    });
 
-  updateRecentFilesList(config.recentFiles || [], onRecentFileSelect, removeRecentFile, clearRecentFiles);
+    updateRecentFilesList(config.recentFiles || [], onRecentFileSelect, removeRecentFile, clearRecentFiles);
 
-  initToolbar({
-    onOpen: openFile,
-    onSave: saveFile,
-    onSaveAs: saveFileAs,
-    onNew: newFile,
-    onRecentFiles: openRecentFilesModal,
-    onPrint: () => window.print(),
-    onSyncToggle: (enabled) => {
-      setSyncEnabled(enabled);
-      config.syncScroll = enabled;
-      saveConfig();
-    },
-    onThemeSelect: (theme) => {
-      setTheme(theme);
-      config.theme = theme;
-      saveConfig();
-    },
-    onLineNumbersToggle: (show) => {
-      editorAPI.setLineNumbers(show);
-      config.lineNumbers = show;
-      saveConfig();
-    },
-    onWordWrapToggle: (wrap) => {
-      editorAPI.setLineWrapping(wrap);
-      config.wordWrap = wrap;
-      saveConfig();
-    },
-    onPageBreaksToggle: (show) => {
-      config.showPageBreaks = show;
-      saveConfig();
-      const previewPane = document.getElementById('preview-pane');
-      if (previewPane) {
-        if (show) {
-          previewPane.classList.remove('hide-pb-markers');
-        } else {
-          previewPane.classList.add('hide-pb-markers');
-        }
-      }
-    },
-    onFontSize: (size) => {
-      document.documentElement.style.setProperty('--font-size', `${size}px`);
-      config.fontSize = size;
-      saveConfig();
-      editorAPI.requestMeasure();
-    },
-    onFontFamily: (font) => {
-      document.documentElement.style.setProperty('--font-mono', font);
-      config.fontFamily = font;
-      saveConfig();
-      editorAPI.requestMeasure();
-    },
-    onTabSize: (size) => {
-      editorAPI.setTabSize(size);
-      config.tabSize = size;
-      saveConfig();
-    },
-  });
+    initToolbar({
+        onOpen: openFile,
+        onSave: saveFile,
+        onSaveAs: saveFileAs,
+        onNew: newFile,
+        onRecentFiles: openRecentFilesModal,
+        onPrint: () => window.print(),
+        onSyncToggle: (enabled) => {
+            setSyncEnabled(enabled);
+            config.syncScroll = enabled;
+            saveConfig();
+        },
+        onThemeSelect: (theme) => {
+            setTheme(theme);
+            config.theme = theme;
+            saveConfig();
+        },
+        onLineNumbersToggle: (show) => {
+            editorAPI.setLineNumbers(show);
+            config.lineNumbers = show;
+            saveConfig();
+        },
+        onWordWrapToggle: (wrap) => {
+            editorAPI.setLineWrapping(wrap);
+            config.wordWrap = wrap;
+            saveConfig();
+        },
+        onPageBreaksToggle: (show) => {
+            config.showPageBreaks = show;
+            saveConfig();
+            const previewPane = document.getElementById('preview-pane');
+            if (previewPane) {
+                if (show) {
+                    previewPane.classList.remove('hide-pb-markers');
+                } else {
+                    previewPane.classList.add('hide-pb-markers');
+                }
+            }
+        },
+        onSysTrayToggle: async (enabled) => {
+            // Toggle the tray icon LIVE via the backend — no relaunch (which
+            // would break the dev server and discard the open file). Rust shows/
+            // hides the icon and updates the tray-active state the close handler
+            // reads, so the new behavior takes effect immediately.
+            config.sysTray = enabled;
+            saveConfig();
+            try {
+                const { invoke } = await import('@tauri-apps/api/core');
+                await invoke('set_tray', { enabled });
+                await refreshTrayActive();
+            } catch {
+                // browser mode, or no tray on this platform — nothing to toggle
+            }
+        },
+        onFontSize: (size) => {
+            document.documentElement.style.setProperty('--font-size', `${size}px`);
+            config.fontSize = size;
+            saveConfig();
+            editorAPI.requestMeasure();
+        },
+        onFontFamily: (font) => {
+            // ISSUE-15: the Font menu picks a reader-friendly family for the
+            // PREVIEW/print surface (--font-reading). The editor and inline code
+            // stay on --font-mono.
+            document.documentElement.style.setProperty('--font-reading', font);
+            config.fontFamily = font;
+            saveConfig();
+        },
+        onTabSize: (size) => {
+            editorAPI.setTabSize(size);
+            config.tabSize = size;
+            saveConfig();
+        },
+    });
 
-  applyPersistedConfig();
-  applyFontSettings();
+    applyPersistedConfig();
+    applyFontSettings();
 
-  if (isTauri()) {
-    await initWindowControls();
-    await wireTauriListeners();
-    await initWindowSize();
-  }
+    if (isTauri()) {
+        await initWindowControls();
+        await wireTauriListeners();
+        await initWindowSize();
+    }
 
-  initUpdater().catch(() => { });
+    initUpdater().catch(() => { });
 }
 
 
 // ---- Tauri IPC listeners ----
 async function wireTauriListeners() {
-  try {
-    const { invoke } = await import('@tauri-apps/api/core');
-    const initialFile = await invoke('get_initial_file');
-    if (initialFile) {
-      loadFileContent(initialFile.path, initialFile.content);
+    try {
+        const { invoke } = await import('@tauri-apps/api/core');
+        const initialFile = await invoke('get_initial_file');
+        if (initialFile) {
+            loadFileContent(initialFile.path, initialFile.content);
+        }
+    } catch (err) {
+        console.error('Failed to retrieve initial file:', err);
     }
-  } catch (err) {
-    console.error('Failed to retrieve initial file:', err);
-  }
 
-  try {
-    const { getCurrentWindow } = await import('@tauri-apps/api/window');
-    const appWindow = getCurrentWindow();
-    appWindow.onCloseRequested(async (event) => {
-      event.preventDefault();
+    try {
+        const { getCurrentWindow } = await import('@tauri-apps/api/window');
+        const appWindow = getCurrentWindow();
 
-      try {
-        const maximized = await appWindow.isMaximized();
-        config.windowMaximized = maximized;
-        await saveConfig();
-      } catch {
-        // ignore
-      }
+        // Resolve the real tray state once before any close can happen.
+        await refreshTrayActive();
 
-      // ISSUE-1: If a print job just finished, wait for the OS to flush the
-      // PDF file before destroying the webview (which kills the process).
-      if (window.__FEATHER_PRINTING__) {
-        const overlay = document.getElementById('print-overlay');
-        if (overlay) overlay.hidden = false;
-        await new Promise((resolve) => {
-          const check = () => {
-            if (!window.__FEATHER_PRINTING__) { resolve(); return; }
-            setTimeout(check, 500);
-          };
-          check();
+        appWindow.onCloseRequested(async (event) => {
+            event.preventDefault();
+
+            try {
+                const maximized = await appWindow.isMaximized();
+                config.windowMaximized = maximized;
+                await saveConfig();
+            } catch {
+                // ignore
+            }
+
+            // ISSUE-1: hide the window so in-progress PDF prints finish in the
+            // background — but only when a tray genuinely exists to restore from.
+            // Otherwise (tray disabled, or a tray-less platform) quit outright so
+            // the window can't vanish into an unrecoverable process.
+            if (isTrayActive()) {
+                await hideToTray();
+            } else {
+                await requestQuit();
+            }
         });
-        if (overlay) overlay.hidden = true;
-      }
 
-      if (isDirty) {
-        const response = await showUnsavedDialog();
+        const { listen } = await import('@tauri-apps/api/event');
+        // The tray's right-click "Quit" is the only path that terminates the
+        // process. Every other exit (close button, Ctrl+Q) hides to the tray.
+        await listen('tray-quit', () => { requestQuit(); });
 
-        if (response === 'save') {
-          await saveFile();
-          if (!isDirty) {
-            await appWindow.destroy();
-          }
-        } else if (response === 'discard') {
-          isDirty = false;
-          await appWindow.destroy();
-        }
-      } else {
-        await appWindow.destroy();
-      }
-    });
-  } catch {
-    console.log('Tauri API not available - running in browser mode');
-  }
+        // CF2-1: a second launch (single-instance) forwards its file argument
+        // here so it opens in this running instance instead of a duplicate process.
+        await listen('open-file-from-args', async (event) => {
+            const path = event.payload;
+            if (!path) return;
+            if (!(await confirmDiscardChanges())) return;
+            try {
+                const { readTextFile } = await import('@tauri-apps/plugin-fs');
+                const content = await readTextFile(path);
+                loadFileContent(path, content);
+            } catch (e) {
+                console.error('Failed to open forwarded file:', e);
+            }
+        });
+    } catch {
+        console.log('Tauri API not available - running in browser mode');
+    }
 
-  try {
-    const { listen } = await import('@tauri-apps/api/event');
-    await listen('file-changed-on-disk', async (event) => {
-      const { path } = event.payload;
-      if (path !== currentFilePath) return;
+    try {
+        const { listen } = await import('@tauri-apps/api/event');
+        await listen('file-changed-on-disk', async (event) => {
+            const { path } = event.payload;
+            if (path !== currentFilePath) return;
 
-      // PERF-12: ignore the watcher echo from our own writeTextFile.
-      if (isSaving) return;
+            // PERF-12: ignore the watcher echo from our own writeTextFile.
+            if (isSaving) return;
 
-      if (!isDirty) {
-        try {
-          const { readTextFile } = await import('@tauri-apps/plugin-fs');
-          const content = await readTextFile(path);
-          loadFileContent(path, content);
-        } catch (e) {
-          console.error('Failed to auto-reload file after disk change:', e);
-        }
-        return;
-      }
+            if (!isDirty) {
+                try {
+                    const { readTextFile } = await import('@tauri-apps/plugin-fs');
+                    const content = await readTextFile(path);
+                    loadFileContent(path, content);
+                } catch (e) {
+                    console.error('Failed to auto-reload file after disk change:', e);
+                }
+                return;
+            }
 
-      const { ask } = await import('@tauri-apps/plugin-dialog');
-      const reload = await ask(
-        `The file "${path}" has been modified on disk by another program.\n\nWould you like to reload it from disk? Unsaved editor changes will be overwritten.`,
-        {
-          title: 'File Modified Externally',
-          kind: 'warning',
-          okLabel: 'Reload File',
-          cancelLabel: 'Keep Editor Version',
-        }
-      );
-      if (reload) {
-        try {
-          const { readTextFile } = await import('@tauri-apps/plugin-fs');
-          const content = await readTextFile(path);
-          loadFileContent(path, content);
-        } catch (e) {
-          console.error('Failed to reload file after disk change:', e);
-        }
-      }
-    });
-  } catch (err) {
-    console.error('Failed to set up disk file watcher listener:', err);
-  }
+            const { ask } = await import('@tauri-apps/plugin-dialog');
+            const reload = await ask(
+                `The file "${path}" has been modified on disk by another program.\n\nWould you like to reload it from disk? Unsaved editor changes will be overwritten.`,
+                {
+                    title: 'File Modified Externally',
+                    kind: 'warning',
+                    okLabel: 'Reload File',
+                    cancelLabel: 'Keep Editor Version',
+                }
+            );
+            if (reload) {
+                try {
+                    const { readTextFile } = await import('@tauri-apps/plugin-fs');
+                    const content = await readTextFile(path);
+                    loadFileContent(path, content);
+                } catch (e) {
+                    console.error('Failed to reload file after disk change:', e);
+                }
+            }
+        });
+    } catch (err) {
+        console.error('Failed to set up disk file watcher listener:', err);
+    }
 }
 
 // ---- Editor change handler (synchronous; debounce lives in CodeMirror) ----
 function onContentChange(text, isProgrammatic) {
-  previewAPI.renderMarkdown(text);
-  updateStatusBar(text);
+    previewAPI.renderMarkdown(text);
+    updateStatusBar(text);
 
-  if (isProgrammatic) {
-    isDirty = false;
-    updateTitleBar();
-  } else if (!isDirty) {
-    isDirty = true;
-    updateTitleBar();
-  }
+    if (isProgrammatic) {
+        isDirty = false;
+        updateTitleBar();
+    } else if (!isDirty) {
+        isDirty = true;
+        updateTitleBar();
+    }
 }
 
 // ---- Apply persisted preferences on startup ----
 function applyPersistedConfig() {
-  if (!editorAPI) return;
+    if (!editorAPI) return;
 
-  const lineNumbers = config.lineNumbers !== false;
-  const wordWrap = config.wordWrap !== false;
-  const syncScroll = config.syncScroll !== false;
-  const tabSize = config.tabSize || 4;
+    const lineNumbers = config.lineNumbers !== false;
+    const wordWrap = config.wordWrap !== false;
+    const syncScroll = config.syncScroll !== false;
+    const tabSize = config.tabSize || 4;
 
-  editorAPI.setLineNumbers(lineNumbers);
-  editorAPI.setLineWrapping(wordWrap);
-  editorAPI.setTabSize(tabSize);
+    editorAPI.setLineNumbers(lineNumbers);
+    editorAPI.setLineWrapping(wordWrap);
+    editorAPI.setTabSize(tabSize);
 
-  setSyncEnabled(syncScroll);
+    setSyncEnabled(syncScroll);
 
-  const showPageBreaks = config.showPageBreaks !== false;
+    const showPageBreaks = config.showPageBreaks !== false;
 
-  // Reflect state in View menu
-  setMenuChecked('toggle-line-numbers', lineNumbers);
-  setMenuChecked('toggle-word-wrap', wordWrap);
-  setMenuChecked('toggle-sync', syncScroll);
-  setMenuChecked('toggle-pb-visibility', showPageBreaks);
+    // Reflect state in View menu
+    setMenuChecked('toggle-line-numbers', lineNumbers);
+    setMenuChecked('toggle-word-wrap', wordWrap);
+    setMenuChecked('toggle-sync', syncScroll);
+    setMenuChecked('toggle-pb-visibility', showPageBreaks);
+    setMenuChecked('toggle-sys-tray', config.sysTray !== false);
 
-  const previewPane = document.getElementById('preview-pane');
-  if (previewPane) {
-    if (showPageBreaks) {
-      previewPane.classList.remove('hide-pb-markers');
-    } else {
-      previewPane.classList.add('hide-pb-markers');
-    }
-  }
-
-  // Reflect state in Style menu
-  setActiveTheme(config.theme || 'snow');
-  setActiveFontFamily(config.fontFamily || "'JetBrains Mono', monospace");
-  setActiveTabSize(tabSize);
-
-
-  const ratio = typeof config.splitRatio === 'number' ? config.splitRatio : 0.5;
-  if (Math.abs(ratio - 0.5) > 0.001) {
-    const editorPane = document.getElementById('editor-pane');
     const previewPane = document.getElementById('preview-pane');
-    if (editorPane && previewPane) {
-      const clamped = Math.max(0.2, Math.min(0.8, ratio));
-      editorPane.style.width = `${clamped * 100}%`;
-      previewPane.style.width = `${(1 - clamped) * 100}%`;
+    if (previewPane) {
+        if (showPageBreaks) {
+            previewPane.classList.remove('hide-pb-markers');
+        } else {
+            previewPane.classList.add('hide-pb-markers');
+        }
     }
-  }
+
+    // Reflect state in Style menu
+    setActiveTheme(config.theme || 'snow');
+    setActiveFontFamily(config.fontFamily || "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif");
+    setActiveTabSize(tabSize);
+
+
+    const ratio = typeof config.splitRatio === 'number' ? config.splitRatio : 0.5;
+    if (Math.abs(ratio - 0.5) > 0.001) {
+        const editorPane = document.getElementById('editor-pane');
+        const previewPane = document.getElementById('preview-pane');
+        if (editorPane && previewPane) {
+            const clamped = Math.max(0.2, Math.min(0.8, ratio));
+            editorPane.style.width = `${clamped * 100}%`;
+            previewPane.style.width = `${(1 - clamped) * 100}%`;
+        }
+    }
 }
 
 function applyFontSettings() {
-  if (config.fontSize) {
-    document.documentElement.style.setProperty('--font-size', `${config.fontSize}px`);
-  }
-  if (config.fontFamily) {
-    document.documentElement.style.setProperty('--font-mono', config.fontFamily);
-  }
-  updateZoomBadge(config.fontSize || 14);
+    if (config.fontSize) {
+        document.documentElement.style.setProperty('--font-size', `${config.fontSize}px`);
+    }
+    if (config.fontFamily) {
+        document.documentElement.style.setProperty('--font-reading', config.fontFamily);
+    }
+    updateZoomBadge(config.fontSize || 14);
 }
 
 async function pingAnalytics() {
-  if (navigator.onLine === false) return; // Silent exit if completely offline
+    if (navigator.onLine === false) return; // Silent exit if completely offline
 
-  try {
-    const versionEl = document.querySelector('#header-icon .version-text');
-    const version = versionEl ? versionEl.textContent.trim().replace(/^v/, '') : '0.0.0';
+    try {
+        const versionEl = document.querySelector('#header-icon .version-text');
+        const version = versionEl ? versionEl.textContent.trim().replace(/^v/, '') : '0.0.0';
 
-    const platform = encodeURIComponent(navigator.platform || 'unknown');
-    const language = encodeURIComponent(navigator.language || 'unknown');
-    const resolution = encodeURIComponent(`${window.screen.width}x${window.screen.height}`);
+        const platform = encodeURIComponent(navigator.platform || 'unknown');
+        const language = encodeURIComponent(navigator.language || 'unknown');
+        const resolution = encodeURIComponent(`${window.screen.width}x${window.screen.height}`);
 
-    const ANALYTICS_URL = 'https://feather-md-analytics-production.up.railway.app';
+        const ANALYTICS_URL = 'https://feather-md-analytics-production.up.railway.app';
 
-    await fetch(`${ANALYTICS_URL}/ping?version=${version}&platform=${platform}&language=${language}&resolution=${resolution}`, {
-      method: 'POST',
-      mode: 'no-cors'
-    });
-  } catch {
-    // Silent fail to ensure user experience is not affected when backend is unreachable/offline
-  }
+        await fetch(`${ANALYTICS_URL}/ping?version=${version}&platform=${platform}&language=${language}&resolution=${resolution}`, {
+            method: 'POST',
+            mode: 'no-cors'
+        });
+    } catch {
+        // Silent fail to ensure user experience is not affected when backend is unreachable/offline
+    }
 }
