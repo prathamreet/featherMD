@@ -89,19 +89,19 @@ export function initToolbar( handlers ) {
   // View menu toggles
   wireAction( 'toggle-sync', ( item ) => {
     const checked = item.getAttribute( 'data-checked' ) !== 'true';
-    item.setAttribute( 'data-checked', checked );
+    item.setAttribute( 'data-checked', checked ? 'true' : 'false' );
     handlers.onSyncToggle( checked );
   } );
 
   wireAction( 'toggle-line-numbers', ( item ) => {
     const checked = item.getAttribute( 'data-checked' ) !== 'true';
-    item.setAttribute( 'data-checked', checked );
+    item.setAttribute( 'data-checked', checked ? 'true' : 'false' );
     handlers.onLineNumbersToggle( checked );
   } );
 
   wireAction( 'toggle-word-wrap', ( item ) => {
     const checked = item.getAttribute( 'data-checked' ) !== 'true';
-    item.setAttribute( 'data-checked', checked );
+    item.setAttribute( 'data-checked', checked ? 'true' : 'false' );
     handlers.onWordWrapToggle( checked );
   } );
 
@@ -109,6 +109,12 @@ export function initToolbar( handlers ) {
     const checked = item.getAttribute( 'data-checked' ) !== 'true';
     item.setAttribute( 'data-checked', checked ? 'true' : 'false' );
     handlers.onPageBreaksToggle( checked );
+  } );
+
+  wireAction( 'toggle-sys-tray', ( item ) => {
+    const checked = item.getAttribute( 'data-checked' ) !== 'true';
+    item.setAttribute( 'data-checked', checked ? 'true' : 'false' );
+    handlers.onSysTrayToggle( checked );
   } );
 
   // Style menu - theme (ISSUE-5: stay open so users can preview multiple themes;
@@ -130,6 +136,7 @@ export function initToolbar( handlers ) {
   // Style menu - tab size (stays open)
   wireAction( 'set-tab', ( item ) => {
     const size = parseInt( item.getAttribute( 'data-tab' ), 10 );
+    if ( Number.isNaN( size ) ) return; // TS2-2: ignore a missing/malformed data-tab
     handlers.onTabSize( size );
     document.querySelectorAll( '.tab-item' ).forEach( ( ti ) => {
       ti.setAttribute( 'data-checked', ti === item ? 'true' : 'false' );
