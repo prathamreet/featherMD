@@ -9,7 +9,9 @@
 @import 'katex/dist/katex.min.css';
 
 #preview-content {
-  font-family: var(--font-ui);
+  /* ISSUE-15: reader-friendly family chosen from the Font menu (--font-reading);
+     falls back to the UI font. Inline code/pre keep --font-mono below. */
+  font-family: var(--font-reading, var(--font-ui));
   font-size: var(--font-size);
   color: var(--text);
   line-height: 1.7;

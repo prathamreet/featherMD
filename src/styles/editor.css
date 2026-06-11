@@ -6,7 +6,7 @@
   height: 100%;
   font-family: var(--font-mono);
   font-size: var(--font-size);
-  background: var(--bg-editor, var(--bg));
+  background: var(--bg);
   color: var(--text);
 }
 
