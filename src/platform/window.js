@@ -2,6 +2,7 @@
 
 import { config, saveConfig } from '../core/config.js';
 import { isTauri } from '../core/state.js';
+import { confirmDiscardChanges } from '../core/file-io.js';
 
 export async function initWindowControls() {
   if ( !isTauri() ) return;
@@ -27,6 +28,33 @@ export async function initWindowControls() {
 
 let windowResizeSaveTimer = null;
 let windowResizeUnlisten = null;
+
+// CF2-1: the single source of truth for "does a system tray actually exist".
+// The Rust backend builds the tray only on Windows AND only when the user's
+// sysTray preference is enabled, so this reflects reality — not just intent.
+// Defaults to false so that, before it is resolved (and on every no-tray
+// platform), closing QUITS rather than hiding into an unrecoverable window.
+let _trayActive = false;
+
+/** Synchronous getter for the cached tray state (see refreshTrayActive). */
+export function isTrayActive() {
+  return _trayActive;
+}
+
+/** Query the backend once for whether the tray is active, and cache it. */
+export async function refreshTrayActive() {
+  if ( !isTauri() ) {
+    _trayActive = false;
+    return false;
+  }
+  try {
+    const { invoke } = await import( '@tauri-apps/api/core' );
+    _trayActive = ( await invoke( 'tray_active' ) ) === true;
+  } catch {
+    _trayActive = false;
+  }
+  return _trayActive;
+}
 
 /**
  * Show the Tauri window. The window starts hidden (`visible: false` in
@@ -93,17 +121,52 @@ export async function setWindowMaximized( on ) {
 }
 
 /**
- * Request a window close (Ctrl+Q). Routes through Tauri's close, which fires
- * the onCloseRequested handler wired in main.js so the unsaved-changes guard
- * still runs. No-op in browser dev mode.
+ * Hide the window to the system tray. Used by Ctrl+Q and the close button so
+ * the app stays alive in the background (preserving in-progress PDF prints).
+ * The process only terminates via the tray's right-click "Quit" item
+ * (requestQuit). No-op in browser dev mode.
  */
-export async function closeWindow() {
+export async function hideToTray() {
   if ( !isTauri() ) return;
   try {
     const { getCurrentWindow } = await import( '@tauri-apps/api/window' );
-    await getCurrentWindow().close();
+    await getCurrentWindow().hide();
   } catch ( err ) {
-    console.warn( 'Failed to close window:', err );
+    console.error( 'Failed to hide window to tray:', err );
+  }
+}
+
+/**
+ * Fully quit the application. Only reachable from the tray's right-click
+ * "Quit" menu item.
+ *
+ * ISSUE-1: Every other exit path (close button, Ctrl+Q) hides to the tray so
+ * in-progress PDF prints finish writing. This is the sole path that actually
+ * terminates the process. It surfaces the window first, runs the
+ * unsaved-changes guard, and exits via plugin-process so the tray icon is torn
+ * down too. No-op in browser dev mode.
+ */
+export async function requestQuit() {
+  if ( !isTauri() ) return;
+
+  // Bring the window forward so the unsaved-changes dialog is visible even when
+  // the quit was triggered from the tray while the window was hidden.
+  try {
+    const { getCurrentWindow } = await import( '@tauri-apps/api/window' );
+    const appWindow = getCurrentWindow();
+    await appWindow.show();
+    await appWindow.setFocus();
+  } catch {
+    // ignore — proceed to the guard regardless
+  }
+
+  if ( !( await confirmDiscardChanges() ) ) return;
+
+  try {
+    const { exit } = await import( '@tauri-apps/plugin-process' );
+    await exit( 0 );
+  } catch ( err ) {
+    console.error( 'Failed to exit application:', err );
   }
 }
 
