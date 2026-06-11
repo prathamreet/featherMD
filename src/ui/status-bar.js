@@ -37,10 +37,12 @@ export function updateCursorPosition() {
   const { line, col } = _editorAPI.getCursorPosition();
   document.getElementById( 'status-cursor' ).textContent = `Ln ${ line }, Col ${ col }`;
 
-  const text = _editorAPI.getValue();
+  // CF-3: full-document word/char/paragraph stats are recomputed only on edits
+  // (updateStatusBar, fired from onContentChange). Recomputing them here ran
+  // getValue() + 16 regex passes over the entire document on every arrow key,
+  // click, and selection change — a real frame-budget cliff on large files.
+  // Cursor movement only needs Ln/Col and the (small) current-selection stats.
   const selectedText = _editorAPI.getSelectedText();
-
-  applyStats( countStats( text ) );
 
   const selectedEl = document.getElementById( 'status-selected' );
   const separatorEl = document.getElementById( 'status-selected-separator' );
@@ -82,9 +84,10 @@ function formatCount( n, noun ) {
 
 /**
  * Count words, characters, and paragraphs from raw markdown text
- * after stripping syntax artifacts.
+ * after stripping syntax artifacts. Exported so the performance benchmark can
+ * measure the real pipeline (AT2-2) rather than a stand-in.
  */
-function countStats( text ) {
+export function countStats( text ) {
   if ( !text ) return { words: 0, chars: 0, paragraphs: 0 };
 
   const clean = stripMarkdown( text );
