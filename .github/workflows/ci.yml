@@ -27,3 +27,53 @@ jobs:
 
       - name: Run Unified PRD Audit
         run: npm run report
+
+  rust-check:
+    name: 'Rust Compile Check'
+    # Both platforms: the tray code is #[cfg(target_os = "windows")], so only a
+    # Windows runner actually type-checks it — ubuntu alone would compile it out.
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ubuntu-latest, windows-latest]
+    runs-on: "${{ matrix.platform }}"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux build dependencies
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # generate_context!() embeds frontendDist (../dist), so the frontend must
+      # exist before the Rust crate will compile.
+      - name: Build frontend
+        run: npm run build
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            src-tauri/target
+          key: "${{ runner.os }}-cargo-${{ hashFiles('src-tauri/Cargo.toml') }}"
+
+      # RR2-6: catch Rust compile errors on every push/PR — previously the crate
+      # was only ever compiled at release time (release.yml on a v* tag).
+      - name: cargo check
+        working-directory: src-tauri
+        run: cargo check
