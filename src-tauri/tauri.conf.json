@@ -20,7 +20,8 @@
                 "minHeight": 400,
                 "decorations": false,
                 "transparent": false,
-                "visible": false
+                "visible": false,
+                "additionalBrowserArgs": "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection --disable-gpu"
             }
         ],
         "security": {
