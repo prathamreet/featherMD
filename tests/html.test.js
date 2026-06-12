@@ -131,9 +131,10 @@ describe('HTML -- Menu Bar Structure', () => {
     });
   });
 
-  it('should have 4 checkable items in view menu', () => {
+  it('should have 5 checkable items in view menu', () => {
+    // Word Wrap, Sync Scroll, Line Numbers, Show Page Breaks, System Tray
     const items = doc.querySelectorAll('#view-menu .menu-item.checkable');
-    expect(items.length).toBe(4);
+    expect(items.length).toBe(5);
   });
 
   it('should have file menu actions with keyboard shortcuts displayed', () => {
