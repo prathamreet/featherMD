@@ -23,3 +23,20 @@ tauri-plugin-single-instance = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 notify = "6"
+
+# Windows-only: raw WebView2 COM access to trim the renderer's working set when
+# the window is hidden to the tray (MemoryUsageTargetLevel). Versions are pinned
+# to match what Tauri 2.11 already pulls in, so the COM interface types unify.
+[target.'cfg(windows)'.dependencies]
+webview2-com = "0.38"
+windows = "0.61"
+
+# Size-optimized release profile. The Rust backend does no perf-critical work
+# (file I/O, IPC, OS file watching), so trading a little codegen speed for a
+# smaller binary is a pure win — and a smaller binary also starts faster.
+[profile.release]
+opt-level = "s"     # optimize for size
+lto = true          # link-time optimization strips cross-crate dead code
+codegen-units = 1   # better optimization across the whole crate
+strip = true        # remove debug symbols / metadata
+panic = "abort"     # drop unwinding tables (no Rust unit tests rely on unwind)
