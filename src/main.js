@@ -10,7 +10,7 @@
 import './core/state.js';
 import { isTauri, setTauri } from './core/state.js';
 import { config, loadConfig, saveConfig } from './core/config.js';
-import { WELCOME_TEXT } from './core/welcome.js';
+import { WELCOME_TEXT, EXAMPLES_TEXT } from './core/welcome.js';
 import {
     initFileIO,
     loadFileContent,
@@ -76,6 +76,19 @@ window.addEventListener('DOMContentLoaded', () => {
     previewAPI.initPreviewClickToEdit((text) => {
         editorAPI.searchAndHighlight(text);
     });
+
+    // Load the KaTeX/Mermaid examples only when the user asks — keeps those heavy
+    // engines out of the cold-start renderer heap (see welcome.js).
+    const previewContent = document.getElementById('preview-content');
+    if (previewContent) {
+        previewContent.addEventListener('click', (e) => {
+            const link = e.target.closest('a');
+            if (!link || !(link.getAttribute('href') || '').endsWith('#examples')) return;
+            e.preventDefault();
+            editorAPI.setValue(EXAMPLES_TEXT);
+            editorAPI.focus();
+        });
+    }
 
     const headerIcon = document.getElementById('header-icon');
     if (headerIcon) {
