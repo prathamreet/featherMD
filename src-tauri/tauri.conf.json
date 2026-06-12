@@ -1,70 +1,77 @@
 {
-  "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Feather MD",
-  "version": "1.8.0",
-  "identifier": "com.feathermd.app",
-  "build": {
-    "frontendDist": "../dist",
-    "devUrl": "http://localhost:1420",
-    "beforeDevCommand": "npm run dev",
-    "beforeBuildCommand": "npm run build"
-  },
-  "app": {
-    "withGlobalTauri": false,
-    "windows": [
-      {
-        "title": "Feather MD",
-        "width": 1200,
-        "height": 800,
-        "minWidth": 600,
-        "minHeight": 400,
-        "decorations": false,
-        "transparent": false,
-        "visible": false
-      }
-    ],
-    "security": {
-      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' asset: https: data:; connect-src 'self' https://github.com https://objects.githubusercontent.com https://*.github.com https://feather-md-analytics-production.up.railway.app"
-    }
-  },
-  "bundle": {
-    "active": true,
-    "createUpdaterArtifacts": true,
-    "targets": [
-      "nsis",
-      "deb",
-      "appimage"
-    ],
-    "icon": [
-      "icons/32x32.png",
-      "icons/128x128.png",
-      "icons/128x128@2x.png",
-      "icons/icon.icns",
-      "icons/icon.ico"
-    ],
-    "fileAssociations": [
-      {
-        "ext": [
-          "md",
-          "markdown"
+    "$schema": "https://schema.tauri.app/config/2",
+    "productName": "Feather MD",
+    "version": "1.8.0",
+    "identifier": "com.feathermd.app",
+    "build": {
+        "frontendDist": "../dist",
+        "devUrl": "http://localhost:1420",
+        "beforeDevCommand": "npm run dev",
+        "beforeBuildCommand": "npm run build"
+    },
+    "app": {
+        "withGlobalTauri": false,
+        "windows": [
+            {
+                "title": "Feather MD",
+                "width": 1200,
+                "height": 800,
+                "minWidth": 600,
+                "minHeight": 400,
+                "decorations": false,
+                "transparent": false,
+                "visible": false,
+                "additionalBrowserArgs": "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection --disable-gpu"
+            }
         ],
-        "name": "Markdown",
-        "description": "Markdown file"
-      }
-    ],
-    "windows": {
-      "nsis": {
-        "installerIcon": "icons/icon.ico",
-        "installMode": "currentUser"
-      }
+        "security": {
+            "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' asset: http://asset.localhost https: data:; connect-src 'self' https://github.com https://objects.githubusercontent.com https://release-assets.githubusercontent.com https://feather-md-analytics-production.up.railway.app",
+            "assetProtocol": {
+                "enable": true,
+                "scope": [
+                    "**"
+                ]
+            }
+        }
+    },
+    "bundle": {
+        "active": true,
+        "createUpdaterArtifacts": true,
+        "targets": [
+            "nsis",
+            "deb",
+            "appimage"
+        ],
+        "icon": [
+            "icons/32x32.png",
+            "icons/128x128.png",
+            "icons/128x128@2x.png",
+            "icons/icon.icns",
+            "icons/icon.ico"
+        ],
+        "fileAssociations": [
+            {
+                "ext": [
+                    "md",
+                    "markdown"
+                ],
+                "name": "Markdown",
+                "description": "Markdown file"
+            }
+        ],
+        "windows": {
+            "nsis": {
+                "installerIcon": "icons/icon.ico",
+                "installMode": "currentUser"
+            }
+        }
+    },
+    "plugins": {
+        "updater": {
+            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDFFRTIyOTRBRjBBNTVBODkKUldTSldxWHdTaW5pSG5vS0J5b0JLcmtQaHRMNE1xUW5xSUpjZS85b2dubnozaFNkMmtVeUFaWjUK",
+            "endpoints": [
+                "https://github.com/prathamreet/featherMD/releases/latest/download/latest.json"
+            ]
+        }
     }
-  },
-  "plugins": {
-    "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDFFRTIyOTRBRjBBNTVBODkKUldTSldxWHdTaW5pSG5vS0J5b0JLcmtQaHRMNE1xUW5xSUpjZS85b2dubnozaFNkMmtVeUFaWjUK",
-      "endpoints": [
-        "https://github.com/prathamreet/featherMD/releases/latest/download/latest.json"
-      ]
-    }
-  }
 }

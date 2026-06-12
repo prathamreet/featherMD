@@ -1,6 +1,7 @@
 import { describe, bench } from 'vitest';
 import { initPreview } from '../src/preview/preview.js';
 import { initThemes, applyTheme } from '../src/ui/themes.js';
+import { countStats } from '../src/ui/status-bar.js';
 import { vi } from 'vitest';
 
 // Mock window.matchMedia at the global level
@@ -54,13 +55,10 @@ describe('Feather MD — Performance Benchmarks', () => {
 
   // ---- 2. Word Count Extraction Benchmark ----
   describe('Word Count Engine Speed', () => {
-    // Word count calculation logic used on keypress
-    const countWords = (text) => {
-      return text ? text.trim().split(/\s+/).filter(Boolean).length : 0;
-    };
-
+    // AT2-2: benchmark the REAL stats pipeline (countStats -> stripMarkdown, the
+    // 16-regex pass that actually runs on edits), not a trivial split stand-in.
     bench('Calculate word count on massive 5,000-line document', () => {
-      countWords(largeMarkdown);
+      countStats(largeMarkdown);
     });
   });
 

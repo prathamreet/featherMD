@@ -3,7 +3,7 @@
 // ========================================
 
 import { EditorView, lineNumbers, highlightActiveLine, highlightActiveLineGutter, keymap, drawSelection, dropCursor, rectangularSelection, crosshairCursor } from '@codemirror/view';
-import { EditorState, Compartment } from '@codemirror/state';
+import { EditorState, Compartment, Annotation } from '@codemirror/state';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { languages } from '@codemirror/language-data';
 import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands';
@@ -22,7 +22,13 @@ let onChangeCallback = null;
 let onCursorActivityCallback = null;
 let debounceTimer = null;
 
-let isProgrammaticSetting = false;
+// CF-1: tag programmatic edits (setValue) on the transaction itself rather than
+// a shared boolean. A module-level flag flipped synchronously around dispatch()
+// could be read stale by the 150ms-debounced callback, letting a user keystroke
+// that landed in the window be misclassified as programmatic (isDirty never
+// flips -> silent data loss). An annotation travels with its transaction, so the
+// classification is always read from the exact change that triggered it.
+const programmaticChange = Annotation.define();
 
 /**
  * Initialize the CodeMirror 6 editor
@@ -39,7 +45,7 @@ export function initEditor(domEl, onChange, onCursorActivity) {
   // changes (event-driven cursor-position updates).
   const updateListener = EditorView.updateListener.of((update) => {
     if (update.docChanged) {
-      const isProgrammatic = isProgrammaticSetting;
+      const isProgrammatic = update.transactions.some((tr) => tr.annotation(programmaticChange));
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => {
         if (onChangeCallback) {
@@ -108,6 +114,7 @@ export function initEditor(domEl, onChange, onCursorActivity) {
     setLineNumbers,
     setLineWrapping,
     setTabSize,
+    searchAndHighlight,
     focus: () => editorView.focus(),
     getScrollDOM: () => editorView.scrollDOM,
     requestMeasure: () => { if (editorView) editorView.requestMeasure(); },
@@ -119,16 +126,14 @@ export function initEditor(domEl, onChange, onCursorActivity) {
  */
 function setValue(text) {
   if (!editorView) return;
-  isProgrammaticSetting = true;
-  const transaction = editorView.state.update({
+  editorView.dispatch({
     changes: {
       from: 0,
       to: editorView.state.doc.length,
       insert: text,
     },
+    annotations: programmaticChange.of(true),
   });
-  editorView.dispatch(transaction);
-  isProgrammaticSetting = false;
 }
 
 /**
@@ -192,4 +197,89 @@ function setTabSize(size) {
       indentUnit.of(' '.repeat(size)),
     ]),
   });
+}
+
+/**
+ * Search the document for `text` and select + scroll to the first match.
+ * Used by the preview triple-click feature (ISSUE-16) to jump from preview
+ * back to the corresponding source in the editor.
+ *
+ * The rendered preview strips markdown formatting (**bold** -> bold,
+ * [text](url) -> text, `code` -> code), so an exact indexOf against the raw
+ * source often fails. We use a multi-strategy approach:
+ *   1. Exact match (works for plain prose).
+ *   2. First-line match (works for headings, short paragraphs).
+ *   3. Word-sequence search: extract the first few words from the rendered
+ *      text, then scan the source for a line containing those words in order,
+ *      allowing arbitrary markdown syntax between them.
+ */
+function searchAndHighlight(text) {
+  if (!editorView || !text) return;
+
+  const trimmed = text.trim();
+  if (!trimmed) return;
+
+  const doc = editorView.state.doc.toString();
+
+  // Strategy 1: exact substring match
+  let idx = doc.indexOf(trimmed);
+  if (idx !== -1) {
+    selectAndScroll(idx, idx + trimmed.length);
+    return;
+  }
+
+  // Strategy 2: first line match
+  const firstLine = trimmed.split('\n')[0].trim();
+  if (firstLine.length > 3) {
+    idx = doc.indexOf(firstLine);
+    if (idx !== -1) {
+      selectAndScroll(idx, idx + firstLine.length);
+      return;
+    }
+  }
+
+  // Strategy 3: word-sequence fuzzy search. Extract the first N words from
+  // the rendered text and look for a source line that contains them in order.
+  // This bridges the gap between rendered "This is bold text" and source
+  // "This is **bold** text".
+  const words = trimmed.split(/\s+/).filter(Boolean);
+  if (words.length === 0) return;
+
+  // Use up to the first 6 words for the search pattern — enough to be unique,
+  // few enough to tolerate mid-word formatting.
+  const searchWords = words.slice(0, 6);
+
+  // Build a regex that matches these words in sequence with arbitrary chars
+  // between them (non-greedy, single-line). Escape regex specials in each word.
+  const escaped = searchWords.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  const pattern = new RegExp(escaped.join('[\\s\\S]{0,20}?'));
+
+  const match = pattern.exec(doc);
+  if (match) {
+    // Expand the selection to the full source line for context.
+    const lineObj = editorView.state.doc.lineAt(match.index);
+    selectAndScroll(lineObj.from, lineObj.to);
+    return;
+  }
+
+  // Strategy 4: last resort — try each individual word (>= 4 chars) and jump
+  // to the first unique occurrence.
+  for (const word of words) {
+    if (word.length < 4) continue;
+    const wi = doc.indexOf(word);
+    if (wi !== -1) {
+      const lineObj = editorView.state.doc.lineAt(wi);
+      selectAndScroll(lineObj.from, lineObj.to);
+      return;
+    }
+  }
+}
+
+function selectAndScroll(from, to) {
+  if (!editorView) return;
+  editorView.dispatch({
+    selection: { anchor: from, head: to },
+    scrollIntoView: true,
+  });
+  editorView.focus();
 }

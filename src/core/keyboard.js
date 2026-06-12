@@ -8,12 +8,36 @@ import { setMenuChecked, setActiveFontFamily, setActiveTabSize } from '../ui/too
 import { toggleShortcutsModal, openRecentFilesModal } from '../ui/dialogs.js';
 import { cycleTheme } from '../ui/themes.js';
 import { toggleFullscreen, isFullscreenActive, exitFullscreen } from '../ui/fullscreen.js';
-import { closeWindow } from '../platform/window.js';
+import { hideToTray, requestQuit, isTrayActive } from '../platform/window.js';
 
 let _editorAPI = null;
 
+// RR-1: Ctrl+scroll zoom fires on every wheel tick. The CSS var update is
+// applied immediately for responsiveness, but persistence is debounced so a
+// fast scroll doesn't flood localStorage + the filesystem with concurrent
+// config writes.
+let zoomSaveTimer = null;
+function persistZoomDebounced() {
+  clearTimeout( zoomSaveTimer );
+  zoomSaveTimer = setTimeout( saveConfig, 400 );
+}
+
 // Cycle targets for the Alt-leader chords (Style menu mirrors these lists).
-const FONT_FAMILIES = [ "'JetBrains Mono', monospace", 'monospace' ];
+// ISSUE-15: ten reader-friendly families for the preview/print surface. Kept
+// byte-identical to the data-font values in index.html so the menu checkmarks
+// and the Alt+F chord stay in sync.
+const FONT_FAMILIES = [
+  "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  "'Segoe UI', -apple-system, Roboto, sans-serif",
+  "Calibri, 'Segoe UI', sans-serif",
+  'Verdana, Geneva, sans-serif',
+  "Georgia, Cambria, 'Times New Roman', serif",
+  'Cambria, Georgia, serif',
+  'Constantia, Georgia, serif',
+  "'Sitka Text', Cambria, Georgia, serif",
+  "'Palatino Linotype', 'Book Antiqua', Palatino, serif",
+  "'Times New Roman', Times, serif",
+];
 const TAB_SIZES = [ 2, 4 ];
 
 // Leader-key state for the Alt+T / Alt+F / Alt+D "then Up/Down" chords.
@@ -79,7 +103,13 @@ export function initKeyboardShortcuts( editorAPI ) {
       reloadApp();
     } else if ( ctrl && !shift && ( e.key === 'q' || e.key === 'Q' ) ) {
       e.preventDefault();
-      closeWindow();
+      // Hide to tray only when a tray truly exists; otherwise quit (so there's
+      // no invisible, unrecoverable window on tray-less platforms).
+      if ( isTrayActive() ) {
+        hideToTray();
+      } else {
+        requestQuit();
+      }
     } else if ( ctrl && !shift && e.key === 'p' ) {
       e.preventDefault();
       window.print();
@@ -173,7 +203,7 @@ export function initKeyboardShortcuts( editorAPI ) {
           const newSize = currentSize + 1;
           document.documentElement.style.setProperty( '--font-size', `${ newSize }px` );
           config.fontSize = newSize;
-          saveConfig();
+          persistZoomDebounced();
           updateZoomBadge( newSize );
           _editorAPI.requestMeasure();
         }
@@ -183,7 +213,7 @@ export function initKeyboardShortcuts( editorAPI ) {
           const newSize = currentSize - 1;
           document.documentElement.style.setProperty( '--font-size', `${ newSize }px` );
           config.fontSize = newSize;
-          saveConfig();
+          persistZoomDebounced();
           updateZoomBadge( newSize );
           _editorAPI.requestMeasure();
         }
@@ -224,11 +254,10 @@ function cycleFont( direction ) {
   let idx = FONT_FAMILIES.indexOf( cur );
   if ( idx === -1 ) idx = 0;
   const next = FONT_FAMILIES[ ( idx + direction + FONT_FAMILIES.length ) % FONT_FAMILIES.length ];
-  document.documentElement.style.setProperty( '--font-mono', next );
+  document.documentElement.style.setProperty( '--font-reading', next );
   config.fontFamily = next;
   saveConfig();
   setActiveFontFamily( next );
-  _editorAPI.requestMeasure();
 }
 
 function cycleTab( direction ) {

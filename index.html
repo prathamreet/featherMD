@@ -2,422 +2,653 @@
 <html lang="en" data-theme="snow">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Feather MD</title>
-  <link rel="stylesheet" href="/src/styles/base.css" />
-  <link rel="stylesheet" href="/src/styles/editor.css" />
-  <link rel="stylesheet" href="/src/styles/preview.css" />
-  <link rel="stylesheet" href="/src/styles/toolbar.css" />
-  <script type="module" src="/src/main.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feather MD</title>
+    <link rel="stylesheet" href="/src/styles/base.css" />
+    <link rel="stylesheet" href="/src/styles/editor.css" />
+    <link rel="stylesheet" href="/src/styles/preview.css" />
+    <link rel="stylesheet" href="/src/styles/toolbar.css" />
+    <script type="module" src="/src/main.js"></script>
 </head>
 
 <body>
-  <!-- Header: icon + menus + font-size slider | title | window controls -->
-  <div id="header-bar">
-    <div id="header-left">
-      <div id="header-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
-          <line x1="16" y1="8" x2="2" y2="22"></line>
-          <line x1="17.5" y1="15" x2="9" y2="15"></line>
-        </svg>
-        <span class="version-text">v1.8.0</span>
-      </div>
-
-      <!-- File Menu -->
-      <div class="menu-dropdown">
-        <button class="menu-btn" data-menu="file-menu">File</button>
-        <div id="file-menu" class="menu-panel" hidden>
-          <button class="menu-item" data-action="new-file">
-            <span class="menu-item-label">New File</span>
-            <span class="menu-item-shortcut">Ctrl+N</span>
-          </button>
-          <button class="menu-item" data-action="open-file">
-            <span class="menu-item-label">Open</span>
-            <span class="menu-item-shortcut">Ctrl+O</span>
-          </button>
-          <button class="menu-item" data-action="save-file">
-            <span class="menu-item-label">Save</span>
-            <span class="menu-item-shortcut">Ctrl+S</span>
-          </button>
-          <button class="menu-item" data-action="save-as">
-            <span class="menu-item-label">Save As</span>
-            <span class="menu-item-shortcut">Ctrl+Shift+S</span>
-          </button>
-          <div class="menu-separator"></div>
-          <button class="menu-item" data-action="recent-files">
-            <span class="menu-item-label">Recent Files</span>
-            <span class="menu-item-shortcut">Ctrl+R</span>
-          </button>
-          <div class="menu-separator"></div>
-          <button class="menu-item" data-action="print">
-            <span class="menu-item-label">Print</span>
-            <span class="menu-item-shortcut">Ctrl+P</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- View Menu -->
-      <div class="menu-dropdown">
-        <button class="menu-btn" data-menu="view-menu">View</button>
-        <div id="view-menu" class="menu-panel" hidden>
-          <button class="menu-item checkable" data-action="toggle-word-wrap" data-checked="true">
-            <span class="menu-check">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="2,6 5,9 10,3" />
-              </svg>
-            </span>
-            <span class="menu-item-label">Word Wrap</span>
-            <span class="menu-item-shortcut">Alt+Z</span>
-          </button>
-          <button class="menu-item checkable" data-action="toggle-sync" data-checked="true">
-            <span class="menu-check">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="2,6 5,9 10,3" />
-              </svg>
-            </span>
-            <span class="menu-item-label">Sync Scroll</span>
-            <span class="menu-item-shortcut">Alt+X</span>
-          </button>
-          <button class="menu-item checkable" data-action="toggle-line-numbers" data-checked="true">
-            <span class="menu-check">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="2,6 5,9 10,3" />
-              </svg>
-            </span>
-            <span class="menu-item-label">Line Numbers</span>
-            <span class="menu-item-shortcut">Alt+C</span>
-          </button>
-          <button class="menu-item checkable" data-action="toggle-pb-visibility" data-checked="true">
-            <span class="menu-check">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="2,6 5,9 10,3" />
-              </svg>
-            </span>
-            <span class="menu-item-label">Show Page Breaks</span>
-            <span class="menu-item-shortcut">Alt+P</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Style Menu -->
-      <div class="menu-dropdown">
-        <button class="menu-btn" data-menu="style-menu">Style</button>
-        <div id="style-menu" class="menu-panel" hidden>
-
-          <!-- Theme Submenu -->
-          <div class="menu-submenu">
-            <button class="menu-item has-submenu" data-action="theme-submenu-btn">
-              <span class="menu-item-label">Theme</span>
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5">
-                <polyline points="3,2 7,5 3,8" />
-              </svg>
-            </button>
-            <div class="submenu-panel" id="theme-submenu">
-              <div class="menu-group-label">Theme - Light</div>
-              <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="snow"
-                data-checked="true">
-                <span class="menu-check">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="2,6 5,9 10,3" />
-                  </svg>
-                </span>
-                <span class="menu-item-label">Snow</span>
-              </button>
-              <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="solarized-light">
-                <span class="menu-check">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="2,6 5,9 10,3" />
-                  </svg>
-                </span>
-                <span class="menu-item-label">Solarized Light</span>
-              </button>
-              <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="github-light">
-                <span class="menu-check">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="2,6 5,9 10,3" />
-                  </svg>
-                </span>
-                <span class="menu-item-label">GitHub Light</span>
-              </button>
-              <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="sepia">
-                <span class="menu-check">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="2,6 5,9 10,3" />
-                  </svg>
-                </span>
-                <span class="menu-item-label">Sepia</span>
-              </button>
-              <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="gruvbox-light">
-                <span class="menu-check">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="2,6 5,9 10,3" />
-                  </svg>
-                </span>
-                <span class="menu-item-label">Gruvbox Light</span>
-              </button>
-              <div class="menu-separator"></div>
-              <div class="menu-group-label">Theme - Dark</div>
-              <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="onyx">
-                <span class="menu-check">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="2,6 5,9 10,3" />
-                  </svg>
-                </span>
-                <span class="menu-item-label">Onyx</span>
-              </button>
-              <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="solarized-dark">
-                <span class="menu-check">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="2,6 5,9 10,3" />
-                  </svg>
-                </span>
-                <span class="menu-item-label">Solarized Dark</span>
-              </button>
-              <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="github-dark">
-                <span class="menu-check">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="2,6 5,9 10,3" />
-                  </svg>
-                </span>
-                <span class="menu-item-label">GitHub Dark</span>
-              </button>
-              <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="monokai">
-                <span class="menu-check">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="2,6 5,9 10,3" />
-                  </svg>
-                </span>
-                <span class="menu-item-label">Monokai</span>
-              </button>
-              <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="gruvbox-dark">
-                <span class="menu-check">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="2,6 5,9 10,3" />
-                  </svg>
-                </span>
-                <span class="menu-item-label">Gruvbox Dark</span>
-              </button>
+    <!-- Header: icon + menus + font-size slider | title | window controls -->
+    <div id="header-bar">
+        <div id="header-left">
+            <div id="header-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
+                    <line x1="16" y1="8" x2="2" y2="22"></line>
+                    <line x1="17.5" y1="15" x2="9" y2="15"></line>
+                </svg>
+                <span class="version-text">v1.8.0</span>
             </div>
-          </div>
 
-          <!-- Font Submenu -->
-          <div class="menu-submenu">
-            <button class="menu-item has-submenu" data-action="font-submenu-btn">
-              <span class="menu-item-label">Font</span>
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5">
-                <polyline points="3,2 7,5 3,8" />
-              </svg>
-            </button>
-            <div class="submenu-panel" id="font-submenu">
-              <button class="menu-item checkable font-item" data-action="set-font"
-                data-font="'JetBrains Mono', monospace" data-checked="true">
-                <span class="menu-check">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="2,6 5,9 10,3" />
-                  </svg>
-                </span>
-                <span class="menu-item-label">JetBrains Mono</span>
-              </button>
-              <button class="menu-item checkable font-item" data-action="set-font" data-font="monospace">
-                <span class="menu-check">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="2,6 5,9 10,3" />
-                  </svg>
-                </span>
-                <span class="menu-item-label">System Monospace</span>
-              </button>
+            <!-- File Menu -->
+            <div class="menu-dropdown">
+                <button class="menu-btn" data-menu="file-menu">File</button>
+                <div id="file-menu" class="menu-panel" hidden>
+                    <button class="menu-item" data-action="new-file">
+                        <span class="menu-item-label">New File</span>
+                        <span class="menu-item-shortcut">Ctrl+N</span>
+                    </button>
+                    <button class="menu-item" data-action="open-file">
+                        <span class="menu-item-label">Open</span>
+                        <span class="menu-item-shortcut">Ctrl+O</span>
+                    </button>
+                    <button class="menu-item" data-action="save-file">
+                        <span class="menu-item-label">Save</span>
+                        <span class="menu-item-shortcut">Ctrl+S</span>
+                    </button>
+                    <button class="menu-item" data-action="save-as">
+                        <span class="menu-item-label">Save As</span>
+                        <span class="menu-item-shortcut">Ctrl+Shift+S</span>
+                    </button>
+                    <div class="menu-separator"></div>
+                    <button class="menu-item" data-action="recent-files">
+                        <span class="menu-item-label">Recent Files</span>
+                        <span class="menu-item-shortcut">Ctrl+R</span>
+                    </button>
+                    <div class="menu-separator"></div>
+                    <button class="menu-item" data-action="print">
+                        <span class="menu-item-label">Print</span>
+                        <span class="menu-item-shortcut">Ctrl+P</span>
+                    </button>
+                </div>
             </div>
-          </div>
 
-          <!-- Tab Size Submenu -->
-          <div class="menu-submenu">
-            <button class="menu-item has-submenu" data-action="tab-submenu-btn">
-              <span class="menu-item-label">Tab Size</span>
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5">
-                <polyline points="3,2 7,5 3,8" />
-              </svg>
-            </button>
-            <div class="submenu-panel" id="tab-submenu">
-              <button class="menu-item checkable tab-item" data-action="set-tab" data-tab="2">
-                <span class="menu-check">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="2,6 5,9 10,3" />
-                  </svg>
-                </span>
-                <span class="menu-item-label">2 spaces</span>
-              </button>
-              <button class="menu-item checkable tab-item" data-action="set-tab" data-tab="4" data-checked="true">
-                <span class="menu-check">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="2,6 5,9 10,3" />
-                  </svg>
-                </span>
-                <span class="menu-item-label">4 spaces</span>
-              </button>
+            <!-- View Menu -->
+            <div class="menu-dropdown">
+                <button class="menu-btn" data-menu="view-menu">View</button>
+                <div id="view-menu" class="menu-panel" hidden>
+                    <button class="menu-item checkable" data-action="toggle-word-wrap" data-checked="true">
+                        <span class="menu-check">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="2,6 5,9 10,3" />
+                            </svg>
+                        </span>
+                        <span class="menu-item-label">Word Wrap</span>
+                        <span class="menu-item-shortcut">Alt+Z</span>
+                    </button>
+                    <button class="menu-item checkable" data-action="toggle-sync" data-checked="true">
+                        <span class="menu-check">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="2,6 5,9 10,3" />
+                            </svg>
+                        </span>
+                        <span class="menu-item-label">Sync Scroll</span>
+                        <span class="menu-item-shortcut">Alt+X</span>
+                    </button>
+                    <button class="menu-item checkable" data-action="toggle-line-numbers" data-checked="true">
+                        <span class="menu-check">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="2,6 5,9 10,3" />
+                            </svg>
+                        </span>
+                        <span class="menu-item-label">Line Numbers</span>
+                        <span class="menu-item-shortcut">Alt+C</span>
+                    </button>
+                    <button class="menu-item checkable" data-action="toggle-pb-visibility" data-checked="true">
+                        <span class="menu-check">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="2,6 5,9 10,3" />
+                            </svg>
+                        </span>
+                        <span class="menu-item-label">Show Page Breaks</span>
+                        <span class="menu-item-shortcut">Alt+P</span>
+                    </button>
+                    <div class="menu-separator"></div>
+                    <button class="menu-item checkable" data-action="toggle-sys-tray" data-checked="true"
+                        title="When on, closing the window keeps Feather MD quietly running in the background (system tray). This is important for PDF export - saving a PDF takes a moment, and closing too early will leave you with an empty 0-byte file. Turn this off only if you want the app to fully close every time.">
+                        <span class="menu-check">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="2,6 5,9 10,3" />
+                            </svg>
+                        </span>
+                        <span class="menu-item-label">System Tray</span>
+                    </button>
+                </div>
             </div>
-          </div>
 
+            <!-- Style Menu -->
+            <div class="menu-dropdown">
+                <button class="menu-btn" data-menu="style-menu">Style</button>
+                <div id="style-menu" class="menu-panel" hidden>
+
+                    <!-- Theme Submenu -->
+                    <div class="menu-submenu">
+                        <button class="menu-item has-submenu" data-action="theme-submenu-btn">
+                            <span class="menu-item-label">Theme</span>
+                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor"
+                                stroke-width="1.5">
+                                <polyline points="3,2 7,5 3,8" />
+                            </svg>
+                        </button>
+                        <div class="submenu-panel" id="theme-submenu">
+                            <div class="menu-group-label">Theme - Light</div>
+                            <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="snow"
+                                data-checked="true">
+                                <span class="menu-check">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="2,6 5,9 10,3" />
+                                    </svg>
+                                </span>
+                                <span class="menu-item-label">Snow</span>
+                            </button>
+                            <button class="menu-item checkable theme-item" data-action="set-theme"
+                                data-theme="solarized-light">
+                                <span class="menu-check">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="2,6 5,9 10,3" />
+                                    </svg>
+                                </span>
+                                <span class="menu-item-label">Solarized Light</span>
+                            </button>
+                            <button class="menu-item checkable theme-item" data-action="set-theme"
+                                data-theme="github-light">
+                                <span class="menu-check">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="2,6 5,9 10,3" />
+                                    </svg>
+                                </span>
+                                <span class="menu-item-label">GitHub Light</span>
+                            </button>
+                            <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="sepia">
+                                <span class="menu-check">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="2,6 5,9 10,3" />
+                                    </svg>
+                                </span>
+                                <span class="menu-item-label">Sepia</span>
+                            </button>
+                            <button class="menu-item checkable theme-item" data-action="set-theme"
+                                data-theme="gruvbox-light">
+                                <span class="menu-check">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="2,6 5,9 10,3" />
+                                    </svg>
+                                </span>
+                                <span class="menu-item-label">Gruvbox Light</span>
+                            </button>
+                            <div class="menu-separator"></div>
+                            <div class="menu-group-label">Theme - Dark</div>
+                            <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="onyx">
+                                <span class="menu-check">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="2,6 5,9 10,3" />
+                                    </svg>
+                                </span>
+                                <span class="menu-item-label">Onyx</span>
+                            </button>
+                            <button class="menu-item checkable theme-item" data-action="set-theme"
+                                data-theme="solarized-dark">
+                                <span class="menu-check">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="2,6 5,9 10,3" />
+                                    </svg>
+                                </span>
+                                <span class="menu-item-label">Solarized Dark</span>
+                            </button>
+                            <button class="menu-item checkable theme-item" data-action="set-theme"
+                                data-theme="github-dark">
+                                <span class="menu-check">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="2,6 5,9 10,3" />
+                                    </svg>
+                                </span>
+                                <span class="menu-item-label">GitHub Dark</span>
+                            </button>
+                            <button class="menu-item checkable theme-item" data-action="set-theme" data-theme="monokai">
+                                <span class="menu-check">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="2,6 5,9 10,3" />
+                                    </svg>
+                                </span>
+                                <span class="menu-item-label">Monokai</span>
+                            </button>
+                            <button class="menu-item checkable theme-item" data-action="set-theme"
+                                data-theme="gruvbox-dark">
+                                <span class="menu-check">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="2,6 5,9 10,3" />
+                                    </svg>
+                                </span>
+                                <span class="menu-item-label">Gruvbox Dark</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Font Submenu -->
+                    <div class="menu-submenu">
+                        <button class="menu-item has-submenu" data-action="font-submenu-btn">
+                            <span class="menu-item-label">Font</span>
+                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor"
+                                stroke-width="1.5">
+                                <polyline points="3,2 7,5 3,8" />
+                            </svg>
+                        </button>
+                        <div class="submenu-panel" id="font-submenu">
+                            <div class="menu-group-label">Sans-serif</div>
+                            <button class="menu-item checkable font-item" data-action="set-font"
+                                data-font="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+                                data-checked="true">
+                                <span class="menu-check">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="2,6 5,9 10,3" />
+                                    </svg>
+                                </span>
+                                <span class="menu-item-label" style="font-family: 'Inter', sans-serif;">Inter</span>
+                            </button>
+                            <button class="menu-item checkable font-item" data-action="set-font"
+                                data-font="'Segoe UI', -apple-system, Roboto, sans-serif">
+                                <span class="menu-check">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="2,6 5,9 10,3" />
+                                    </svg>
+                                </span>
+                                <span class="menu-item-label" style="font-family: 'Segoe UI', sans-serif;">Segoe
+                                    UI</span>
+                            </button>
+                            <button class="menu-item checkable font-item" data-action="set-font"
+                                data-font="Calibri, 'Segoe UI', sans-serif">
+                                <span class="menu-check">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="2,6 5,9 10,3" />
+                                    </svg>
+                                </span>
+                                <span class="menu-item-label" style="font-family: Calibri, sans-serif;">Calibri</span>
+                            </button>
+                            <button class="menu-item checkable font-item" data-action="set-font"
+                                data-font="Verdana, Geneva, sans-serif">
+                                <span class="menu-check">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="2,6 5,9 10,3" />
+                                    </svg>
+                                </span>
+                                <span class="menu-item-label" style="font-family: Verdana, sans-serif;">Verdana</span>
+                            </button>
+                            <div class="menu-separator"></div>
+                            <div class="menu-group-label">Serif</div>
+                            <button class="menu-item checkable font-item" data-action="set-font"
+                                data-font="Georgia, Cambria, 'Times New Roman', serif">
+                                <span class="menu-check">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="2,6 5,9 10,3" />
+                                    </svg>
+                                </span>
+                                <span class="menu-item-label" style="font-family: Georgia, serif;">Georgia</span>
+                            </button>
+                            <button class="menu-item checkable font-item" data-action="set-font"
+                                data-font="Cambria, Georgia, serif">
+                                <span class="menu-check">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="2,6 5,9 10,3" />
+                                    </svg>
+                                </span>
+                                <span class="menu-item-label" style="font-family: Cambria, serif;">Cambria</span>
+                            </button>
+                            <button class="menu-item checkable font-item" data-action="set-font"
+                                data-font="Constantia, Georgia, serif">
+                                <span class="menu-check">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="2,6 5,9 10,3" />
+                                    </svg>
+                                </span>
+                                <span class="menu-item-label" style="font-family: Constantia, serif;">Constantia</span>
+                            </button>
+                            <button class="menu-item checkable font-item" data-action="set-font"
+                                data-font="'Sitka Text', Cambria, Georgia, serif">
+                                <span class="menu-check">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="2,6 5,9 10,3" />
+                                    </svg>
+                                </span>
+                                <span class="menu-item-label" style="font-family: 'Sitka Text', serif;">Sitka</span>
+                            </button>
+                            <button class="menu-item checkable font-item" data-action="set-font"
+                                data-font="'Palatino Linotype', 'Book Antiqua', Palatino, serif">
+                                <span class="menu-check">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="2,6 5,9 10,3" />
+                                    </svg>
+                                </span>
+                                <span class="menu-item-label"
+                                    style="font-family: 'Palatino Linotype', serif;">Palatino</span>
+                            </button>
+                            <button class="menu-item checkable font-item" data-action="set-font"
+                                data-font="'Times New Roman', Times, serif">
+                                <span class="menu-check">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="2,6 5,9 10,3" />
+                                    </svg>
+                                </span>
+                                <span class="menu-item-label" style="font-family: 'Times New Roman', serif;">Times New
+                                    Roman</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tab Size Submenu -->
+                    <div class="menu-submenu">
+                        <button class="menu-item has-submenu" data-action="tab-submenu-btn">
+                            <span class="menu-item-label">Tab Size</span>
+                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor"
+                                stroke-width="1.5">
+                                <polyline points="3,2 7,5 3,8" />
+                            </svg>
+                        </button>
+                        <div class="submenu-panel" id="tab-submenu">
+                            <button class="menu-item checkable tab-item" data-action="set-tab" data-tab="2">
+                                <span class="menu-check">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="2,6 5,9 10,3" />
+                                    </svg>
+                                </span>
+                                <span class="menu-item-label">2 spaces</span>
+                            </button>
+                            <button class="menu-item checkable tab-item" data-action="set-tab" data-tab="4"
+                                data-checked="true">
+                                <span class="menu-check">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="2,6 5,9 10,3" />
+                                    </svg>
+                                </span>
+                                <span class="menu-item-label">4 spaces</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Zoom Indicator Widget -->
+            <button id="zoom-badge" class="zoom-btn" title="Reset zoom to default">100%</button>
         </div>
-      </div>
 
-      <!-- Zoom Indicator Widget -->
-      <button id="zoom-badge" class="zoom-btn" title="Reset zoom to default">100%</button>
-    </div>
+        <!-- Center Title (drag region) -->
+        <div id="header-title" data-tauri-drag-region>FeatherMD - Untitled</div>
 
-    <!-- Center Title (drag region) -->
-    <div id="header-title" data-tauri-drag-region>FeatherMD - Untitled</div>
-
-    <!-- Window Controls -->
-    <div id="header-controls">
-      <button id="btn-minimize" class="title-btn" aria-label="Minimize">
-        <svg width="12" height="12" viewBox="0 0 12 12">
-          <line x1="2" y1="6" x2="10" y2="6" stroke="currentColor" stroke-width="1.5" />
-        </svg>
-      </button>
-      <button id="btn-maximize" class="title-btn" aria-label="Maximize">
-        <svg width="12" height="12" viewBox="0 0 12 12">
-          <rect x="2" y="2" width="8" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="1.5" />
-        </svg>
-      </button>
-      <button id="btn-close" class="title-btn title-btn-close" aria-label="Close">
-        <svg width="12" height="12" viewBox="0 0 12 12">
-          <line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.5" />
-          <line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.5" />
-        </svg>
-      </button>
-    </div>
-  </div>
-
-  <!-- Main Split Container -->
-  <div id="split-container">
-    <div id="editor-pane"></div>
-    <div id="divider"></div>
-    <div id="preview-pane">
-      <div id="preview-content"></div>
-    </div>
-  </div>
-
-  <!-- Keyboard Shortcuts Modal -->
-  <div id="shortcuts-modal" class="modal-overlay" hidden>
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Keyboard Shortcuts</h3>
-        <button id="btn-close-shortcuts" class="settings-close" aria-label="Close shortcuts">
-          <svg width="16" height="16" viewBox="0 0 12 12">
-            <line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.5" />
-            <line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.5" />
-          </svg>
-        </button>
-      </div>
-      <div class="modal-body">
-        <table class="shortcuts-table">
-          <tbody>
-            <tr class="shortcuts-section"><th colspan="2">File</th></tr>
-            <tr><td><kbd>Ctrl</kbd>+<kbd>N</kbd></td><td>New file</td></tr>
-            <tr><td><kbd>Ctrl</kbd>+<kbd>O</kbd></td><td>Open file</td></tr>
-            <tr><td><kbd>Ctrl</kbd>+<kbd>S</kbd></td><td>Save</td></tr>
-            <tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd></td><td>Save As</td></tr>
-            <tr><td><kbd>Ctrl</kbd>+<kbd>R</kbd></td><td>Recent files</td></tr>
-            <tr><td><kbd>Ctrl</kbd>+<kbd>P</kbd></td><td>Print / Export PDF</td></tr>
-
-            <tr class="shortcuts-section"><th colspan="2">View</th></tr>
-            <tr><td><kbd>Alt</kbd>+<kbd>Z</kbd></td><td>Toggle word wrap</td></tr>
-            <tr><td><kbd>Alt</kbd>+<kbd>X</kbd></td><td>Toggle sync scroll</td></tr>
-            <tr><td><kbd>Alt</kbd>+<kbd>C</kbd></td><td>Toggle line numbers</td></tr>
-            <tr><td><kbd>Alt</kbd>+<kbd>P</kbd></td><td>Toggle page-break markers</td></tr>
-            <tr><td><kbd>F11</kbd></td><td>Toggle fullscreen preview</td></tr>
-            <tr><td><kbd>Esc</kbd></td><td>Exit fullscreen / close dialog</td></tr>
-
-            <tr class="shortcuts-section"><th colspan="2">Style (chord — tap the leader, then <kbd>&uarr;</kbd>/<kbd>&darr;</kbd>)</th></tr>
-            <tr><td><kbd>Alt</kbd>+<kbd>T</kbd></td><td>Cycle theme (5 light, 5 dark)</td></tr>
-            <tr><td><kbd>Alt</kbd>+<kbd>F</kbd></td><td>Cycle font</td></tr>
-            <tr><td><kbd>Alt</kbd>+<kbd>D</kbd></td><td>Cycle tab size</td></tr>
-            <tr><td><kbd>Ctrl</kbd> + scroll</td><td>Zoom text in / out</td></tr>
-
-            <tr class="shortcuts-section"><th colspan="2">Editor</th></tr>
-            <tr><td><kbd>Ctrl</kbd>+<kbd>F</kbd></td><td>Find</td></tr>
-            <tr><td><kbd>Ctrl</kbd>+<kbd>H</kbd></td><td>Find &amp; replace</td></tr>
-            <tr><td><kbd>Ctrl</kbd>+<kbd>G</kbd> / <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd></td><td>Find next / previous</td></tr>
-            <tr><td><kbd>Ctrl</kbd>+<kbd>/</kbd></td><td>Toggle line comment</td></tr>
-            <tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd></td><td>Undo / Redo</td></tr>
-            <tr><td><kbd>Ctrl</kbd>+<kbd>A</kbd></td><td>Select all</td></tr>
-            <tr><td><kbd>Ctrl</kbd>+<kbd>D</kbd></td><td>Select next occurrence</td></tr>
-            <tr><td><kbd>Ctrl</kbd>+<kbd>L</kbd></td><td>Select current line</td></tr>
-            <tr><td><kbd>Alt</kbd>+<kbd>&uarr;</kbd> / <kbd>Alt</kbd>+<kbd>&darr;</kbd></td><td>Move line up / down</td></tr>
-            <tr><td><kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>&uarr;</kbd> / <kbd>&darr;</kbd></td><td>Copy line up / down</td></tr>
-            <tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Indent / Outdent</td></tr>
-            <tr><td><kbd>Ctrl</kbd>+<kbd>Home</kbd> / <kbd>End</kbd></td><td>Jump to document start / end</td></tr>
-
-            <tr class="shortcuts-section"><th colspan="2">App</th></tr>
-            <tr><td><kbd>Ctrl</kbd>+<kbd>.</kbd></td><td>Show this dialog</td></tr>
-            <tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd></td><td>Reload</td></tr>
-            <tr><td><kbd>Ctrl</kbd>+<kbd>Q</kbd></td><td>Quit</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- Recent Files Modal -->
-  <div id="recent-files-modal" class="modal-overlay" hidden>
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Recent Files</h3>
-        <button id="btn-close-recent" class="settings-close" aria-label="Close recent files">
-          <svg width="16" height="16" viewBox="0 0 12 12">
-            <line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.5" />
-            <line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.5" />
-          </svg>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div id="recent-files-list">
-          <div class="menu-item-empty">No recent files</div>
+        <!-- Window Controls -->
+        <div id="header-controls">
+            <button id="btn-minimize" class="title-btn" aria-label="Minimize">
+                <svg width="12" height="12" viewBox="0 0 12 12">
+                    <line x1="2" y1="6" x2="10" y2="6" stroke="currentColor" stroke-width="1.5" />
+                </svg>
+            </button>
+            <button id="btn-maximize" class="title-btn" aria-label="Maximize">
+                <svg width="12" height="12" viewBox="0 0 12 12">
+                    <rect x="2" y="2" width="8" height="8" rx="1" fill="none" stroke="currentColor"
+                        stroke-width="1.5" />
+                </svg>
+            </button>
+            <button id="btn-close" class="title-btn title-btn-close" aria-label="Close">
+                <svg width="12" height="12" viewBox="0 0 12 12">
+                    <line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.5" />
+                    <line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.5" />
+                </svg>
+            </button>
         </div>
-      </div>
     </div>
-  </div>
 
-  <!-- Unsaved Changes Dialog -->
-  <div id="unsaved-dialog" class="modal-overlay" hidden>
-    <div class="modal-content unsaved-dialog-content">
-      <div class="modal-header">
-        <h3>Unsaved Changes</h3>
-      </div>
-      <p id="unsaved-dialog-message" hidden></p>
-      <div class="modal-footer">
-        <button id="unsaved-btn-cancel" class="dialog-btn dialog-btn-secondary" aria-keyshortcuts="C">Cancel <span
-            class="btn-hint">(c)</span></button>
-        <button id="unsaved-btn-discard" class="dialog-btn dialog-btn-danger" aria-keyshortcuts="N">Don't Save <span
-            class="btn-hint">(n)</span></button>
-        <button id="unsaved-btn-save" class="dialog-btn dialog-btn-primary" aria-keyshortcuts="S">Save <span
-            class="btn-hint">(s)</span></button>
-      </div>
+    <!-- Main Split Container -->
+    <div id="split-container">
+        <div id="editor-pane"></div>
+        <div id="divider"></div>
+        <div id="preview-pane">
+            <div id="preview-content"></div>
+        </div>
     </div>
-  </div>
 
-  <!-- Status Bar -->
-  <div id="status-bar">
-    <span id="status-filepath" title="">Untitled</span>
-    <div id="status-right">
-      <span id="status-selected" style="display: none;"></span>
-      <span class="status-separator" id="status-selected-separator" style="display: none;">|</span>
-      <span id="status-words">0 words</span>
-      <span class="status-separator">|</span>
-      <span id="status-chars">0 chars</span>
-      <span class="status-separator">|</span>
-      <span id="status-paragraphs">0 paragraphs</span>
-      <span class="status-separator">|</span>
-      <span id="status-cursor">Ln 1, Col 1</span>
-      <span class="status-separator">|</span>
-      <span id="status-encoding">UTF-8</span>
-      <span class="status-separator">|</span>
-      <span id="status-line-ending">LF</span>
+    <!-- Keyboard Shortcuts Modal -->
+    <div id="shortcuts-modal" class="modal-overlay" hidden>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Keyboard Shortcuts</h3>
+                <button id="btn-close-shortcuts" class="settings-close" aria-label="Close shortcuts">
+                    <svg width="16" height="16" viewBox="0 0 12 12">
+                        <line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.5" />
+                        <line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.5" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="shortcuts-table">
+                    <tbody>
+                        <tr class="shortcuts-section">
+                            <th colspan="2">File</th>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>N</kbd></td>
+                            <td>New file</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>O</kbd></td>
+                            <td>Open file</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>S</kbd></td>
+                            <td>Save</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd></td>
+                            <td>Save As</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>R</kbd></td>
+                            <td>Recent files</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>P</kbd></td>
+                            <td>Print / Export PDF</td>
+                        </tr>
+
+                        <tr class="shortcuts-section">
+                            <th colspan="2">View</th>
+                        </tr>
+                        <tr>
+                            <td><kbd>Alt</kbd>+<kbd>Z</kbd></td>
+                            <td>Toggle word wrap</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Alt</kbd>+<kbd>X</kbd></td>
+                            <td>Toggle sync scroll</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Alt</kbd>+<kbd>C</kbd></td>
+                            <td>Toggle line numbers</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Alt</kbd>+<kbd>P</kbd></td>
+                            <td>Toggle page-break markers</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>F11</kbd></td>
+                            <td>Toggle fullscreen preview</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Esc</kbd></td>
+                            <td>Exit fullscreen / close dialog</td>
+                        </tr>
+
+                        <tr class="shortcuts-section">
+                            <th colspan="2">Style (chord — tap the leader, then <kbd>&uarr;</kbd>/<kbd>&darr;</kbd>)
+                            </th>
+                        </tr>
+                        <tr>
+                            <td><kbd>Alt</kbd>+<kbd>T</kbd></td>
+                            <td>Cycle theme (5 light, 5 dark)</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Alt</kbd>+<kbd>F</kbd></td>
+                            <td>Cycle font</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Alt</kbd>+<kbd>D</kbd></td>
+                            <td>Cycle tab size</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd> + scroll</td>
+                            <td>Zoom text in / out</td>
+                        </tr>
+
+                        <tr class="shortcuts-section">
+                            <th colspan="2">Editor</th>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>F</kbd></td>
+                            <td>Find</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>H</kbd></td>
+                            <td>Find &amp; replace</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>G</kbd> / <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd></td>
+                            <td>Find next / previous</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>/</kbd></td>
+                            <td>Toggle line comment</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd></td>
+                            <td>Undo / Redo</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>A</kbd></td>
+                            <td>Select all</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>D</kbd></td>
+                            <td>Select next occurrence</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>L</kbd></td>
+                            <td>Select current line</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Alt</kbd>+<kbd>&uarr;</kbd> / <kbd>Alt</kbd>+<kbd>&darr;</kbd></td>
+                            <td>Move line up / down</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>&uarr;</kbd> / <kbd>&darr;</kbd></td>
+                            <td>Copy line up / down</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td>
+                            <td>Indent / Outdent</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>Home</kbd> / <kbd>End</kbd></td>
+                            <td>Jump to document start / end</td>
+                        </tr>
+
+                        <tr class="shortcuts-section">
+                            <th colspan="2">App</th>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>.</kbd></td>
+                            <td>Show this dialog</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd></td>
+                            <td>Reload</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd>+<kbd>Q</kbd></td>
+                            <td>Hide to tray</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-  </div>
+
+    <!-- Recent Files Modal -->
+    <div id="recent-files-modal" class="modal-overlay" hidden>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Recent Files</h3>
+                <button id="btn-close-recent" class="settings-close" aria-label="Close recent files">
+                    <svg width="16" height="16" viewBox="0 0 12 12">
+                        <line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.5" />
+                        <line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.5" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="recent-files-list">
+                    <div class="menu-item-empty">No recent files</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unsaved Changes Dialog -->
+    <div id="unsaved-dialog" class="modal-overlay" hidden>
+        <div class="modal-content unsaved-dialog-content">
+            <div class="modal-header">
+                <h3>Unsaved Changes</h3>
+            </div>
+            <p id="unsaved-dialog-message" hidden></p>
+            <div class="modal-footer">
+                <button id="unsaved-btn-cancel" class="dialog-btn dialog-btn-secondary" aria-keyshortcuts="C">Cancel
+                    <span class="btn-hint">(c)</span></button>
+                <button id="unsaved-btn-discard" class="dialog-btn dialog-btn-danger" aria-keyshortcuts="N">Don't Save
+                    <span class="btn-hint">(n)</span></button>
+                <button id="unsaved-btn-save" class="dialog-btn dialog-btn-primary" aria-keyshortcuts="S">Save <span
+                        class="btn-hint">(s)</span></button>
+            </div>
+        </div>
+    </div>
+    <!-- Status Bar -->
+    <div id="status-bar">
+        <span id="status-filepath" title="">Untitled</span>
+        <div id="status-right">
+            <span id="status-selected" style="display: none;"></span>
+            <span class="status-separator" id="status-selected-separator" style="display: none;">|</span>
+            <span id="status-words">0 words</span>
+            <span class="status-separator">|</span>
+            <span id="status-chars">0 chars</span>
+            <span class="status-separator">|</span>
+            <span id="status-paragraphs">0 paragraphs</span>
+            <span class="status-separator">|</span>
+            <span id="status-cursor">Ln 1, Col 1</span>
+            <span class="status-separator">|</span>
+            <span id="status-encoding">UTF-8</span>
+            <span class="status-separator">|</span>
+            <span id="status-line-ending">LF</span>
+        </div>
+    </div>
 </body>
 
 </html>

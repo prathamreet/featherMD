@@ -77,12 +77,19 @@ function showUpdateBanner(update, relaunch) {
     try {
       // Download and install the update.
       // On Windows NSIS, this will automatically close and relaunch.
+      // MP2-1: accumulate chunk lengths against contentLength for a real percentage
+      // (the previous "0%" was a static placeholder that never advanced).
+      let downloaded = 0;
+      let total = 0;
       await update.downloadAndInstall((event) => {
-        if (event.event === 'Started' && event.data.contentLength) {
-          installBtn.textContent = 'Downloading… 0%';
+        if (event.event === 'Started') {
+          total = event.data.contentLength || 0;
+          installBtn.textContent = total ? 'Downloading… 0%' : 'Downloading…';
         } else if (event.event === 'Progress') {
-          // event.data.chunkLength is available but total progress isn't easily computed
-          installBtn.textContent = 'Downloading…';
+          downloaded += event.data.chunkLength || 0;
+          installBtn.textContent = total > 0
+            ? `Downloading… ${Math.min(100, Math.round((downloaded / total) * 100))}%`
+            : 'Downloading…';
         } else if (event.event === 'Finished') {
           installBtn.textContent = 'Restarting…';
         }

@@ -137,15 +137,28 @@ console.log( 'Step 5/5: Auditing CPU Idle Constraints' );
 console.log( '======================================================================' );
 let hasPollingLoops = false;
 let pollingFiles = [];
-const srcFiles = fs.readdirSync( path.join( WORKSPACE_DIR, 'src' ) );
 
-for ( const file of srcFiles ) {
-  if ( file.endsWith( '.js' ) ) {
-    const content = fs.readFileSync( path.join( WORKSPACE_DIR, 'src', file ), 'utf8' );
-    if ( content.includes( 'setInterval(' ) ) {
-      hasPollingLoops = true;
-      pollingFiles.push( `src/${ file }` );
+// AT2-1: walk src/ recursively. The previous non-recursive readdirSync only ever
+// matched the single top-level src/main.js, so the "0 polling loops" PASS was
+// effectively unverified for the ~20 files under src/core, src/ui, etc.
+const collectJsFiles = ( dir ) => {
+  const out = [];
+  for ( const entry of fs.readdirSync( dir, { withFileTypes: true } ) ) {
+    const full = path.join( dir, entry.name );
+    if ( entry.isDirectory() ) {
+      out.push( ...collectJsFiles( full ) );
+    } else if ( entry.name.endsWith( '.js' ) ) {
+      out.push( full );
     }
+  }
+  return out;
+};
+
+for ( const filePath of collectJsFiles( path.join( WORKSPACE_DIR, 'src' ) ) ) {
+  const content = fs.readFileSync( filePath, 'utf8' );
+  if ( content.includes( 'setInterval(' ) ) {
+    hasPollingLoops = true;
+    pollingFiles.push( path.relative( WORKSPACE_DIR, filePath ).replace( /\\/g, '/' ) );
   }
 }
 console.log( `Polling check complete: ${ hasPollingLoops ? 'Active loops found' : '0 background loops found (Event-driven)' }.\n` );

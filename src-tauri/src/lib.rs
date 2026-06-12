@@ -1,12 +1,28 @@
-use tauri::{Manager, Emitter};
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
+use tauri::{Emitter, Manager};
+
+// Tray + menu are Windows-only (see `setup_tray`), so their imports are gated to
+// avoid unused-import errors on Linux/macOS builds.
+#[cfg(target_os = "windows")]
+use tauri::{
+    menu::{Menu, MenuItem},
+    tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
+};
 
 use notify::{Config, Event, EventKind, RecommendedWatcher, RecursiveMode, Watcher};
 
 struct InitialFileState(Mutex<Option<String>>);
+
+/// Whether a system-tray icon is currently active (Windows-only, and only when
+/// the user's `sysTray` preference is on). The frontend reads this via the
+/// `tray_active` command to decide what closing the window should do: hide it to
+/// the tray, or quit outright (Linux/macOS, or tray disabled). This prevents a
+/// "close hides an invisible, unrecoverable window" trap. See CF2-1.
+struct TrayActive(AtomicBool);
 
 /// Holds the active filesystem watcher. Dropping the watcher releases the
 /// underlying OS handle (ReadDirectoryChangesW / inotify), so the thread
@@ -17,7 +33,9 @@ struct FileWatcher {
 
 /// Get the initial file path and content if loaded via CLI argument
 #[tauri::command]
-async fn get_initial_file(state: tauri::State<'_, InitialFileState>) -> Result<Option<serde_json::Value>, String> {
+async fn get_initial_file(
+    state: tauri::State<'_, InitialFileState>,
+) -> Result<Option<serde_json::Value>, String> {
     let mut file_opt = state.0.lock().map_err(|e| e.to_string())?;
     if let Some(path) = file_opt.take() {
         if let Ok(content) = fs::read_to_string(&path) {
@@ -30,6 +48,44 @@ async fn get_initial_file(state: tauri::State<'_, InitialFileState>) -> Result<O
     Ok(None)
 }
 
+/// Report whether the system tray is active (see `TrayActive`).
+#[tauri::command]
+fn tray_active(state: tauri::State<'_, TrayActive>) -> bool {
+    state.0.load(Ordering::Relaxed)
+}
+
+/// Show or hide the tray icon live when the user toggles the System Tray
+/// preference. Avoids relaunching the app (which breaks the dev server and
+/// loses the open file). No-op where there is no tray (non-Windows).
+#[tauri::command]
+fn set_tray(
+    app: tauri::AppHandle,
+    enabled: bool,
+    state: tauri::State<'_, TrayActive>,
+) -> Result<(), String> {
+    #[cfg(target_os = "windows")]
+    {
+        if let Some(tray) = app.tray_by_id("main-tray") {
+            tray.set_visible(enabled).map_err(|e| e.to_string())?;
+            state.0.store(enabled, Ordering::Relaxed);
+        }
+    }
+    // Touch the args on non-Windows so they aren't flagged unused.
+    #[cfg(not(target_os = "windows"))]
+    let _ = (&app, enabled, &state);
+    Ok(())
+}
+
+/// Trim or restore the WebView2 working set when the window is hidden to / shown
+/// from the tray (see `set_webview_memory_low`). No-op on non-Windows.
+#[tauri::command]
+fn set_webview_memory(app: tauri::AppHandle, low: bool) {
+    #[cfg(target_os = "windows")]
+    set_webview_memory_low(&app, low);
+    #[cfg(not(target_os = "windows"))]
+    let _ = (&app, low);
+}
+
 /// Begin watching `path` for external modifications using event-driven OS
 /// notifications. Replaces any previously installed watcher.
 #[tauri::command]
@@ -38,6 +94,14 @@ async fn watch_file(
     path: String,
     state: tauri::State<'_, FileWatcher>,
 ) -> Result<(), String> {
+    // SR2-1: validate the frontend-supplied path before installing a watcher.
+    // Only an existing regular file may be watched — this closes the "watch an
+    // arbitrary path" vector and avoids leaking a watcher on a typo'd path.
+    let watched_path = PathBuf::from(&path);
+    if !watched_path.is_file() {
+        return Err(format!("Refusing to watch a non-file path: {path}"));
+    }
+
     // Drop any existing watcher first so its OS handle is released before we
     // install the next one.
     {
@@ -45,7 +109,6 @@ async fn watch_file(
         *slot = None;
     }
 
-    let watched_path = PathBuf::from(&path);
     let emit_path = path.clone();
 
     // Coalesce bursts of events (editors often emit several syscalls per save).
@@ -95,17 +158,153 @@ async fn unwatch_file(state: tauri::State<'_, FileWatcher>) -> Result<(), String
     Ok(())
 }
 
+/// Bring the main window back from the system tray: show it, restore it if it
+/// was minimized, and give it focus. (Windows-only — see `setup_tray`.)
+#[cfg(target_os = "windows")]
+fn show_main_window(app: &tauri::AppHandle) {
+    if let Some(window) = app.get_webview_window("main") {
+        let _ = window.show();
+        let _ = window.unminimize();
+        let _ = window.set_focus();
+    }
+    // Restore full performance now that the window is visible again.
+    set_webview_memory_low(app, false);
+}
+
+/// Ask WebView2 to trim or restore its working set. Setting LOW while the window
+/// is hidden to the tray suspends background script timers and releases unused
+/// memory pages back to the OS (the renderer drops from ~60 MB toward ~15 MB);
+/// NORMAL on restore returns to full performance. Windows-only.
+#[cfg(target_os = "windows")]
+fn set_webview_memory_low(app: &tauri::AppHandle, low: bool) {
+    use webview2_com::Microsoft::Web::WebView2::Win32::{
+        ICoreWebView2_19, COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_LOW,
+        COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_NORMAL,
+    };
+    use windows::core::Interface;
+
+    if let Some(window) = app.get_webview_window("main") {
+        let _ = window.with_webview(move |webview| unsafe {
+            // MemoryUsageTargetLevel lives on ICoreWebView2_19 (the core webview),
+            // reached via the controller. The cast fails gracefully on older
+            // WebView2 runtimes that don't implement _19.
+            let Ok(core) = webview.controller().CoreWebView2() else { return };
+            let Ok(core) = core.cast::<ICoreWebView2_19>() else { return };
+            let level = if low {
+                COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_LOW
+            } else {
+                COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_NORMAL
+            };
+            let _ = core.SetMemoryUsageTargetLevel(level);
+        });
+    }
+}
+
+/// Read the persisted `sysTray` preference from config.json so the tray's
+/// initial visibility matches the user's choice. Defaults to enabled when the
+/// file is missing/unreadable. Windows-only (the tray itself is Windows-only).
+#[cfg(target_os = "windows")]
+fn tray_enabled_in_config(app: &tauri::App) -> bool {
+    let Ok(dir) = app.path().app_config_dir() else {
+        return true;
+    };
+    let Ok(content) = std::fs::read_to_string(dir.join("feathermd").join("config.json")) else {
+        return true;
+    };
+    serde_json::from_str::<serde_json::Value>(&content)
+        .ok()
+        .and_then(|json| json.get("sysTray").and_then(|v| v.as_bool()))
+        .unwrap_or(true)
+}
+
+/// Build the system tray (Windows-only) with the given initial visibility. The
+/// icon is always created so it can be shown/hidden live via `set_tray` without
+/// relaunching; `visible` reflects the persisted preference at startup.
+#[cfg(target_os = "windows")]
+fn setup_tray(app: &tauri::App, visible: bool) -> tauri::Result<()> {
+    let show_item = MenuItem::with_id(app, "show", "Show Feather MD", true, None::<&str>)?;
+    let quit_item = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
+    let tray_menu = Menu::with_items(app, &[&show_item, &quit_item])?;
+
+    let mut tray_builder = TrayIconBuilder::with_id("main-tray")
+        .tooltip("Feather MD")
+        .menu(&tray_menu)
+        .show_menu_on_left_click(false)
+        .on_menu_event(|app, event| match event.id.as_ref() {
+            "show" => show_main_window(app),
+            "quit" => {
+                // Surface the window and let the frontend run its unsaved-changes
+                // guard (via the `tray-quit` event) before the process exits.
+                if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.show();
+                    let _ = window.unminimize();
+                    let _ = window.set_focus();
+                    let _ = window.emit("tray-quit", ());
+                }
+            }
+            _ => {}
+        })
+        .on_tray_icon_event(|tray, event| {
+            if let TrayIconEvent::Click {
+                button: MouseButton::Left,
+                button_state: MouseButtonState::Up,
+                ..
+            } = event
+            {
+                show_main_window(tray.app_handle());
+            }
+        });
+
+    if let Some(icon) = app.default_window_icon() {
+        tray_builder = tray_builder.icon(icon.clone());
+    }
+    let tray = tray_builder.build(app)?;
+    tray.set_visible(visible)?;
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    let builder = tauri::Builder::default();
+
+    // CF2-1: single-instance is RELEASE-ONLY. In `tauri dev`, app restarts and
+    // running a second instance must not wedge on a stale lock (it would focus a
+    // dead window instead of starting a fresh dev session).
+    #[cfg(not(debug_assertions))]
+    let builder = builder.plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
+        if let Some(window) = app.get_webview_window("main") {
+            let _ = window.show();
+            let _ = window.unminimize();
+            let _ = window.set_focus();
+            // Forward a file passed to the second launch so it opens in the
+            // running instance rather than being lost.
+            if let Some(arg) = argv.get(1) {
+                if PathBuf::from(arg).is_file() {
+                    let _ = window.emit("open-file-from-args", arg.clone());
+                }
+            }
+        }
+    }));
+
+    builder
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(InitialFileState(Mutex::new(None)))
-        .manage(FileWatcher { watcher: Mutex::new(None) })
-        .invoke_handler(tauri::generate_handler![get_initial_file, watch_file, unwatch_file])
+        .manage(TrayActive(AtomicBool::new(false)))
+        .manage(FileWatcher {
+            watcher: Mutex::new(None),
+        })
+        .invoke_handler(tauri::generate_handler![
+            get_initial_file,
+            watch_file,
+            unwatch_file,
+            tray_active,
+            set_tray,
+            set_webview_memory
+        ])
         .setup(|app| {
             // Check for CLI file argument
             let args: Vec<String> = std::env::args().collect();
@@ -125,6 +324,22 @@ pub fn run() {
                     };
                 }
             }
+
+            // ISSUE-1 / CF2-1: the system tray is Windows-only — that's where the
+            // 0-byte-PDF print spooler problem lives. The icon is always built but
+            // its visibility tracks the persisted `sysTray` preference, so it can
+            // be toggled live (set_tray) without relaunching. A build failure is
+            // logged (not fatal) and leaves TrayActive=false so the frontend falls
+            // back to quit-on-close.
+            #[cfg(target_os = "windows")]
+            {
+                let visible = tray_enabled_in_config(app);
+                match setup_tray(app, visible) {
+                    Ok(()) => app.state::<TrayActive>().0.store(visible, Ordering::Relaxed),
+                    Err(err) => eprintln!("Failed to create system tray: {err}"),
+                }
+            }
+
             Ok(())
         })
         .run(tauri::generate_context!())

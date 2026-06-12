@@ -9,7 +9,9 @@
 @import 'katex/dist/katex.min.css';
 
 #preview-content {
-  font-family: var(--font-ui);
+  /* ISSUE-15: reader-friendly family chosen from the Font menu (--font-reading);
+     falls back to the UI font. Inline code/pre keep --font-mono below. */
+  font-family: var(--font-reading, var(--font-ui));
   font-size: var(--font-size);
   color: var(--text);
   line-height: 1.7;
@@ -437,6 +439,39 @@ body.fullscreen-preview #preview-content .fmd-mermaid {
 
   #preview-content .fmd-math-display {
     overflow: visible !important;
+  }
+
+  /* ISSUE-2: Force word-wrap so long lines print instead of scrolling off-page.
+     Code blocks get pre-wrap so whitespace is preserved but lines break at the
+     page edge; tables switch to fixed layout so cell content wraps too. */
+  #preview-content pre {
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    overflow-x: visible !important;
+  }
+
+  #preview-content pre code {
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  #preview-content table {
+    table-layout: fixed !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  #preview-content td,
+  #preview-content th {
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  #preview-content img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
   }
 }
 
