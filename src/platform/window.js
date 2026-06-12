@@ -131,6 +131,10 @@ export async function hideToTray() {
   try {
     const { getCurrentWindow } = await import( '@tauri-apps/api/window' );
     await getCurrentWindow().hide();
+    // Ask WebView2 to trim its working set while hidden (Windows-only; no-op
+    // elsewhere). show_main_window restores NORMAL on the way back.
+    const { invoke } = await import( '@tauri-apps/api/core' );
+    await invoke( 'set_webview_memory', { low: true } );
   } catch ( err ) {
     console.error( 'Failed to hide window to tray:', err );
   }
