@@ -76,6 +76,16 @@ fn set_tray(
     Ok(())
 }
 
+/// Trim or restore the WebView2 working set when the window is hidden to / shown
+/// from the tray (see `set_webview_memory_low`). No-op on non-Windows.
+#[tauri::command]
+fn set_webview_memory(app: tauri::AppHandle, low: bool) {
+    #[cfg(target_os = "windows")]
+    set_webview_memory_low(&app, low);
+    #[cfg(not(target_os = "windows"))]
+    let _ = (&app, low);
+}
+
 /// Begin watching `path` for external modifications using event-driven OS
 /// notifications. Replaces any previously installed watcher.
 #[tauri::command]
@@ -156,6 +166,37 @@ fn show_main_window(app: &tauri::AppHandle) {
         let _ = window.show();
         let _ = window.unminimize();
         let _ = window.set_focus();
+    }
+    // Restore full performance now that the window is visible again.
+    set_webview_memory_low(app, false);
+}
+
+/// Ask WebView2 to trim or restore its working set. Setting LOW while the window
+/// is hidden to the tray suspends background script timers and releases unused
+/// memory pages back to the OS (the renderer drops from ~60 MB toward ~15 MB);
+/// NORMAL on restore returns to full performance. Windows-only.
+#[cfg(target_os = "windows")]
+fn set_webview_memory_low(app: &tauri::AppHandle, low: bool) {
+    use webview2_com::Microsoft::Web::WebView2::Win32::{
+        ICoreWebView2_19, COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_LOW,
+        COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_NORMAL,
+    };
+    use windows::core::Interface;
+
+    if let Some(window) = app.get_webview_window("main") {
+        let _ = window.with_webview(move |webview| unsafe {
+            // MemoryUsageTargetLevel lives on ICoreWebView2_19 (the core webview),
+            // reached via the controller. The cast fails gracefully on older
+            // WebView2 runtimes that don't implement _19.
+            let Ok(core) = webview.controller().CoreWebView2() else { return };
+            let Ok(core) = core.cast::<ICoreWebView2_19>() else { return };
+            let level = if low {
+                COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_LOW
+            } else {
+                COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_NORMAL
+            };
+            let _ = core.SetMemoryUsageTargetLevel(level);
+        });
     }
 }
 
@@ -261,7 +302,8 @@ pub fn run() {
             watch_file,
             unwatch_file,
             tray_active,
-            set_tray
+            set_tray,
+            set_webview_memory
         ])
         .setup(|app| {
             // Check for CLI file argument
