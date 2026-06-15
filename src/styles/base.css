@@ -394,23 +394,21 @@ body {
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 8px 10px 8px 8px;
+  padding: 8px 10px;
   background: transparent;
   border: none;
-  border-left: 2px solid transparent;
   color: var(--text);
   font-size: 12.5px;
   font-family: var(--font-ui);
   text-align: left;
   cursor: pointer;
   border-radius: var(--radius-md);
-  transition: background var(--transition-fast) ease, border-color var(--transition-fast) ease;
+  transition: background var(--transition-fast) ease;
   gap: 8px;
 }
 
 .recent-file-item:hover {
   background: color-mix(in srgb, var(--text) 5%, transparent);
-  border-left-color: var(--accent);
 }
 
 .recent-file-info {
@@ -426,6 +424,18 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: var(--text);
+}
+
+.recent-file-item:hover .recent-file-name {
+  color: var(--text);
+}
+
+#recent-files-modal h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 16px;
 }
 
 .recent-file-path {
@@ -924,40 +934,30 @@ kbd {
   box-shadow: var(--shadow-lg);
 }
 
-.unsaved-dialog-content .modal-header {
-  padding: 24px 24px 8px 24px;
-  border-bottom: none;
+.unsaved-dialog-content .modal-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.unsaved-dialog-content .modal-header h3 {
+.unsaved-dialog-content h3 {
+  margin: 0;
   font-size: 16px;
   font-weight: 600;
   color: var(--text);
 }
 
-.unsaved-dialog-content .modal-body {
-  padding: 8px 24px 20px 24px;
-}
-
-.unsaved-dialog-content .modal-body p {
+.unsaved-dialog-content p {
+  margin: 0;
   font-size: 13px;
   color: var(--text-muted);
   line-height: 1.5;
 }
 
-.modal-footer {
+.unsaved-dialog-content .modal-buttons {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  padding: 16px 20px;
-  border-top: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
-}
-
-.unsaved-dialog-content .modal-footer {
-  padding: 0 24px 24px 24px;
-  border-top: none;
-  background: transparent;
   justify-content: flex-end;
   gap: 8px;
 }
