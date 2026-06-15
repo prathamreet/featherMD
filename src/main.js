@@ -90,9 +90,10 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const headerIcon = document.getElementById('header-icon');
-    if (headerIcon) {
-        headerIcon.addEventListener('click', async () => {
+    const statusVersion = document.getElementById('status-version');
+    if (statusVersion) {
+        statusVersion.addEventListener('click', async (e) => {
+            e.preventDefault();
             const url = 'https://github.com/prathamreet/featherMD';
             try {
                 const { invoke } = await import('@tauri-apps/api/core');

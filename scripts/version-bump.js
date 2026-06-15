@@ -26,9 +26,9 @@ if (fs.existsSync(lockPath)) {
 const indexHtmlPath = 'index.html';
 if (fs.existsSync(indexHtmlPath)) {
   let html = fs.readFileSync(indexHtmlPath, 'utf8');
-  html = html.replace(/(<span class="version-text">)v[^<]*(<\/span>)/g, `$1v${version}$2`);
+  html = html.replace(/(class="version-text"[^>]*>)v[^<]*(<\/a>)/g, `$1v${version}$2`);
   fs.writeFileSync(indexHtmlPath, html, 'utf8');
-  console.log(`Synced index.html brand-version to ${version}`);
+  console.log(`Synced index.html status bar version to ${version}`);
 }
 
 const pageCssPath = 'page/styles.css';

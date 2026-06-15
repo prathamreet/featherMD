@@ -40,7 +40,8 @@
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.03);
 }
 
-html, body {
+html,
+body {
   height: 100%;
   overflow: hidden;
   font-family: var(--font-ui);
@@ -76,7 +77,8 @@ html, body {
   gap: 4px;
   flex-shrink: 0;
   -webkit-app-region: no-drag;
-  z-index: 2; /* High z-index to stay above centered title */
+  z-index: 2;
+  /* High z-index to stay above centered title */
 }
 
 #header-icon {
@@ -126,7 +128,8 @@ html, body {
 
 /* ---- Menu Bar Buttons ---- */
 .menu-btn {
-  height: 28px; /* Elegant pill size */
+  height: 28px;
+  /* Elegant pill size */
   padding: 0 12px;
   background: transparent;
   border: none;
@@ -174,8 +177,15 @@ html, body {
 }
 
 @keyframes menu-in {
-  from { opacity: 0; transform: scale(0.96) translateY(-4px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .menu-group-label {
@@ -341,8 +351,15 @@ html, body {
 }
 
 @keyframes submenu-in {
-  from { opacity: 0; transform: scale(0.96) translateX(-4px); }
-  to   { opacity: 1; transform: scale(1) translateX(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateX(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+  }
 }
 
 .menu-submenu:hover .submenu-panel,
@@ -503,13 +520,16 @@ html, body {
   top: 50%;
   transform: translate(-50%, -50%);
   font-size: 12.5px;
-  font-weight: 600; /* Bolder, premium branding */
+  font-weight: 600;
+  /* Bolder, premium branding */
   color: var(--text);
   white-space: nowrap;
   letter-spacing: 0.4px;
   -webkit-app-region: drag;
-  pointer-events: none; /* Let clicks pass through for window drag in Tauri */
-  z-index: 1; /* Sits beneath menu clicks */
+  pointer-events: none;
+  /* Let clicks pass through for window drag in Tauri */
+  z-index: 1;
+  /* Sits beneath menu clicks */
   max-width: 35%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -665,8 +685,22 @@ html, body {
   gap: 0;
 }
 
-#status-right > span:not(.status-separator) {
+#status-right>span:not(.status-separator) {
   padding: 0 6px;
+}
+
+#status-version {
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  padding: 0 6px;
+  transition: color var(--transition-fast) ease;
+}
+
+#status-version:hover {
+  color: var(--accent);
 }
 
 .status-separator {
@@ -696,8 +730,13 @@ html, body {
 }
 
 @keyframes modal-bg-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .modal-content {
@@ -714,8 +753,15 @@ html, body {
 }
 
 @keyframes modal-in {
-  from { opacity: 0; transform: scale(0.97) translateY(-6px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .modal-header {
