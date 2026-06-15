@@ -81,50 +81,6 @@ body {
   /* High z-index to stay above centered title */
 }
 
-#header-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--accent);
-  flex-shrink: 0;
-  width: 48px;
-  height: 28px;
-  margin-right: 12px;
-  position: relative;
-  cursor: pointer;
-}
-
-#header-icon svg {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 1;
-  transition: opacity var(--transition-fast) ease;
-}
-
-#header-icon .version-text {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  font-family: var(--font-mono, monospace);
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--text-muted);
-  white-space: nowrap;
-  opacity: 0;
-  transition: opacity var(--transition-fast) ease;
-  pointer-events: none;
-}
-
-#header-icon:hover svg {
-  opacity: 0;
-}
-
-#header-icon:hover .version-text {
-  opacity: 1;
-}
 
 /* ---- Menu Bar Buttons ---- */
 .menu-btn {
@@ -427,9 +383,7 @@ body {
   color: var(--text);
 }
 
-.recent-file-item:hover .recent-file-name {
-  color: var(--text);
-}
+
 
 #recent-files-modal h3 {
   font-size: 16px;
@@ -774,20 +728,7 @@ body {
   }
 }
 
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 24px;
-  border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
-}
 
-.modal-header h3 {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text);
-  letter-spacing: -0.01em;
-}
 
 .modal-body {
   padding: 20px 24px;
