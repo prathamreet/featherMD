@@ -495,7 +495,7 @@ async function pingAnalytics() {
     if (navigator.onLine === false) return; // Silent exit if completely offline
 
     try {
-        const versionEl = document.querySelector('#header-icon .version-text');
+        const versionEl = document.getElementById('status-version');
         const version = versionEl ? versionEl.textContent.trim().replace(/^v/, '') : '0.0.0';
 
         const platform = encodeURIComponent(navigator.platform || 'unknown');
