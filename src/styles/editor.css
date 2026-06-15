@@ -4,7 +4,7 @@
 
 .cm-editor {
   height: 100%;
-  font-family: var(--font-mono);
+  font-family: var(--font-editor, var(--font-mono));
   font-size: var(--font-size);
   background: var(--bg);
   color: var(--text);
@@ -12,7 +12,7 @@
 
 .cm-editor .cm-scroller {
   overflow: auto;
-  font-family: var(--font-mono);
+  font-family: var(--font-editor, var(--font-mono));
   line-height: 1.6;
 }
 
@@ -27,32 +27,33 @@
 }
 
 .cm-editor .cm-gutters {
-  background: var(--bg-secondary);
-  border-right: 1px solid var(--border);
+  background: transparent;
+  border-right: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
   color: var(--text-muted);
   font-size: 0.85em;
 }
 
 .cm-editor .cm-gutter.cm-lineNumbers .cm-gutterElement {
-  padding: 0 8px 0 12px;
-  min-width: 40px;
+  padding: 0 12px;
+  min-width: 44px;
 }
 
 .cm-editor .cm-activeLineGutter {
-  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  background: transparent;
   color: var(--text);
+  font-weight: 500;
 }
 
 .cm-editor .cm-activeLine {
-  background: color-mix(in srgb, var(--accent) 5%, transparent);
+  background: color-mix(in srgb, var(--accent) 3%, transparent);
 }
 
 .cm-editor .cm-selectionBackground {
-  background: color-mix(in srgb, var(--accent) 20%, transparent) !important;
+  background: color-mix(in srgb, var(--accent) 25%, transparent) !important;
 }
 
 .cm-editor.cm-focused .cm-selectionBackground {
-  background: color-mix(in srgb, var(--accent) 25%, transparent) !important;
+  background: color-mix(in srgb, var(--accent) 30%, transparent) !important;
 }
 
 .cm-editor .cm-matchingBracket {
@@ -84,7 +85,7 @@
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border);
   color: var(--text);
-  padding: 4px 8px;
+  padding: 6px 12px;
 }
 
 .cm-editor .cm-panel input,
@@ -96,10 +97,11 @@
 
 .cm-editor .cm-panel input {
   background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  padding: 2px 6px;
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
   outline: none;
+  transition: border-color var(--transition-fast);
 }
 
 .cm-editor .cm-panel input:focus {
@@ -108,14 +110,17 @@
 
 .cm-editor .cm-panel button {
   background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  padding: 2px 8px;
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
   cursor: pointer;
+  font-weight: 500;
+  transition: all var(--transition-fast);
 }
 
 .cm-editor .cm-panel button:hover {
-  background: var(--border);
+  background: color-mix(in srgb, var(--text) 6%, transparent);
+  border-color: var(--text-muted);
 }
 
 /* Markdown and Syntax highlighting via CSS vars */
@@ -184,7 +189,7 @@
 .cm-editor .cm-tooltip {
   background: var(--bg-secondary);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
   color: var(--text);
 }
