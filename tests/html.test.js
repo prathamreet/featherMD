@@ -49,7 +49,7 @@ describe('HTML -- SEO & Head Metadata', () => {
 describe('HTML -- Required Element IDs', () => {
   const requiredIds = [
     // Header bar
-    'header-bar', 'header-left', 'header-icon', 'header-title', 'header-controls',
+    'header-bar', 'header-left', 'header-title', 'header-controls',
     'btn-minimize', 'btn-maximize', 'btn-close',
     // Menus
     'file-menu', 'view-menu', 'style-menu',
@@ -65,7 +65,7 @@ describe('HTML -- Required Element IDs', () => {
     'unsaved-btn-cancel', 'unsaved-btn-discard', 'unsaved-btn-save',
     // Status bar
     'status-bar', 'status-filepath', 'status-words', 'status-chars', 'status-paragraphs',
-    'status-cursor', 'status-encoding', 'status-line-ending',
+    'status-cursor', 'status-encoding', 'status-line-ending', 'status-version',
   ];
 
   requiredIds.forEach(id => {

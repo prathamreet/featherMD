@@ -90,9 +90,10 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const headerIcon = document.getElementById('header-icon');
-    if (headerIcon) {
-        headerIcon.addEventListener('click', async () => {
+    const statusVersion = document.getElementById('status-version');
+    if (statusVersion) {
+        statusVersion.addEventListener('click', async (e) => {
+            e.preventDefault();
             const url = 'https://github.com/prathamreet/featherMD';
             try {
                 const { invoke } = await import('@tauri-apps/api/core');
@@ -264,9 +265,15 @@ async function runBootSequence() {
         onFontFamily: (font) => {
             // ISSUE-15: the Font menu picks a reader-friendly family for the
             // PREVIEW/print surface (--font-reading). The editor and inline code
-            // stay on --font-mono.
+            // stay on --font-mono unless editorMonospace is set to false.
             document.documentElement.style.setProperty('--font-reading', font);
             config.fontFamily = font;
+            applyEditorFont();
+            saveConfig();
+        },
+        onEditorMonospaceToggle: (enabled) => {
+            config.editorMonospace = enabled;
+            applyEditorFont();
             saveConfig();
         },
         onTabSize: (size) => {
@@ -470,14 +477,25 @@ function applyFontSettings() {
     if (config.fontFamily) {
         document.documentElement.style.setProperty('--font-reading', config.fontFamily);
     }
+    applyEditorFont();
     updateZoomBadge(config.fontSize || 14);
+}
+
+function applyEditorFont() {
+    const useMonospace = config.editorMonospace !== false;
+    if (useMonospace) {
+        document.documentElement.style.setProperty('--font-editor', 'var(--font-mono)');
+    } else {
+        document.documentElement.style.setProperty('--font-editor', 'var(--font-reading)');
+    }
+    setMenuChecked('toggle-editor-monospace', useMonospace);
 }
 
 async function pingAnalytics() {
     if (navigator.onLine === false) return; // Silent exit if completely offline
 
     try {
-        const versionEl = document.querySelector('#header-icon .version-text');
+        const versionEl = document.getElementById('status-version');
         const version = versionEl ? versionEl.textContent.trim().replace(/^v/, '') : '0.0.0';
 
         const platform = encodeURIComponent(navigator.platform || 'unknown');

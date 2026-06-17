@@ -6,21 +6,22 @@
 .title-btn[aria-label]::after {
   content: attr(aria-label);
   position: absolute;
-  top: calc(100% + 4px);
+  top: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
-  background: var(--bg);
+  background: var(--bg-secondary);
   color: var(--text);
-  font-size: 11px;
-  padding: 3px 6px;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 4px 8px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 150ms ease;
+  transition: opacity var(--transition-fast) ease;
   z-index: 200;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .title-btn[aria-label]:hover::after {

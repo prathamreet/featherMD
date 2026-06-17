@@ -6,7 +6,7 @@ import { EditorView, lineNumbers, highlightActiveLine, highlightActiveLineGutter
 import { EditorState, Compartment, Annotation } from '@codemirror/state';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { languages } from '@codemirror/language-data';
-import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands';
+import { defaultKeymap, history, historyKeymap, indentMore, indentLess } from '@codemirror/commands';
 import { syntaxHighlighting, indentOnInput, bracketMatching, foldGutter, foldKeymap, indentUnit } from '@codemirror/language';
 import { searchKeymap, highlightSelectionMatches } from '@codemirror/search';
 import { closeBrackets, closeBracketsKeymap, autocompletion } from '@codemirror/autocomplete';
@@ -85,7 +85,20 @@ export function initEditor(domEl, onChange, onCursorActivity) {
         ...searchKeymap,
         ...historyKeymap,
         ...foldKeymap,
-        indentWithTab,
+        {
+          key: 'Tab',
+          run: (view) => {
+            if (view.state.readOnly) return false;
+            if (view.state.selection.ranges.some(r => !r.empty)) {
+              return indentMore(view);
+            }
+            const size = view.state.tabSize || 4;
+            const insert = ' '.repeat(size);
+            view.dispatch(view.state.replaceSelection(insert));
+            return true;
+          },
+          shift: indentLess,
+        },
       ]),
       updateListener,
       EditorView.theme({

@@ -16,16 +16,6 @@
     <!-- Header: icon + menus + font-size slider | title | window controls -->
     <div id="header-bar">
         <div id="header-left">
-            <div id="header-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
-                    <line x1="16" y1="8" x2="2" y2="22"></line>
-                    <line x1="17.5" y1="15" x2="9" y2="15"></line>
-                </svg>
-                <span class="version-text">v1.9.0</span>
-            </div>
-
             <!-- File Menu -->
             <div class="menu-dropdown">
                 <button class="menu-btn" data-menu="file-menu">File</button>
@@ -245,6 +235,17 @@
                             </svg>
                         </button>
                         <div class="submenu-panel" id="font-submenu">
+                            <button class="menu-item checkable" data-action="toggle-editor-monospace"
+                                data-checked="true">
+                                <span class="menu-check">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polyline points="2,6 5,9 10,3" />
+                                    </svg>
+                                </span>
+                                <span class="menu-item-label">Editor Monospace</span>
+                            </button>
+                            <div class="menu-separator"></div>
                             <div class="menu-group-label">Sans-serif</div>
                             <button class="menu-item checkable font-item" data-action="set-font"
                                 data-font="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
@@ -365,25 +366,15 @@
                             </svg>
                         </button>
                         <div class="submenu-panel" id="tab-submenu">
-                            <button class="menu-item checkable tab-item" data-action="set-tab" data-tab="2">
-                                <span class="menu-check">
-                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
-                                        stroke-width="2">
-                                        <polyline points="2,6 5,9 10,3" />
-                                    </svg>
-                                </span>
-                                <span class="menu-item-label">2 spaces</span>
-                            </button>
-                            <button class="menu-item checkable tab-item" data-action="set-tab" data-tab="4"
-                                data-checked="true">
-                                <span class="menu-check">
-                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
-                                        stroke-width="2">
-                                        <polyline points="2,6 5,9 10,3" />
-                                    </svg>
-                                </span>
-                                <span class="menu-item-label">4 spaces</span>
-                            </button>
+                            <div class="tab-size-selector">
+                                <button class="tab-btn tab-item" data-action="set-tab" data-tab="1">1</button>
+                                <button class="tab-btn tab-item" data-action="set-tab" data-tab="2">2</button>
+                                <button class="tab-btn tab-item" data-action="set-tab" data-tab="3">3</button>
+                                <button class="tab-btn tab-item" data-action="set-tab" data-tab="4"
+                                    data-checked="true">4</button>
+                                <button class="tab-btn tab-item" data-action="set-tab" data-tab="5">5</button>
+                                <button class="tab-btn tab-item" data-action="set-tab" data-tab="6">6</button>
+                            </div>
                         </div>
                     </div>
 
@@ -431,15 +422,7 @@
     <!-- Keyboard Shortcuts Modal -->
     <div id="shortcuts-modal" class="modal-overlay" hidden>
         <div class="modal-content">
-            <div class="modal-header">
-                <h3>Keyboard Shortcuts</h3>
-                <button id="btn-close-shortcuts" class="settings-close" aria-label="Close shortcuts">
-                    <svg width="16" height="16" viewBox="0 0 12 12">
-                        <line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.5" />
-                        <line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.5" />
-                    </svg>
-                </button>
-            </div>
+            <button id="btn-close-shortcuts" style="display: none;" aria-label="Close shortcuts"></button>
             <div class="modal-body">
                 <table class="shortcuts-table">
                     <tbody>
@@ -596,16 +579,9 @@
     <!-- Recent Files Modal -->
     <div id="recent-files-modal" class="modal-overlay" hidden>
         <div class="modal-content">
-            <div class="modal-header">
-                <h3>Recent Files</h3>
-                <button id="btn-close-recent" class="settings-close" aria-label="Close recent files">
-                    <svg width="16" height="16" viewBox="0 0 12 12">
-                        <line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.5" />
-                        <line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.5" />
-                    </svg>
-                </button>
-            </div>
+            <button id="btn-close-recent" style="display: none;" aria-label="Close recent files"></button>
             <div class="modal-body">
+                <h3>Recent Files</h3>
                 <div id="recent-files-list">
                     <div class="menu-item-empty">No recent files</div>
                 </div>
@@ -616,17 +592,17 @@
     <!-- Unsaved Changes Dialog -->
     <div id="unsaved-dialog" class="modal-overlay" hidden>
         <div class="modal-content unsaved-dialog-content">
-            <div class="modal-header">
+            <div class="modal-body">
                 <h3>Unsaved Changes</h3>
-            </div>
-            <p id="unsaved-dialog-message" hidden></p>
-            <div class="modal-footer">
-                <button id="unsaved-btn-cancel" class="dialog-btn dialog-btn-secondary" aria-keyshortcuts="C">Cancel
-                    <span class="btn-hint">(c)</span></button>
-                <button id="unsaved-btn-discard" class="dialog-btn dialog-btn-danger" aria-keyshortcuts="N">Don't Save
-                    <span class="btn-hint">(n)</span></button>
-                <button id="unsaved-btn-save" class="dialog-btn dialog-btn-primary" aria-keyshortcuts="S">Save <span
-                        class="btn-hint">(s)</span></button>
+                <p id="unsaved-dialog-message" hidden></p>
+                <div class="modal-buttons">
+                    <button id="unsaved-btn-cancel" class="dialog-btn dialog-btn-secondary" aria-keyshortcuts="C">Cancel
+                        <span class="btn-hint">(c)</span></button>
+                    <button id="unsaved-btn-discard" class="dialog-btn dialog-btn-danger" aria-keyshortcuts="N">Don't Save
+                        <span class="btn-hint">(n)</span></button>
+                    <button id="unsaved-btn-save" class="dialog-btn dialog-btn-primary" aria-keyshortcuts="S">Save <span
+                            class="btn-hint">(s)</span></button>
+                </div>
             </div>
         </div>
     </div>
@@ -647,6 +623,9 @@
             <span id="status-encoding">UTF-8</span>
             <span class="status-separator">|</span>
             <span id="status-line-ending">LF</span>
+            <span class="status-separator">|</span>
+            <a href="https://github.com/prathamreet/featherMD" target="_blank" class="version-text"
+                id="status-version">v1.9.0</a>
         </div>
     </div>
 </body>

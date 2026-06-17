@@ -5,7 +5,7 @@ import { isTauri } from './state.js';
 
 // Canonical defaults. `config` starts as a copy; sanitizeConfig() falls back to
 // these per-field when a loaded value is missing or the wrong type/range.
-const DEFAULTS = Object.freeze( {
+const DEFAULTS = Object.freeze({
   theme: null,
   fontSize: 14,
   // ISSUE-15: reader-friendly PREVIEW font (see --font-reading). Default = Inter.
@@ -22,7 +22,8 @@ const DEFAULTS = Object.freeze( {
   showPageBreaks: true,
   // Whether closing/Ctrl+Q hides the app to the system tray (true) or quits outright (false).
   sysTray: true,
-} );
+  editorMonospace: true,
+});
 
 // RR2-2: the pre-reader-fonts builds defaulted fontFamily to the editor mono
 // stack. That now drives the preview's --font-reading, which would render the
@@ -35,32 +36,32 @@ export const config = { ...DEFAULTS, recentFiles: [] };
 export async function loadConfig() {
   let loaded = false;
 
-  if ( isTauri() ) {
+  if (isTauri()) {
     try {
-      const { appConfigDir, join } = await import( '@tauri-apps/api/path' );
-      const { exists, readTextFile } = await import( '@tauri-apps/plugin-fs' );
+      const { appConfigDir, join } = await import('@tauri-apps/api/path');
+      const { exists, readTextFile } = await import('@tauri-apps/plugin-fs');
 
       const configDir = await appConfigDir();
-      const configPath = await join( configDir, 'feathermd', 'config.json' );
+      const configPath = await join(configDir, 'feathermd', 'config.json');
 
-      if ( await exists( configPath ) ) {
-        const content = await readTextFile( configPath );
-        Object.assign( config, JSON.parse( content ) );
+      if (await exists(configPath)) {
+        const content = await readTextFile(configPath);
+        Object.assign(config, JSON.parse(content));
         loaded = true;
       }
-    } catch ( err ) {
-      console.warn( 'Failed to load native config, falling back to localStorage:', err );
+    } catch (err) {
+      console.warn('Failed to load native config, falling back to localStorage:', err);
     }
   }
 
-  if ( !loaded ) {
+  if (!loaded) {
     try {
-      const stored = localStorage.getItem( 'feathermd-config' );
-      if ( stored ) {
-        Object.assign( config, JSON.parse( stored ) );
+      const stored = localStorage.getItem('feathermd-config');
+      if (stored) {
+        Object.assign(config, JSON.parse(stored));
       }
-    } catch ( err ) {
-      console.warn( 'Failed to load config from localStorage:', err );
+    } catch (err) {
+      console.warn('Failed to load config from localStorage:', err);
     }
   }
 
@@ -71,36 +72,37 @@ export async function loadConfig() {
   sanitizeConfig();
 }
 
-function clampNumber( value, min, max, fallback ) {
-  const n = Number( value );
-  if ( !Number.isFinite( n ) ) return fallback;
-  return Math.min( max, Math.max( min, n ) );
+function clampNumber(value, min, max, fallback) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.min(max, Math.max(min, n));
 }
 
-function toBool( value, fallback ) {
+function toBool(value, fallback) {
   return typeof value === 'boolean' ? value : fallback;
 }
 
 function sanitizeConfig() {
-  config.fontSize = clampNumber( config.fontSize, 8, 36, DEFAULTS.fontSize );
-  config.tabSize = ( config.tabSize === 2 || config.tabSize === 4 ) ? config.tabSize : DEFAULTS.tabSize;
-  config.splitRatio = clampNumber( config.splitRatio, 0.2, 0.8, DEFAULTS.splitRatio );
-  config.windowWidth = clampNumber( config.windowWidth, 600, 100000, DEFAULTS.windowWidth );
-  config.windowHeight = clampNumber( config.windowHeight, 400, 100000, DEFAULTS.windowHeight );
+  config.fontSize = clampNumber(config.fontSize, 8, 36, DEFAULTS.fontSize);
+  config.tabSize = (Number.isInteger(config.tabSize) && config.tabSize >= 1 && config.tabSize <= 6) ? config.tabSize : DEFAULTS.tabSize;
+  config.splitRatio = clampNumber(config.splitRatio, 0.2, 0.8, DEFAULTS.splitRatio);
+  config.windowWidth = clampNumber(config.windowWidth, 600, 100000, DEFAULTS.windowWidth);
+  config.windowHeight = clampNumber(config.windowHeight, 400, 100000, DEFAULTS.windowHeight);
 
-  config.wordWrap = toBool( config.wordWrap, DEFAULTS.wordWrap );
-  config.lineNumbers = toBool( config.lineNumbers, DEFAULTS.lineNumbers );
-  config.syncScroll = toBool( config.syncScroll, DEFAULTS.syncScroll );
-  config.showPageBreaks = toBool( config.showPageBreaks, DEFAULTS.showPageBreaks );
-  config.windowMaximized = toBool( config.windowMaximized, DEFAULTS.windowMaximized );
-  config.sysTray = toBool( config.sysTray, DEFAULTS.sysTray );
+  config.wordWrap = toBool(config.wordWrap, DEFAULTS.wordWrap);
+  config.lineNumbers = toBool(config.lineNumbers, DEFAULTS.lineNumbers);
+  config.syncScroll = toBool(config.syncScroll, DEFAULTS.syncScroll);
+  config.showPageBreaks = toBool(config.showPageBreaks, DEFAULTS.showPageBreaks);
+  config.windowMaximized = toBool(config.windowMaximized, DEFAULTS.windowMaximized);
+  config.sysTray = toBool(config.sysTray, DEFAULTS.sysTray);
+  config.editorMonospace = toBool(config.editorMonospace, DEFAULTS.editorMonospace);
 
-  if ( config.theme !== null && typeof config.theme !== 'string' ) config.theme = DEFAULTS.theme;
-  if ( config.fontFamily === LEGACY_MONO_FONT ) config.fontFamily = DEFAULTS.fontFamily;
-  if ( typeof config.fontFamily !== 'string' || !config.fontFamily ) config.fontFamily = DEFAULTS.fontFamily;
+  if (config.theme !== null && typeof config.theme !== 'string') config.theme = DEFAULTS.theme;
+  if (config.fontFamily === LEGACY_MONO_FONT) config.fontFamily = DEFAULTS.fontFamily;
+  if (typeof config.fontFamily !== 'string' || !config.fontFamily) config.fontFamily = DEFAULTS.fontFamily;
 
-  config.recentFiles = Array.isArray( config.recentFiles )
-    ? config.recentFiles.filter( ( p ) => typeof p === 'string' )
+  config.recentFiles = Array.isArray(config.recentFiles)
+    ? config.recentFiles.filter((p) => typeof p === 'string')
     : [];
 }
 
@@ -112,30 +114,30 @@ let saveChain = Promise.resolve();
 export function saveConfig() {
   // localStorage mirror is synchronous, so it can't interleave — write it eagerly.
   try {
-    localStorage.setItem( 'feathermd-config', JSON.stringify( config ) );
-  } catch ( err ) {
-    console.warn( 'Failed to save to localStorage:', err );
+    localStorage.setItem('feathermd-config', JSON.stringify(config));
+  } catch (err) {
+    console.warn('Failed to save to localStorage:', err);
   }
 
-  if ( !isTauri() ) return Promise.resolve();
+  if (!isTauri()) return Promise.resolve();
 
-  saveChain = saveChain.then( saveConfigNative ).catch( ( err ) => {
-    console.error( 'Failed to save config file natively:', err );
-  } );
+  saveChain = saveChain.then(saveConfigNative).catch((err) => {
+    console.error('Failed to save config file natively:', err);
+  });
   return saveChain;
 }
 
 async function saveConfigNative() {
-  const { appConfigDir, join } = await import( '@tauri-apps/api/path' );
-  const { exists, writeTextFile, mkdir } = await import( '@tauri-apps/plugin-fs' );
+  const { appConfigDir, join } = await import('@tauri-apps/api/path');
+  const { exists, writeTextFile, mkdir } = await import('@tauri-apps/plugin-fs');
 
   const configDir = await appConfigDir();
-  const feathermdDir = await join( configDir, 'feathermd' );
+  const feathermdDir = await join(configDir, 'feathermd');
 
-  if ( !( await exists( feathermdDir ) ) ) {
-    await mkdir( feathermdDir, { recursive: true } );
+  if (!(await exists(feathermdDir))) {
+    await mkdir(feathermdDir, { recursive: true });
   }
 
-  const configPath = await join( feathermdDir, 'config.json' );
-  await writeTextFile( configPath, JSON.stringify( config, null, 2 ) );
+  const configPath = await join(feathermdDir, 'config.json');
+  await writeTextFile(configPath, JSON.stringify(config, null, 2));
 }
