@@ -94,8 +94,8 @@ Release bundles land in:
 
 | | |
 | --- | --- |
-| **Unified Header** | A single 40 px bar combines title, menus, font-size slider, and corner-flush Win11-style window controls. Active document title is absolutely centered with transparent pointer events. |
-| **Hover Dropdown Menus** | File / View / Style open on hover with a 180 ms grace timeout and diagonal pointer bridge to prevent accidental dismissals. Theme, Font, and Tab pickers stay open so you can preview multiple options without re-opening. |
+| **Unified Header** | A single 44 px bar combines title, menus, font-size slider, and corner-flush Win11-style window controls (close button turns red on hover). Active document title is absolutely centered with transparent pointer events. |
+| **Hover Dropdown Menus** | File / View / Style open on hover with a 180 ms grace timeout and diagonal pointer bridge to prevent accidental dismissals. The Style menu includes grouped themes, checkable fonts with an Editor Monospace toggle, and a nested horizontal segmented Tab Size selector (1 to 6 spaces). |
 | **Native dual-pane** | Editor on the left, live preview on the right. Resizable from 20% to 80%. Double-click the divider to reset to center. |
 | **Bidirectional scroll sync** | Scroll either pane, the other follows. Ratio-based, no jitter on long documents. Toggle with `Alt + X`. |
 | **CodeMirror 6 editor** | Markdown syntax styling, code folding, bracket and quote auto-pair, active-line highlight, find and replace. |
@@ -258,10 +258,13 @@ featherMD/
 │
 ├── tests/                           Vitest suites mirroring src/ layout.
 │   ├── editor/editor.test.js        CodeMirror integration.
-│   ├── preview/preview.test.js      Rendering, XSS sanitization, GFM.
+│   ├── preview/
+│   │   ├── preview.test.js          Rendering, XSS sanitization, GFM.
+│   │   └── math-mermaid.test.js     KaTeX math + Mermaid diagrams.
 │   ├── ui/
 │   │   ├── toolbar.test.js          Menu wiring, dropdowns, recent files.
-│   │   └── themes.test.js           Theme switching, OS detection.
+│   │   ├── themes.test.js           Theme switching, OS detection.
+│   │   └── fullscreen.test.js       Fullscreen preview mode.
 │   ├── core/sync.test.js            Scroll sync + feedback-loop prevention.
 │   ├── html.test.js                 index.html structure, ARIA.
 │   ├── security.test.js             XSS, prototype pollution, perm scopes.
@@ -308,8 +311,8 @@ Not yet. The codebase is Tauri so a macOS build is a CI job away. It is on the r
 **Can I edit files larger than X MB?**
 Yes. CodeMirror 6 handles large files efficiently. There is no hard cap. Performance degrades smoothly on truly huge files (50 MB+) the same way any text editor does.
 
-**Does it support tables, footnotes, task lists, math?**
-Tables, task lists, fenced code, GFM extensions: yes. Footnotes and math (KaTeX / MathJax) are not enabled by default to keep the bundle small. A toggle is on the roadmap.
+**Does it support tables, footnotes, task lists, math, diagrams?**
+Yes. It supports GFM tables, task lists, footnotes, and fenced code. LaTeX math expressions (both inline `$E=mc^2$` and display `$$\int dx$$`) are parsed and rendered using lazy-loaded **KaTeX**. Vector diagrams (fences marked `mermaid` or `mmd`) are rendered via lazy-loaded **Mermaid v11**, which automatically adapts to the chosen light or dark theme.
 
 **Where are my settings stored?**
 On Tauri builds, the OS config directory under `feathermd/config.json`. On Windows that is `%APPDATA%\com.feathermd.app\feathermd\config.json`. On Linux, `~/.config/com.feathermd.app/feathermd/config.json`. A `localStorage` fallback is used in browser dev mode.
