@@ -1,14 +1,14 @@
 # PRD - Feather MD
 ### Lightweight Dual-Pane Markdown Editor for Windows & Linux
-**Version:** 1.4.1
-**Status:** Shipping (1.4.1 released 2026-05-29)
-**Last updated:** 2026-05-31
+**Version:** 1.9.0
+**Status:** Shipping (1.9.0 released 2026-06-17)
+**Last updated:** 2026-06-17
 
 ---
 
 ## 1. Product Overview
 
-**Feather MD** is a native-feeling, zero-bloat Markdown editor that opens instantly when double-clicking any `.md` file. It pairs a CodeMirror 6 editor with a live `marked.js` preview in a resizable 50/50 split, ships ten themes, and installs from a sub-10 MB bundle on Windows and Linux. No Electron, no Node runtime, no background services.
+**Feather MD** is a native-feeling, zero-bloat Markdown editor that opens instantly when double-clicking any `.md` file. It pairs a CodeMirror 6 editor with a live `marked.js` preview in a resizable split layout, ships ten themes, and installs from a sub-10 MB bundle on Windows and Linux. No Electron, no Node runtime, no background services.
 
 ### 1.1 Core Constraints (non-negotiable)
 - Cold start: **< 100 ms** from double-click to visible content
@@ -16,7 +16,7 @@
 - Runtime RAM: **< 60 MB** for a 10,000-word file, **< 30 MB** idle
 - Render lag: **< 200 ms** from keystroke to preview update
 - CPU idle: **< 1%** when no typing; native OS file-event watcher, no polling timers
-- Zero telemetry. The only outbound request is the optional signed update check (see §3.9)
+- No telemetry beyond the optional signed update check (see §3.9) and anonymous ping analytics (see §3.10)
 
 ---
 
@@ -26,9 +26,11 @@
 |---|---|---|
 | Shell / native | **Tauri 2** (Rust) | Uses OS WebView, no bundled Chromium, ~5 MB binary |
 | WebView runtime | **WebView2** (Win) / **WebKitGTK** (Linux) | Ships with OS, zero extra download |
-| Editor | **CodeMirror 6** (tree-shaken) | ~300 KB gzip; compartments for hot-reconfig of line numbers / wrap / tab size |
+| Editor | **CodeMirror 6** (tree-shaken) | ~300 KB gzip; compartments for hot-reconfig of line numbers / wrap / tab size / dynamic fonts |
 | Markdown parser | **marked v15** | Synchronous GFM parser |
 | Sanitizer | **DOMPurify v3** | XSS strip before `innerHTML` injection |
+| Math parsing | **KaTeX v0.16** | LaTeX math expressions inline and display parsing (lazy-loaded) |
+| Diagram parsing | **Mermaid v11** | Vector graphics rendering for diagrams (lazy-loaded) |
 | Code highlighting | **highlight.js v11** | Lazy-loaded per-language via `import.meta.glob` |
 | Bundler | **Vite 6** | HMR dev, single ~400 KB prod bundle + on-demand chunks |
 | Themes | **CSS custom properties** | Single consolidated `base.css`, zero JS overhead, instant swap |
@@ -36,7 +38,7 @@
 | Auto-updater | **`tauri-plugin-updater`** + **`tauri-plugin-process`** | Ed25519-signed releases, single startup check, user-gated install |
 | Installer | **Tauri CLI** | `.exe` (Win NSIS), `.deb` + `.AppImage` (Linux) |
 | Tests | **Vitest** + **jsdom** | 200+ specs across editor, preview, UI, sync, security, html, performance |
-| Lint | **ESLint v9** (flat config) | Browser + node globals, custom writable globals for HMR-safe state |
+| Lint | **ESLint v9** (flat config) | Browser + node globals, custom globals for HMR-safe state |
 
 **Excluded intentionally:** React, Vue, any UI framework, Electron, Monaco, ProseMirror, any CSS framework, Vim mode, in-app browser navigation.
 
@@ -53,30 +55,32 @@
 - New file: `Ctrl+N` - blank editor, unsaved state, unwatches the previous file
 - Unsaved-changes indicator: ` *` suffix in the unified header title (e.g. `FeatherMD - notes.md *`)
 - On close with unsaved changes: custom three-button modal (Save / Don't Save / Cancel)
-- Recent files: last 10 paths stored in local config, surfaced under `File > Recent Files` submenu
+- Recent files: last 10 paths stored in local config, surfaced under `File > Recent Files` menu and modal
 - File watcher: event-driven Rust `notify::RecommendedWatcher`
   - Watches the currently open file; **NonRecursive**, 50 ms debounce on event bursts (editors emit multiple syscalls per save)
   - On external modification with clean buffer → silently reloads
   - On external modification with unsaved edits → prompts via native ask dialog
   - Self-save echo suppression: frontend `isSaving` flag is set during `writeTextFile` and held for 500 ms; events arriving inside that window are ignored. **No `unwatch_file` / `watch_file` IPC round-trips on save.**
 
-### 3.2 Editor Pane (left, default 50% width)
+### 3.2 Editor Pane (left, resizable split width)
 - CodeMirror 6 with `@codemirror/lang-markdown` and `@codemirror/language-data`
-- Built-in extensions: history, fold gutter, bracket matching, close brackets, autocompletion, drop cursor, rectangular selection, crosshair cursor, active-line highlight, selection-match highlight, indent-on-input, default highlight style
-- Line numbers: toggleable (`Ctrl+L`) via Compartment reconfigure
-- Word wrap: on by default, toggleable (`Alt+Z`) via Compartment
-- Tab size: 2 or 4 spaces (default 4, switchable in Style menu); `indentWithTab` inserts literal spaces of the chosen width
-- Keymap: `closeBracketsKeymap`, `defaultKeymap`, `searchKeymap`, `historyKeymap`, `foldKeymap`, `indentWithTab`
+- Built-in extensions: history, fold gutter, bracket matching, close brackets, autocompletion, drop cursor, rectangular selection, crosshair cursor, active-line highlight, active-line gutter highlight, selection-match highlight, indent-on-input, default highlight style
+- Line numbers: toggleable via View menu or `Alt+C` keyboard shortcut (Compartment reconfigure)
+- Word wrap: on by default, toggleable via View menu or `Alt+Z` keyboard shortcut (Compartment reconfigure)
+- Tab size: 1 to 6 spaces (default 4, switchable via Style > Tab Size horizontal segmented buttons submenu); pressing Tab inserts literal spaces at the cursor or indents the selection block
+- Keymap: `closeBracketsKeymap`, `defaultKeymap`, `searchKeymap`, `historyKeymap`, `foldKeymap`, custom Tab handler
 - Find / replace: `Ctrl+F` / `Ctrl+H` via CodeMirror's built-in search panel
 - Single `updateListener` handles both doc changes (150 ms debounced) and selection changes (event-driven cursor updates) - no duplicate listeners
-- No spell-check (OS WebView handles this natively when enabled)
+- Editor Font Family: toggleable between Editor Monospace (uses `--font-mono`) and Reader-friendly Font (uses `--font-reading` mapped from the Style > Font submenu), persisted as `editorMonospace` state in configuration
 
-### 3.3 Preview Pane (right, default 50% width)
+### 3.3 Preview Pane (right, resizable split width)
 - Renders via `marked.parse` (synchronous), sanitized by `DOMPurify.sanitize`
 - GFM enabled: tables, strikethrough, task lists, fenced code
 - Debounce: **150 ms** after last keystroke (lives inside CodeMirror's update listener)
-- No intermediate `requestAnimationFrame` queue - render is invoked synchronously from the debounced callback
+- Full Width Layout: utilizes the full automatic width of the preview pane (`100%` width)
 - Code blocks: per-language `highlight.js` modules lazy-loaded via `import.meta.glob('/node_modules/highlight.js/lib/languages/*.js', { eager: false })` with single-flight de-duplication and alias resolution (`js`→`javascript`, `ts`→`typescript`, `rs`→`rust`, etc.)
+- Math rendering: LaTeX math expressions (`$inline$` and `$$display$$`) parsed and rendered using KaTeX with in-memory caching
+- Diagram rendering: Mermaid diagram code blocks (`mermaid` and `mmd`) parsed and rendered using Mermaid v11, with in-memory caching and light/dark theme refresh support
 - Images with relative paths resolved against the open file's directory using Tauri's `convertFileSrc` asset protocol; absolute Windows paths are normalized to backslashes
 - External links (`http://`, `https://`) intercepted and routed through `plugin:opener|open_url` so the OS browser handles them - no in-app navigation
 - DOMPurify strips `<script>`, `<iframe>`, and event handlers
@@ -86,7 +90,7 @@
 - Algorithm: **scroll ratio** - `scrollRatio = scrollTop / (scrollHeight - clientHeight)`
 - Source-tracking: `mouseenter` on each pane sets `activeSource`; only the active source drives the other pane
 - Feedback-loop guard: `syncing` boolean flag, reset on the next `requestAnimationFrame`
-- Toggle: toolbar `View > Sync Scroll` and `Alt+S` keyboard shortcut
+- Toggle: toolbar `View > Sync Scroll` and `Alt+X` keyboard shortcut
 - All scroll listeners registered with `{ passive: true }` for compositor-thread scroll
 - Persisted in config; restored on boot
 
@@ -110,24 +114,28 @@ All 10 themes are defined as `:root[data-theme="name"] { ... }` blocks **consoli
 Theme auto-detection: reads `window.matchMedia('(prefers-color-scheme: dark)')` on first launch and picks `snow` (light) or `onyx` (dark). The OS preference is re-applied on every boot before config loads, so the first paint matches the user's system theme. Once the user explicitly picks a theme, the choice is persisted and OS-change events stop overriding it.
 
 ### 3.6 UI Shell
-- **Unified 40 px header bar** combining what was previously a title bar + toolbar:
-  - Left: brand icon (with version tooltip via `::after`), menu buttons (File / View / Style), font-size slider
+- **Unified 44 px header bar** combining title bar + toolbar:
+  - Left: menu buttons (File / View / Style) and zoom indicator widget (`100%` reset button) separated by a subtle 1px line
   - Center: absolutely-centered current document title (drag region for Tauri window move)
-  - Right: minimize / maximize / close window buttons
+  - Right: minimize / maximize / close window buttons (close button transitions to danger red accent on hover)
 - `decorations: false` in `tauri.conf.json` - the header is fully custom HTML
 - **Hover-intent dropdown menus:**
   - Open on `mouseenter`, close on `mouseleave` with a 180 ms grace timeout
   - Diagonal pointer bridge (`.submenu-panel::before`) prevents cursor-drift dismissal
   - Click-outside closes all menus
 - Menus:
-  - **File:** New File, Open, Save, Save As, Recent Files (submenu), Print
-  - **View:** Sync Scroll, Line Numbers, Word Wrap (all checkable)
-  - **Style:** Theme (submenu, grouped Light / Dark), Font (submenu), Tab Size (submenu)
+  - **File:** New File, Open, Save, Save As, Recent Files, Print
+  - **View:** Word Wrap, Sync Scroll, Line Numbers, Show Page Breaks, System Tray (all checkable)
+  - **Style:** Theme (submenu, grouped Light / Dark), Font (submenu with font families + Editor Monospace toggle), Tab Size (submenu with horizontal segmented button array from 1 to 6)
 - Resizable split: drag the central divider; clamped 20% / 80% per pane; double-click resets to 50/50; ratio persisted
-- Status bar (bottom, 24 px): file path (truncated, hover-tooltip with full path) · word count · line:col · encoding (UTF-8) · CRLF/LF indicator
+- Status bar (bottom, 26 px):
+  - Left: file path (truncated, hover-tooltip with full path)
+  - Right: selected statistics (word, character, and paragraph count shown dynamically as `(x words, y chars, z paras) sel` when text is highlighted) · total word count · total character count · total paragraph count · Ln/Col · UTF-8 encoding · LF/CRLF indicator · version link pointing to GitHub on the extreme right
+  - Separators: Styled as 1px high-contrast lines using specific CSS `font-size: 0; color: transparent;` and `:not(.status-separator)` padding filters to avoid square blocks in WebView2
 - Custom modals (no native confirm dialogs):
-  - **Unsaved Changes:** three-button overlay (Save / Don't Save / Cancel) with overlay-click and Escape dismiss
-  - **Shortcuts help:** `Ctrl+?` opens a list of all keybindings
+  - **Unsaved Changes Dialog:** Unified `.modal-body` overlay containing the title, message paragraph, and buttons (Save / Don't Save / Cancel) with an even `20px` gap and `24px` padding. Dismissable via overlay-click and Escape key
+  - **Shortcuts Modal:** Headerless, borderless, wide landscape 2-column list fitting all keybindings on a single frame with zero vertical scrollbars. Dismissable via overlay-click and Escape key
+  - **Recent Files Modal:** Headerless, borderless modal with file name color static on hover. Close button visually hidden (`style="display: none;"`) for tests. Dismissable via overlay-click and Escape key
 
 ### 3.7 Settings & Persistence
 - Single JSON config file:
@@ -135,10 +143,10 @@ Theme auto-detection: reads `window.matchMedia('(prefers-color-scheme: dark)')` 
   - Windows: `%APPDATA%\com.feathermd.app\feathermd\config.json`
 - Browser-dev fallback: `localStorage` under key `feathermd-config`
 - Settings UI lives entirely in the header dropdowns and the font-size slider - no dedicated side panel
-- Persisted: theme, font size (12-20 px), font family, tab size, word wrap, line numbers, sync scroll, window dimensions, maximized state, split ratio, recent files
+- Persisted: theme, fontSize, fontFamily, tabSize, wordWrap, lineNumbers, syncScroll, recentFiles, windowWidth, windowHeight, windowMaximized, splitRatio, showPageBreaks, sysTray, editorMonospace
 
 ### 3.8 Performance Budget
-| Metric | Budget | Measured (v1.4.1) |
+| Metric | Budget | Measured (v1.9.0) |
 |---|---|---|
 | JS bundle (gzip, total) | < 450 KB | ~400 KB |
 | CSS bundle (gzip) | < 30 KB | ~19 KB |
@@ -151,8 +159,7 @@ Theme auto-detection: reads `window.matchMedia('(prefers-color-scheme: dark)')` 
 | Save IPC round-trips | 1 | 1 (`writeTextFile`; watcher echo suppressed by frontend flag) |
 
 ### 3.9 Auto-Updater
-The app ships a single network-touching feature: a signed update check on startup. This is a deliberate trade-off against §1.1's "zero telemetry" guideline, scoped narrowly:
-
+The app check signed updates on startup:
 - **One outbound request** to `https://github.com/prathamreet/featherMD/releases/latest/download/latest.json` on app boot
 - No analytics, no headers identifying the user beyond the standard HTTP User-Agent
 - All release artifacts are signed with **Ed25519**; the public key is embedded in the binary
@@ -161,6 +168,12 @@ The app ships a single network-touching feature: a signed update check on startu
 - On install, `tauri-plugin-process::relaunch()` swaps to the new binary
 - CSP in `tauri.conf.json` allows `connect-src` only for `github.com` / `objects.githubusercontent.com` / `*.github.com`
 - Update check failures fail silently (no error UI when offline)
+
+### 3.10 Analytics
+The app triggers an anonymous ping analytics call when online, sending the version, platform, language, and screen resolution:
+- **One outbound request** to `https://feather-md-analytics-production.up.railway.app` on app boot
+- No user-identifying data is sent
+- Offline states fail silently without affecting user experience or boot speed
 
 ---
 
@@ -202,6 +215,7 @@ featherMD/
 │   │   └── preview.js               marked → DOMPurify → innerHTML. Lazy highlight.js
 │   │                                per language. convertFileSrc for relative images.
 │   │                                Opener-plugin routing for external links.
+│   │                                KaTeX and Mermaid modules lazy-loaded.
 │   │
 │   ├── ui/
 │   │   ├── toolbar.js               Hover-intent menu dropdowns + 180 ms grace timeout.
@@ -238,6 +252,7 @@ featherMD/
 │   │   └── lib.rs                   IPC commands: get_initial_file, watch_file,
 │   │                                unwatch_file. notify::RecommendedWatcher with
 │   │                                50 ms event-burst debounce.
+│   │                                Setup memory trimming for WebView2 on hide-to-tray.
 │   ├── capabilities/
 │   │   └── default.json             Tauri 2 permission scopes for plugins.
 │   ├── icons/                       Platform icons (Windows .ico, Linux .png).
@@ -247,10 +262,13 @@ featherMD/
 │
 ├── tests/                           Vitest specs, mirrors src/ layout.
 │   ├── editor/editor.test.js        API surface, compartments, cursor, scroll ratio.
-│   ├── preview/preview.test.js      Rendering, sanitization, GFM, scroll, link routing.
+│   ├── preview/
+│   │   ├── preview.test.js          GFM rendering, code highlighting, scroll API.
+│   │   └── math-mermaid.test.js     KaTeX math rendering + Mermaid diagrams preview.
 │   ├── ui/
-│   │   ├── toolbar.test.js          Menu wiring, dropdowns, recent files builder.
-│   │   └── themes.test.js           Theme switching, OS detection, all 10 themes.
+│   │   ├── toolbar.test.js          Menu wiring, dropdown behaviour, recent files.
+│   │   ├── themes.test.js           Theme switching, OS detection, all 10 themes.
+│   │   └── fullscreen.test.js       Fullscreen preview mode toggles + hints.
 │   ├── core/sync.test.js            Bidirectional scroll sync + feedback-loop guard.
 │   ├── html.test.js                 index.html structure, ARIA, accessibility.
 │   ├── security.test.js             XSS, prototype pollution, permission scope guards.
@@ -259,9 +277,10 @@ featherMD/
 ├── scripts/
 │   ├── generate-report.js           Full audit: build + lint + tests + bench + sizes.
 │   └── version-bump.js              Sync version across package.json / Cargo.toml /
-│                                    tauri.conf.json / base.css.
+│                                    tauri.conf.json / index.html.
 │
 ├── .github/                         Issue templates, PR template, CI + release workflows.
+│   └── workflows/                   GitHub Action workflows.
 └── artifacts/                       Logo, screenshots, PRD, release logs.
 ```
 
@@ -287,9 +306,9 @@ npm run lint            # ESLint
 npm run report          # build + lint + tests + bench + bundle sizes
 
 # Outputs:
-# Windows:  src-tauri/target/release/bundle/nsis/Feather MD_1.4.1_x64-setup.exe
-# Linux:    src-tauri/target/release/bundle/deb/Feather MD_1.4.1_amd64.deb
-#           src-tauri/target/release/bundle/appimage/Feather MD_1.4.1_amd64.AppImage
+# Windows:  src-tauri/target/release/bundle/nsis/Feather MD_1.9.0_x64-setup.exe
+# Linux:    src-tauri/target/release/bundle/deb/Feather MD_1.9.0_amd64.deb
+#           src-tauri/target/release/bundle/appimage/Feather MD_1.9.0_amd64.AppImage
 ```
 
 ---
@@ -313,7 +332,7 @@ On `DOMContentLoaded`:
 5. `applyPersistedConfig()` reconfigures CodeMirror compartments + reflects state in menus
 6. Wire Tauri listeners:
    - `get_initial_file` IPC → load CLI-passed file
-   - `tauri://close-requested` → unsaved-changes guard
+   - `tauri://close-requested` → unsaved-changes guard (hide to tray or quit)
    - `file-changed-on-disk` event → handle external edits, honour `isSaving` echo window
 7. `initWindowSize()` restores window dimensions and maximized state, persists future resizes (debounced 500 ms)
 8. `initUpdater()` checks for a signed release (silent on failure)
@@ -323,20 +342,20 @@ On `DOMContentLoaded`:
 | Subsystem | Module | Owns |
 |---|---|---|
 | Editor | `src/editor/editor.js` | CodeMirror 6 lifecycle, doc change debounce, cursor activity, compartment reconfigure |
-| Preview | `src/preview/preview.js` | marked + DOMPurify pipeline, lazy `highlight.js`, image path resolution, external link routing |
+| Preview | `src/preview/preview.js` | marked + DOMPurify pipeline, lazy `highlight.js`, KaTeX / Mermaid parsing, image path resolution, external link routing |
 | Sync scroll | `src/core/sync.js` | Active-source tracking, ratio sync, feedback-loop guard |
 | File IO | `src/core/file-io.js` | open / save / save-as / new, recent files, unsaved guard, `isSaving` echo flag |
 | Config | `src/core/config.js` | Defaults + JSON persistence (Tauri / localStorage) |
 | Keyboard | `src/core/keyboard.js` | Global shortcuts (Ctrl+S/O/N/L/F/H/?, Alt+Z/S, etc.) |
 | Themes | `src/ui/themes.js` | Theme application, OS preference, persistence callback |
 | Toolbar | `src/ui/toolbar.js` | Hover-intent menus, recent files builder, menu state accessors |
-| Dialogs | `src/ui/dialogs.js` | Unsaved-changes modal, shortcuts help modal |
-| Status bar | `src/ui/status-bar.js` | Word count, cursor pos, file path, line ending |
+| Dialogs | `src/ui/dialogs.js` | Unsaved-changes modal, shortcuts help modal, recent files modal |
+| Status bar | `src/ui/status-bar.js` | Word count, cursor pos, file path, line ending, selections count |
 | Divider | `src/ui/divider.js` | Split-pane drag + double-click reset + persistence |
-| Window controls | `src/platform/window.js` | Minimize / maximize / close + size restore + resize-persist |
+| Window controls | `src/platform/window.js` | Minimize / maximize / close + size restore + resize-persist, hide to tray |
 | Updater | `src/platform/updater.js` | Update check, signature verification, install banner |
 | State | `src/core/state.js` | HMR-resistant window-scoped flags |
-| Backend | `src-tauri/src/lib.rs` | `get_initial_file`, `watch_file`, `unwatch_file` IPC commands; notify-based watcher |
+| Backend | `src-tauri/src/lib.rs` | `get_initial_file`, `watch_file`, `unwatch_file` IPC commands; notify-based watcher, WebView2 memory and tray control |
 
 ---
 
@@ -365,7 +384,7 @@ On `DOMContentLoaded`:
 {
   "theme": "snow",
   "fontSize": 14,
-  "fontFamily": "'JetBrains Mono', monospace",
+  "fontFamily": "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
   "tabSize": 4,
   "wordWrap": true,
   "lineNumbers": true,
@@ -377,7 +396,10 @@ On `DOMContentLoaded`:
   "windowWidth": 1200,
   "windowHeight": 800,
   "windowMaximized": false,
-  "splitRatio": 0.5
+  "splitRatio": 0.5,
+  "showPageBreaks": true,
+  "sysTray": true,
+  "editorMonospace": true
 }
 ```
 
@@ -393,7 +415,7 @@ default-src 'self';
 style-src 'self' 'unsafe-inline';
 font-src 'self';
 img-src 'self' asset: https: data:;
-connect-src 'self' https://github.com https://objects.githubusercontent.com https://*.github.com
+connect-src 'self' https://github.com https://objects.githubusercontent.com https://*.github.com https://feather-md-analytics-production.up.railway.app
 ```
 
 ### Permission scopes (`src-tauri/capabilities/default.json`)
@@ -409,7 +431,7 @@ Tauri 2 capabilities are explicitly enumerated:
 - No `<script>`, `<iframe>`, or event-handler attributes survive the pipeline
 
 ### Data egress
-- Outbound HTTP only for the signed update check (§3.9). No file content, file paths, or user data is ever sent over the network.
+- Outbound HTTP only for the signed update check (§3.9) and anonymous ping analytics (§3.10). No file content, file paths, or user data is ever sent over the network.
 - No analytics, no crash reporting, no telemetry SDKs.
 
 ---
@@ -419,8 +441,10 @@ Tauri 2 capabilities are explicitly enumerated:
 ### Test layout (Vitest + jsdom)
 - `tests/editor/editor.test.js` - CodeMirror lifecycle, content management, cursor, compartments, scroll API
 - `tests/preview/preview.test.js` - GFM rendering, XSS sanitization, code highlighting, scroll API
-- `tests/ui/toolbar.test.js` - menu wiring, dropdown behaviour, recent files
+- `tests/preview/math-mermaid.test.js` - KaTeX math rendering and Mermaid diagrams preview layout
+- `tests/ui/toolbar.test.js` - menu wiring, dropdown behaviour, recent files modal
 - `tests/ui/themes.test.js` - all 10 themes apply, OS preference detection, persistence callback
+- `tests/ui/fullscreen.test.js` - fullscreen preview mode toggles and exit hint behavior
 - `tests/core/sync.test.js` - bidirectional scroll sync, feedback-loop guard
 - `tests/html.test.js` - DOM structure, ARIA attributes, keyboard accessibility
 - `tests/security.test.js` - SEC + CODE regression guards (XSS, prototype pollution, permission scopes)
@@ -459,7 +483,7 @@ Tauri 2 capabilities are explicitly enumerated:
 
 ## 13. Release & Versioning
 
-- Versions live in `package.json`, `src-tauri/Cargo.toml`, `src-tauri/tauri.conf.json`, and the brand icon tooltip in `src/styles/base.css`
+- Versions live in `package.json`, `src-tauri/Cargo.toml`, `src-tauri/tauri.conf.json`, and the status bar version link in `index.html`
 - `scripts/version-bump.js` (invoked by the `npm version` lifecycle) syncs all four
 - Release artifacts published via `.github/workflows/release.yml`:
   - `Feather.MD_<version>_x64-setup.exe` + `.sig`
@@ -470,4 +494,4 @@ Tauri 2 capabilities are explicitly enumerated:
 
 ---
 
-*End of PRD - Feather MD v1.4.1*
+*End of PRD - Feather MD v1.9.0*
