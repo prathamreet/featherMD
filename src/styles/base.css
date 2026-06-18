@@ -583,8 +583,8 @@ body {
 }
 
 #divider {
-  width: 9px;
-  margin: 0 -4px;
+  width: 3px;
+  margin: 0 -1px;
   cursor: col-resize;
   background: transparent;
   transition: background var(--transition-fast);
@@ -598,7 +598,7 @@ body {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 4px;
+  left: 1px;
   width: 1px;
   background: color-mix(in srgb, var(--border) 45%, transparent);
   transition: background var(--transition-fast), width var(--transition-fast);
@@ -608,7 +608,7 @@ body {
 #divider.dragging::before {
   background: var(--accent);
   width: 2px;
-  left: 4px;
+  left: 0.5px;
 }
 
 #divider::after {
@@ -616,8 +616,8 @@ body {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: -4px;
-  right: -4px;
+  left: 0px;
+  right: -9px;
 }
 
 /* ---- Status Bar ---- */
