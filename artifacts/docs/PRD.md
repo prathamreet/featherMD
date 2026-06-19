@@ -1,8 +1,8 @@
 # PRD - Feather MD
 ### Lightweight Dual-Pane Markdown Editor for Windows & Linux
-**Version:** 1.9.0
-**Status:** Shipping (1.9.0 released 2026-06-17)
-**Last updated:** 2026-06-17
+**Version:** 1.10.1
+**Status:** Shipping (1.10.0 introduced the background auto-update flow; 1.10.1 current)
+**Last updated:** 2026-06-19
 
 ---
 
@@ -130,7 +130,7 @@ Theme auto-detection: reads `window.matchMedia('(prefers-color-scheme: dark)')` 
 - Resizable split: drag the central divider; clamped 20% / 80% per pane; double-click resets to 50/50; ratio persisted
 - Status bar (bottom, 26 px):
   - Left: file path (truncated, hover-tooltip with full path)
-  - Right: selected statistics (word, character, and paragraph count shown dynamically as `(x words, y chars, z paras) sel` when text is highlighted) · total word count · total character count · total paragraph count · Ln/Col · UTF-8 encoding · LF/CRLF indicator · version link pointing to GitHub on the extreme right
+  - Right: selected statistics (word, character, and paragraph count shown dynamically as `(x words, y chars, z paras) sel` when text is highlighted) · total word count · total character count · total paragraph count · Ln/Col · UTF-8 encoding · LF/CRLF indicator · version link on the extreme right (opens the GitHub repo, and doubles as the auto-update status indicator - see §3.9)
   - Separators: Styled as 1px high-contrast lines using specific CSS `font-size: 0; color: transparent;` and `:not(.status-separator)` padding filters to avoid square blocks in WebView2
 - Custom modals (no native confirm dialogs):
   - **Unsaved Changes Dialog:** Unified `.modal-body` overlay containing the title, message paragraph, and buttons (Save / Don't Save / Cancel) with an even `20px` gap and `24px` padding. Dismissable via overlay-click and Escape key
@@ -146,7 +146,7 @@ Theme auto-detection: reads `window.matchMedia('(prefers-color-scheme: dark)')` 
 - Persisted: theme, fontSize, fontFamily, tabSize, wordWrap, lineNumbers, syncScroll, recentFiles, windowWidth, windowHeight, windowMaximized, splitRatio, showPageBreaks, sysTray, editorMonospace
 
 ### 3.8 Performance Budget
-| Metric | Budget | Measured (v1.9.0) |
+| Metric | Budget | Measured (v1.10.x) |
 |---|---|---|
 | JS bundle (gzip, total) | < 450 KB | ~400 KB |
 | CSS bundle (gzip) | < 30 KB | ~19 KB |
@@ -159,21 +159,41 @@ Theme auto-detection: reads `window.matchMedia('(prefers-color-scheme: dark)')` 
 | Save IPC round-trips | 1 | 1 (`writeTextFile`; watcher echo suppressed by frontend flag) |
 
 ### 3.9 Auto-Updater
-The app check signed updates on startup:
+The app runs one signed background update check on startup. **All status is surfaced through the existing version text in the bottom-right status bar - no banners, no modal pop-ups.** Implemented as a three-phase state machine in [src/platform/updater.js](src/platform/updater.js):
+
+- **idle** - the version text shows `v<version>` and links to the GitHub repo
+- **updating** - a newer release was found; the app downloads and installs it in the background. The text changes to **`Updating...`**, the link is removed, and clicks are disabled (`.update-in-progress`, `pointer-events: none`) so the user cannot accidentally open the browser mid-update. On Windows the NSIS installer runs in **`quiet`** mode (`plugins.updater.windows.installMode` in `tauri.conf.json`) - no Setup window, no progress wizard. This is compatible with the `currentUser` bundle install mode (no admin elevation needed)
+- **ready** - once the update is staged, the text becomes **`Restart App!`** in the theme accent colour (`.update-ready`) as a subtle call-to-action
+
+**Network & signing**
 - **One outbound request** to `https://github.com/prathamreet/featherMD/releases/latest/download/latest.json` on app boot
-- No analytics, no headers identifying the user beyond the standard HTTP User-Agent
-- All release artifacts are signed with **Ed25519**; the public key is embedded in the binary
-- The updater verifies the signature on `latest.json` **before** writing anything
-- A new version surfaces as a slide-in banner; the user explicitly clicks **Update Now** to download and install
-- On install, `tauri-plugin-process::relaunch()` swaps to the new binary
-- CSP in `tauri.conf.json` allows `connect-src` only for `github.com` / `objects.githubusercontent.com` / `*.github.com`
-- Update check failures fail silently (no error UI when offline)
+- All release artifacts are signed with **Ed25519**; the public key is embedded in the binary, and the updater verifies the signature **before** writing anything
+- No headers identifying the user beyond the standard HTTP User-Agent
+- Update-check and download failures fail silently. On download failure the version text, link, and styling revert to the original idle state, so the user never sees an error
+
+**Smart restart (clicking `Restart App!`)**
+- Runs the existing `confirmDiscardChanges()` guard ([src/core/file-io.js](src/core/file-io.js)). With a dirty buffer it shows the Save / Don't Save / Cancel dialog: Save or Don't Save proceeds to `relaunch()`, Cancel aborts and leaves the text as `Restart App!` for a later retry. A clean buffer relaunches immediately
+
+**Exit behaviour while an update is pending**
+- *Staged (ready):* closing needs no prompt - Tauri applies the staged update on the next launch
+- *Still downloading + system tray active:* closing just hides to the tray (no prompt); the download continues in the background
+- *Still downloading + full quit* (close with no tray, tray "Quit", or Ctrl+Q without a tray): `requestQuit()` shows an **"Update in Progress"** warning (**Close Anyway** / **Wait for Update**) before the unsaved-changes guard, so the user can avoid aborting the download
+
+User settings persist across the relaunch automatically - `saveConfig()` writes preferences to `config.json` in real time (see §3.7). The updater's CSP `connect-src` allowance is documented in §10.
 
 ### 3.10 Analytics
 The app triggers an anonymous ping analytics call when online, sending the version, platform, language, and screen resolution:
 - **One outbound request** to `https://feather-md-analytics-production.up.railway.app` on app boot
 - No user-identifying data is sent
 - Offline states fail silently without affecting user experience or boot speed
+
+### 3.11 Printing & PDF Export
+Printing (`Ctrl+P` or File → Print) funnels through a single wrapped `window.print()`, so every entry point gets identical treatment:
+- **Forced light theme:** the output always renders in the `snow` palette regardless of the active editor theme. `initPrintThemeOverride()` ([src/main.js](src/main.js)) swaps `data-theme="snow"` and re-renders Mermaid diagrams (whose colours are baked into the SVG) in the light variant before printing, then restores the user's theme afterward. The saved theme is never written to disk.
+- **Chrome stripping:** `@media print` rules hide the header bar, status bar, editor pane, divider, and modals, so only the rendered document prints.
+- **Multi-page flow:** viewport height/overflow pinning is released so content flows across pages instead of being clipped to a single screen height; Mermaid/math internal scroll caps are lifted so full diagrams print.
+- **Page breaks:** a `<pb>` tag forces a hard page break (`page-break-before: always`). The dashed `<pb>` marker's visibility in the preview is toggled via View → Show Page Breaks / `Alt+P`.
+- **Layout protection:** code blocks and tables word-wrap at the page edge; tables, `<pre>`, blockquotes, and images avoid being split across pages; headings avoid being orphaned at the bottom of a page.
 
 ---
 
@@ -223,7 +243,8 @@ featherMD/
 │   │   ├── themes.js                Theme application + prefers-color-scheme listener.
 │   │   ├── dialogs.js               Custom unsaved-changes modal + shortcuts help modal.
 │   │   ├── status-bar.js            Word count, cursor pos, file path, CRLF/LF.
-│   │   └── divider.js               Editor/preview split-pane drag handle.
+│   │   ├── divider.js               Editor/preview split-pane drag handle.
+│   │   └── fullscreen.js            F11 distraction-free preview (maximize-based).
 │   │
 │   ├── core/
 │   │   ├── config.js                Defaults + Tauri appConfigDir / localStorage persistence.
@@ -237,8 +258,11 @@ featherMD/
 │   │   └── utils.js                 escapeHtml (regex-based, no DOM allocations).
 │   │
 │   ├── platform/
-│   │   ├── window.js                Tauri window controls + size/maximized persistence.
-│   │   └── updater.js               Ed25519-verified auto-update banner.
+│   │   ├── window.js                Tauri window controls + size/maximized persistence,
+│   │   │                            hide-to-tray, tray-aware quit + mid-download guard.
+│   │   └── updater.js               Ed25519-verified background auto-update. Drives the
+│   │                                status-bar update phases (idle / updating / ready)
+│   │                                and the unsaved-changes-guarded relaunch.
 │   │
 │   └── styles/
 │       ├── base.css                 Layout, header, status bar, modals, ALL 10 THEMES.
@@ -250,9 +274,10 @@ featherMD/
 │   ├── src/
 │   │   ├── main.rs                  Tauri app entry (windows_subsystem guard).
 │   │   └── lib.rs                   IPC commands: get_initial_file, watch_file,
-│   │                                unwatch_file. notify::RecommendedWatcher with
-│   │                                50 ms event-burst debounce.
-│   │                                Setup memory trimming for WebView2 on hide-to-tray.
+│   │                                unwatch_file, tray_active, set_tray,
+│   │                                set_webview_memory. notify::RecommendedWatcher with
+│   │                                50 ms event-burst debounce. System-tray build +
+│   │                                live toggle. WebView2 working-set trim on hide-to-tray.
 │   ├── capabilities/
 │   │   └── default.json             Tauri 2 permission scopes for plugins.
 │   ├── icons/                       Platform icons (Windows .ico, Linux .png).
@@ -306,9 +331,9 @@ npm run lint            # ESLint
 npm run report          # build + lint + tests + bench + bundle sizes
 
 # Outputs:
-# Windows:  src-tauri/target/release/bundle/nsis/Feather MD_1.9.0_x64-setup.exe
-# Linux:    src-tauri/target/release/bundle/deb/Feather MD_1.9.0_amd64.deb
-#           src-tauri/target/release/bundle/appimage/Feather MD_1.9.0_amd64.AppImage
+# Windows:  src-tauri/target/release/bundle/nsis/Feather MD_1.10.1_x64-setup.exe
+# Linux:    src-tauri/target/release/bundle/deb/Feather MD_1.10.1_amd64.deb
+#           src-tauri/target/release/bundle/appimage/Feather MD_1.10.1_amd64.AppImage
 ```
 
 ---
@@ -332,10 +357,12 @@ On `DOMContentLoaded`:
 5. `applyPersistedConfig()` reconfigures CodeMirror compartments + reflects state in menus
 6. Wire Tauri listeners:
    - `get_initial_file` IPC → load CLI-passed file
-   - `tauri://close-requested` → unsaved-changes guard (hide to tray or quit)
+   - `open-file-from-args` event → open a file forwarded by a second (single-instance) launch
+   - `tauri://close-requested` → hide to tray when a tray exists, else `requestQuit()` (unsaved-changes guard + mid-download update guard)
+   - `tray-quit` event → `requestQuit()` (the only full-process-exit path)
    - `file-changed-on-disk` event → handle external edits, honour `isSaving` echo window
 7. `initWindowSize()` restores window dimensions and maximized state, persists future resizes (debounced 500 ms)
-8. `initUpdater()` checks for a signed release (silent on failure)
+8. `initUpdater()` runs the signed background update check; drives the status-bar update phases, silent on failure
 
 ### Subsystem map
 
@@ -346,16 +373,17 @@ On `DOMContentLoaded`:
 | Sync scroll | `src/core/sync.js` | Active-source tracking, ratio sync, feedback-loop guard |
 | File IO | `src/core/file-io.js` | open / save / save-as / new, recent files, unsaved guard, `isSaving` echo flag |
 | Config | `src/core/config.js` | Defaults + JSON persistence (Tauri / localStorage) |
-| Keyboard | `src/core/keyboard.js` | Global shortcuts (Ctrl+S/O/N/L/F/H/?, Alt+Z/S, etc.) |
+| Keyboard | `src/core/keyboard.js` | Global shortcuts (Ctrl+O/S/Shift+S/N/R/Shift+R/Q/P/`.`), Alt+Z/X/C/P toggles, Alt+T/F/D leader chords, Ctrl+scroll zoom |
 | Themes | `src/ui/themes.js` | Theme application, OS preference, persistence callback |
 | Toolbar | `src/ui/toolbar.js` | Hover-intent menus, recent files builder, menu state accessors |
 | Dialogs | `src/ui/dialogs.js` | Unsaved-changes modal, shortcuts help modal, recent files modal |
 | Status bar | `src/ui/status-bar.js` | Word count, cursor pos, file path, line ending, selections count |
 | Divider | `src/ui/divider.js` | Split-pane drag + double-click reset + persistence |
+| Fullscreen | `src/ui/fullscreen.js` | F11 distraction-free preview mode (maximize-based; Esc / F11 to exit) |
 | Window controls | `src/platform/window.js` | Minimize / maximize / close + size restore + resize-persist, hide to tray |
-| Updater | `src/platform/updater.js` | Update check, signature verification, install banner |
+| Updater | `src/platform/updater.js` | Background update check, signature verification, status-bar phases (idle / updating / ready), unsaved-changes-guarded relaunch |
 | State | `src/core/state.js` | HMR-resistant window-scoped flags |
-| Backend | `src-tauri/src/lib.rs` | `get_initial_file`, `watch_file`, `unwatch_file` IPC commands; notify-based watcher, WebView2 memory and tray control |
+| Backend | `src-tauri/src/lib.rs` | `get_initial_file`, `watch_file`, `unwatch_file`, `tray_active`, `set_tray`, `set_webview_memory` IPC commands; notify-based watcher, WebView2 memory and tray control |
 
 ---
 
@@ -414,17 +442,18 @@ On `DOMContentLoaded`:
 default-src 'self';
 style-src 'self' 'unsafe-inline';
 font-src 'self';
-img-src 'self' asset: https: data:;
-connect-src 'self' https://github.com https://objects.githubusercontent.com https://*.github.com https://feather-md-analytics-production.up.railway.app
+img-src 'self' asset: http://asset.localhost https: data:;
+connect-src 'self' https://github.com https://objects.githubusercontent.com https://release-assets.githubusercontent.com https://feather-md-analytics-production.up.railway.app
 ```
 
 ### Permission scopes (`src-tauri/capabilities/default.json`)
 Tauri 2 capabilities are explicitly enumerated:
-- `core:default`, `core:event:allow-listen`, `core:event:allow-emit`
-- `dialog:allow-open`, `dialog:allow-save`
-- `fs:allow-read-text-file`, `fs:allow-write-text-file`, `fs:allow-mkdir`, `fs:scope` (allow `**` for user-chosen files)
-- `core:window:allow-{minimize,maximize,unmaximize,close,destroy,is-maximized,set-size}`
-- `opener:default`, `updater:default`, `process:default`
+- `core:default`, `core:event:default`, `core:event:allow-listen`, `core:event:allow-emit`
+- `opener:default`
+- `dialog:default`, `dialog:allow-open`, `dialog:allow-save`
+- `fs:default`, `fs:allow-read-text-file`, `fs:allow-read-file`, `fs:allow-write-text-file`, `fs:allow-write-file`, `fs:allow-mkdir`, `fs:allow-exists`, `fs:scope` (allow `**` for user-chosen files)
+- `core:window:allow-{minimize,maximize,unmaximize,close,destroy,is-maximized,set-size,show,hide,set-focus}`
+- `updater:default`, `process:default`, `process:allow-exit`
 
 ### Sanitization
 - Every preview render is sanitized by **DOMPurify** with `USE_PROFILES: { html: true }` and an explicit `ADD_ATTR: ['target']` for routed external links
@@ -432,7 +461,7 @@ Tauri 2 capabilities are explicitly enumerated:
 
 ### Data egress
 - Outbound HTTP only for the signed update check (§3.9) and anonymous ping analytics (§3.10). No file content, file paths, or user data is ever sent over the network.
-- No analytics, no crash reporting, no telemetry SDKs.
+- No crash reporting, no telemetry SDKs; the analytics ping (§3.10) carries only version, platform, language, and screen resolution.
 
 ---
 
@@ -476,15 +505,15 @@ Tauri 2 capabilities are explicitly enumerated:
 - [x] RAM < 60 MB with a 10,000-word file open (~50 MB measured)
 - [x] CPU < 1% when idle - native event-driven watcher, no polling timers
 - [x] Save path does not pause/resume the watcher (single IPC, `isSaving` flag suppresses echo)
-- [x] No telemetry. Auto-update check is the sole outbound request, signed (Ed25519) and user-gated for install.
+- [x] No file content or paths leave the device. The only outbound requests are the signed (Ed25519), user-gated background update check and an anonymous analytics ping (version/platform/language/resolution).
 - [x] 200+ Vitest specs passing; CI runs the full report on every PR
 
 ---
 
 ## 13. Release & Versioning
 
-- Versions live in `package.json`, `src-tauri/Cargo.toml`, `src-tauri/tauri.conf.json`, and the status bar version link in `index.html`
-- `scripts/version-bump.js` (invoked by the `npm version` lifecycle) syncs all four
+- `package.json` is the source of truth for the version (set it via `npm version`, which also updates `package-lock.json`)
+- `scripts/version-bump.js` (invoked by the `npm version` lifecycle) reads `package.json` and syncs the version into: `src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml`, `src-tauri/Cargo.lock`, the status-bar version link in `index.html`, and the landing page (`page/styles.css` `page-version`, `page/index.html`)
 - Release artifacts published via `.github/workflows/release.yml`:
   - `Feather.MD_<version>_x64-setup.exe` + `.sig`
   - `Feather.MD_<version>_amd64.deb`
@@ -494,4 +523,4 @@ Tauri 2 capabilities are explicitly enumerated:
 
 ---
 
-*End of PRD - Feather MD v1.9.0*
+*End of PRD - Feather MD v1.10.1*
