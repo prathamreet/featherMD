@@ -19,7 +19,7 @@ Drop a \`<pb>\` tag anywhere to force a clean page boundary when printing or exp
 
 ## Math & diagrams
 
-Feather MD renders LaTeX math (KaTeX) and Mermaid diagram - but only loads those engines when a document actually uses them, so a plain note like this one stays light on memory.
+Feather MD renders LaTeX math (KaTeX) and Mermaid diagram - but only loads those engines when a document actually uses them, so a plain note like this one stays light on the memory.
 
 Type inline math like \`$E = mc^2$\`, block math between \`$$ ... $$\`, or open a \`mermaid\` code fence for flowcharts, gantt charts, and git graphs.
 
