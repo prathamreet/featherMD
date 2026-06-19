@@ -68,6 +68,9 @@
   },
   "plugins": {
     "updater": {
+      "windows": {
+        "installMode": "quiet"
+      },
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDFFRTIyOTRBRjBBNTVBODkKUldTSldxWHdTaW5pSG5vS0J5b0JLcmtQaHRMNE1xUW5xSUpjZS85b2dubnozaFNkMmtVeUFaWjUK",
       "endpoints": [
         "https://github.com/prathamreet/featherMD/releases/latest/download/latest.json"
