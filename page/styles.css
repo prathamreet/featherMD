@@ -738,7 +738,7 @@ p {
 
 /* Premium Floating Version Tooltip for Mock Editor */
 .editor-titlebar-icon::after {
-  content: "v1.9.2"; /* page-version */
+  content: "v1.10.0"; /* page-version */
   position: absolute;
   top: calc(100% + 6px);
   left: 50%;

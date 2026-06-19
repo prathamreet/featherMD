@@ -967,7 +967,7 @@ dependencies = [
 
 [[package]]
 name = "feathermd"
-version = "1.9.2"
+version = "1.10.0"
 dependencies = [
  "notify",
  "serde",
