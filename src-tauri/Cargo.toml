@@ -1,6 +1,6 @@
 [package]
 name = "feathermd"
-version = "1.10.3"
+version = "1.10.4"
 description = "A lightweight dual-pane markdown editor"
 authors = ["Feather MD"]
 edition = "2021"
