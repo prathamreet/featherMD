@@ -4,10 +4,14 @@
 // Background auto-update with status communicated through the existing version
 // text in the bottom-right status bar. Three phases:
 //
-//   idle      — version text shows "v1.9.2", clickable (opens GitHub repo).
-//   updating  — version text shows "Updating...", click disabled.
-//   ready     — version text shows "Restart App!", accent-colored, clickable
-//               (relaunches after unsaved-changes guard).
+//   idle      — version text shows "v1.10.x", clickable (opens GitHub repo).
+//   updating  — newer release found; the bytes DOWNLOAD in the background. Text
+//               shows "Updating...", click disabled. The update is downloaded but
+//               deliberately NOT installed yet — on Windows the NSIS install step
+//               closes/restarts the app, so installing is deferred to the user.
+//   ready     — download finished. Text shows "Restart App!", accent-colored,
+//               clickable. The click runs the unsaved-changes guard, then installs
+//               the staged update and relaunches — restart only with consent.
 
 import { confirmDiscardChanges } from '../core/file-io.js';
 
@@ -58,11 +62,15 @@ export async function initUpdater() {
     versionEl.classList.add('update-in-progress');
 
     try {
-      await update.downloadAndInstall();
+      // Download ONLY — do not install here. On Windows the NSIS install step
+      // closes and relaunches the app, which would restart the user without
+      // their consent. Installing is deferred to the "Restart App!" click so the
+      // restart is always explicit (see the ready phase below).
+      await update.download();
     } catch (err) {
       // Download failed — silently revert to original state. The user never
       // knew an update was happening, so no error UI is needed.
-      console.warn('[Updater] Download/install failed:', err);
+      console.warn('[Updater] Download failed:', err);
       _phase = 'idle';
       versionEl.textContent = originalText;
       if (originalHref) versionEl.setAttribute('href', originalHref);
@@ -87,9 +95,14 @@ export async function initUpdater() {
       e.preventDefault();
       if (!(await confirmDiscardChanges())) return;
       try {
+        // Install the already-downloaded update, THEN relaunch. On Windows the
+        // NSIS installer swaps the binary and restarts the app; relaunch() covers
+        // macOS/Linux where the restart must be requested explicitly. Either way
+        // this only runs after the user clicked "Restart App!".
+        await update.install();
         await relaunch();
       } catch (err) {
-        console.error('[Updater] Relaunch failed:', err);
+        console.error('[Updater] Install/relaunch failed:', err);
       }
     });
   } catch (err) {
