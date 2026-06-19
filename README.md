@@ -107,7 +107,7 @@ Release bundles land in:
 | **Custom unsaved-changes modal** | Save / Don't Save / Cancel with single-key shortcuts (`S` / `N` / `C`), Tab nav, and Enter to confirm. |
 | **CLI launch** | `feathermd <path>` opens a file directly. Useful from a terminal or a shell hotkey. |
 | **OS file associations** | `.md` and `.markdown` open in Feather MD on double-click. |
-| **Signed auto-updates** | Ed25519-signed auto-update check on startup with a minimalist slide-in banner and one-click install. |
+| **Signed background auto-updates** | Ed25519-signed update check on startup that downloads and stages quietly in the background. Status shows in the status-bar version text (`Updating...` → `Restart App!`); restarting runs the unsaved-changes guard first. No banners. |
 | **Persistent preferences** | Theme, font family, font size, tab size, line numbers, word wrap, scroll-sync, split ratio, window size, and maximized state are all restored on launch. |
 | **No startup flash** | Window stays hidden until persisted size is applied — no wrong-size flicker. |
 
@@ -174,7 +174,7 @@ If you are managing thousands of linked notes with backlinks and graphs, you wan
 | `F11` | Fullscreen preview (`Esc` exits) |
 | `Ctrl + Q` | Quit |
 | `Ctrl + Shift + R` | Reload |
-| `Ctrl + ?` | Show all shortcuts |
+| `Ctrl + .` | Show all shortcuts |
 
 The theme/font/tab-size chords are a leader sequence: tap `Alt + T` (or `F` / `D`), then `↑` / `↓` to cycle within a short window.
 
@@ -212,7 +212,8 @@ featherMD/
 │   │   │                            and shortcuts help modal.
 │   │   ├── status-bar.js            Word count, cursor position, file path,
 │   │   │                            line ending.
-│   │   └── divider.js               Editor/preview split-pane drag handle.
+│   │   ├── divider.js               Editor/preview split-pane drag handle.
+│   │   └── fullscreen.js            F11 distraction-free preview mode.
 │   │
 │   ├── core/
 │   │   ├── config.js                Defaults + Tauri appConfigDir /
@@ -231,7 +232,8 @@ featherMD/
 │   ├── platform/
 │   │   ├── window.js                Tauri window controls, size persistence,
 │   │   │                            deferred show().
-│   │   └── updater.js               Ed25519-verified auto-update banner.
+│   │   └── updater.js               Ed25519-verified background auto-update;
+│   │                                status-bar update phases + guarded relaunch.
 │   │
 │   └── styles/
 │       ├── base.css                 Layout, header, status bar, modals,
@@ -243,10 +245,11 @@ featherMD/
 ├── src-tauri/                       Rust backend.
 │   ├── src/
 │   │   ├── main.rs                  Tauri app entry (windows_subsystem guard).
-│   │   └── lib.rs                   IPC commands: get_initial_file,
-│   │                                watch_file, unwatch_file. Event-driven
-│   │                                file watcher via the `notify` crate
-│   │                                (no polling timers).
+│   │   └── lib.rs                   IPC commands: get_initial_file, watch_file,
+│   │                                unwatch_file, tray_active, set_tray,
+│   │                                set_webview_memory. Event-driven file watcher
+│   │                                via the `notify` crate (no polling timers);
+│   │                                system tray + WebView2 working-set trim.
 │   ├── capabilities/
 │   │   └── default.json             Tauri 2 permission scopes for plugins.
 │   ├── icons/                       Platform icons.
@@ -272,9 +275,9 @@ featherMD/
 │
 ├── scripts/
 │   ├── generate-report.js           Full audit: build + lint + tests + bench.
-│   └── version-bump.js              Sync version across package.json /
-│                                    Cargo.toml / Cargo.lock /
-│                                    tauri.conf.json / base.css.
+│   └── version-bump.js              Sync version from package.json into
+│                                    tauri.conf.json / Cargo.toml / Cargo.lock /
+│                                    index.html / page/ landing page.
 │
 ├── page/                            GitHub Pages landing page.
 ├── .github/                         Issue templates, PR templates, CI workflows.
