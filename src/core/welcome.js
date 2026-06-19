@@ -17,7 +17,7 @@ Drop a \`<pb>\` tag anywhere to force a clean page boundary when printing or exp
 
 <pb>
 
-## Math & diagrams
+## Math & diagram
 
 Feather MD renders LaTeX math (KaTeX) and Mermaid diagrams - but only loads those engines when a document actually uses them, so a plain note like this one stays light on memory.
 
