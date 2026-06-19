@@ -162,7 +162,7 @@ Theme auto-detection: reads `window.matchMedia('(prefers-color-scheme: dark)')` 
 The app runs one signed background update check on startup. **All status is surfaced through the existing version text in the bottom-right status bar - no banners, no modal pop-ups.** Implemented as a three-phase state machine in [src/platform/updater.js](src/platform/updater.js):
 
 - **idle** - the version text shows `v<version>` and links to the GitHub repo
-- **updating** - a newer release was found; the app downloads and installs it in the background. The text changes to **`Updating...`**, the link is removed, and clicks are disabled (`.update-in-progress`, `pointer-events: none`) so the user cannot accidentally open the browser mid-update. On Windows the NSIS installer runs in **`quiet`** mode (`plugins.updater.windows.installMode` in `tauri.conf.json`) - no Setup window, no progress wizard. This is compatible with the `currentUser` bundle install mode (no admin elevation needed)
+- **updating** - a newer release was found; the app **downloads** it in the background. The text changes to **`Updating...`**, the link is removed, and clicks are disabled (`.update-in-progress`, `pointer-events: none`) so the user cannot accidentally open the browser mid-update. The update is downloaded but **deliberately not installed yet** - on Windows the NSIS install step closes and restarts the app, so installing is deferred to the user's restart click (see *ready*). Implemented with `update.download()`, **not** `downloadAndInstall()`
 - **ready** - once the update is staged, the text becomes **`Restart App!`** in the theme accent colour (`.update-ready`) as a subtle call-to-action
 
 **Network & signing**
@@ -172,10 +172,11 @@ The app runs one signed background update check on startup. **All status is surf
 - Update-check and download failures fail silently. On download failure the version text, link, and styling revert to the original idle state, so the user never sees an error
 
 **Smart restart (clicking `Restart App!`)**
-- Runs the existing `confirmDiscardChanges()` guard ([src/core/file-io.js](src/core/file-io.js)). With a dirty buffer it shows the Save / Don't Save / Cancel dialog: Save or Don't Save proceeds to `relaunch()`, Cancel aborts and leaves the text as `Restart App!` for a later retry. A clean buffer relaunches immediately
+- Runs the existing `confirmDiscardChanges()` guard ([src/core/file-io.js](src/core/file-io.js)). With a dirty buffer it shows the Save / Don't Save / Cancel dialog: Save or Don't Save proceeds to **install the staged download (`update.install()`) and relaunch**, Cancel aborts and leaves the text as `Restart App!` for a later retry. A clean buffer installs + relaunches immediately
+- On Windows the install runs the NSIS installer in **`quiet`** mode (`plugins.updater.windows.installMode` in `tauri.conf.json`) - no Setup window, no progress wizard - which is compatible with the `currentUser` bundle install mode (no admin elevation needed)
 
 **Exit behaviour while an update is pending**
-- *Staged (ready):* closing needs no prompt - Tauri applies the staged update on the next launch
+- *Downloaded (ready):* closing needs no prompt. Because the install is deferred to the restart click, nothing is half-applied on disk - the update is simply re-downloaded on the next launch
 - *Still downloading + system tray active:* closing just hides to the tray (no prompt); the download continues in the background
 - *Still downloading + full quit* (close with no tray, tray "Quit", or Ctrl+Q without a tray): `requestQuit()` shows an **"Update in Progress"** warning (**Close Anyway** / **Wait for Update**) before the unsaved-changes guard, so the user can avoid aborting the download
 
