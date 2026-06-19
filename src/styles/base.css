@@ -667,6 +667,18 @@ body {
   color: var(--accent);
 }
 
+#status-version.update-in-progress {
+  color: var(--text-muted);
+  opacity: 0.6;
+  pointer-events: none;
+  cursor: default;
+}
+
+#status-version.update-ready {
+  color: var(--accent);
+  font-weight: 600;
+}
+
 .status-separator {
   display: inline-block;
   width: 1px;
@@ -991,78 +1003,6 @@ kbd {
 body.resizing {
   user-select: none;
   cursor: col-resize;
-}
-
-/* ---- Auto-Update Banner ---- */
-#update-banner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 16px;
-  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 80%, #000));
-  color: #ffffff;
-  font-family: var(--font-ui);
-  font-size: 13px;
-  z-index: 9999;
-  transform: translateY(-100%);
-  opacity: 0;
-  transition: transform 300ms ease, opacity 300ms ease;
-}
-
-#update-banner.visible {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-.update-banner-text {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.update-banner-text strong {
-  font-weight: 700;
-}
-
-.update-banner-actions {
-  display: flex;
-  gap: 8px;
-  flex-shrink: 0;
-  margin-left: 16px;
-}
-
-.update-btn {
-  padding: 5px 14px;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-ui);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: background 150ms ease, opacity 150ms ease;
-}
-
-.update-btn:disabled {
-  opacity: 0.7;
-  cursor: default;
-}
-
-.update-btn-primary {
-  background: #ffffff;
-  color: var(--accent);
-}
-
-.update-btn-primary:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.9);
-}
-
-.update-btn-secondary {
-  background: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
-}
-
-.update-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.3);
 }
 
 /* ---- Fullscreen Preview Mode (F11) ----
