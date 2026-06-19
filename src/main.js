@@ -90,19 +90,6 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const statusVersion = document.getElementById('status-version');
-    if (statusVersion) {
-        statusVersion.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const url = 'https://github.com/prathamreet/featherMD';
-            try {
-                const { invoke } = await import('@tauri-apps/api/core');
-                await invoke('plugin:opener|open_url', { url });
-            } catch {
-                window.open(url, '_blank');
-            }
-        });
-    }
     // initWindowControls() lives in Phase 2 — it short-circuits on `!isTauri()`,
     // and `setTauri(true)` only flips during Phase 2 after the Tauri core import.
 
