@@ -1,19 +1,33 @@
 // ========================================
 // Feather MD — Auto-Updater Module
 // ========================================
-// Checks for updates on app startup (Tauri only).
-// Shows an unobtrusive banner when a new version is available.
-// User can choose to download+install immediately, which relaunches the app.
+// Background auto-update with status communicated through the existing version
+// text in the bottom-right status bar. Three phases:
+//
+//   idle      — version text shows "v1.9.2", clickable (opens GitHub repo).
+//   updating  — version text shows "Updating...", click disabled.
+//   ready     — version text shows "Restart App!", accent-colored, clickable
+//               (relaunches after unsaved-changes guard).
 
-import { escapeHtml } from '../core/utils.js';
+import { confirmDiscardChanges } from '../core/file-io.js';
+
+// Current update phase: 'idle' | 'updating' | 'ready'
+let _phase = 'idle';
+
+/**
+ * Synchronous getter: true while a download/install is in progress.
+ * Used by the close handler to warn when quitting mid-download.
+ */
+export function isUpdateInProgress() {
+  return _phase === 'updating';
+}
 
 /**
  * Initialize the auto-update checker.
- * Call this once during app startup, after DOMContentLoaded.
- * Safe to call in browser mode — it silently no-ops.
+ * Call once during app startup, after DOMContentLoaded.
+ * Safe to call in browser mode — silently no-ops.
  */
 export async function initUpdater() {
-  // Only run inside Tauri desktop context (probe via ESM import, not globals)
   let isTauri = false;
   try {
     await import('@tauri-apps/api/core');
@@ -23,6 +37,13 @@ export async function initUpdater() {
   }
   if (!isTauri) return;
 
+  const versionEl = document.getElementById('status-version');
+  if (!versionEl) return;
+
+  // Store the original version text and href so we can restore on failure.
+  const originalText = versionEl.textContent;
+  const originalHref = versionEl.getAttribute('href');
+
   try {
     const { check } = await import('@tauri-apps/plugin-updater');
     const { relaunch } = await import('@tauri-apps/plugin-process');
@@ -30,78 +51,49 @@ export async function initUpdater() {
     const update = await check();
     if (!update) return; // Already on latest version
 
-    showUpdateBanner(update, relaunch);
+    // ---- Phase: updating ----
+    _phase = 'updating';
+    versionEl.textContent = 'Updating...';
+    versionEl.removeAttribute('href');
+    versionEl.classList.add('update-in-progress');
+
+    try {
+      await update.downloadAndInstall();
+    } catch (err) {
+      // Download failed — silently revert to original state. The user never
+      // knew an update was happening, so no error UI is needed.
+      console.warn('[Updater] Download/install failed:', err);
+      _phase = 'idle';
+      versionEl.textContent = originalText;
+      if (originalHref) versionEl.setAttribute('href', originalHref);
+      versionEl.classList.remove('update-in-progress');
+      return;
+    }
+
+    // ---- Phase: ready ----
+    _phase = 'ready';
+    versionEl.textContent = 'Restart App!';
+    versionEl.classList.remove('update-in-progress');
+    versionEl.classList.add('update-ready');
+    versionEl.removeAttribute('href');
+
+    // Replace the default click handler with the restart flow.
+    // Use a capturing, once-installed listener via cloneNode to cleanly
+    // remove any previous listeners set by main.js.
+    const freshEl = versionEl.cloneNode(true);
+    versionEl.replaceWith(freshEl);
+
+    freshEl.addEventListener('click', async (e) => {
+      e.preventDefault();
+      if (!(await confirmDiscardChanges())) return;
+      try {
+        await relaunch();
+      } catch (err) {
+        console.error('[Updater] Relaunch failed:', err);
+      }
+    });
   } catch (err) {
-    // Silently ignore update check failures (offline, server down, etc.)
+    // Update check itself failed (offline, server down, etc.)
     console.warn('[Updater] Update check failed:', err);
   }
 }
-
-/**
- * Create and display an update-available banner at the top of the app.
- */
-function showUpdateBanner(update, relaunch) {
-  // Don't show duplicate banners
-  if (document.getElementById('update-banner')) return;
-
-  const banner = document.createElement('div');
-  banner.id = 'update-banner';
-  banner.innerHTML = `
-    <span class="update-banner-text">
-      A new version <strong>v${escapeHtml(update.version)}</strong> is available!
-    </span>
-    <div class="update-banner-actions">
-      <button id="update-btn-install" class="update-btn update-btn-primary">Update Now</button>
-      <button id="update-btn-dismiss" class="update-btn update-btn-secondary">Later</button>
-    </div>
-  `;
-
-  // Insert at the very top of the body, before the menu bar
-  document.body.insertBefore(banner, document.body.firstChild);
-
-  // Trigger slide-in animation
-  requestAnimationFrame(() => banner.classList.add('visible'));
-
-  // Dismiss button
-  document.getElementById('update-btn-dismiss').addEventListener('click', () => {
-    banner.classList.remove('visible');
-    setTimeout(() => banner.remove(), 300);
-  });
-
-  // Install button
-  document.getElementById('update-btn-install').addEventListener('click', async () => {
-    const installBtn = document.getElementById('update-btn-install');
-    installBtn.textContent = 'Downloading…';
-    installBtn.disabled = true;
-
-    try {
-      // Download and install the update.
-      // On Windows NSIS, this will automatically close and relaunch.
-      // MP2-1: accumulate chunk lengths against contentLength for a real percentage
-      // (the previous "0%" was a static placeholder that never advanced).
-      let downloaded = 0;
-      let total = 0;
-      await update.downloadAndInstall((event) => {
-        if (event.event === 'Started') {
-          total = event.data.contentLength || 0;
-          installBtn.textContent = total ? 'Downloading… 0%' : 'Downloading…';
-        } else if (event.event === 'Progress') {
-          downloaded += event.data.chunkLength || 0;
-          installBtn.textContent = total > 0
-            ? `Downloading… ${Math.min(100, Math.round((downloaded / total) * 100))}%`
-            : 'Downloading…';
-        } else if (event.event === 'Finished') {
-          installBtn.textContent = 'Restarting…';
-        }
-      });
-
-      // Relaunch the application into the new version
-      await relaunch();
-    } catch (err) {
-      console.error('[Updater] Install failed:', err);
-      installBtn.textContent = 'Update Failed';
-      installBtn.disabled = false;
-    }
-  });
-}
-

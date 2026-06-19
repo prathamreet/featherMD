@@ -3,6 +3,7 @@
 import { config, saveConfig } from '../core/config.js';
 import { isTauri } from '../core/state.js';
 import { confirmDiscardChanges } from '../core/file-io.js';
+import { isUpdateInProgress } from './updater.js';
 
 export async function initWindowControls() {
   if ( !isTauri() ) return;
@@ -162,6 +163,27 @@ export async function requestQuit() {
     await appWindow.setFocus();
   } catch {
     // ignore — proceed to the guard regardless
+  }
+
+  // ISSUE-1: warn the user if a background update download is still in
+  // progress — quitting now would abort it. This covers every full-quit path
+  // (close button when no tray, tray-quit menu item, Ctrl+Q without tray).
+  if ( isUpdateInProgress() ) {
+    try {
+      const { ask } = await import( '@tauri-apps/plugin-dialog' );
+      const closeAnyway = await ask(
+        'A new update is currently downloading. If you close the app, the download will be interrupted. Close anyway?',
+        {
+          title: 'Update in Progress',
+          kind: 'warning',
+          okLabel: 'Close Anyway',
+          cancelLabel: 'Wait for Update',
+        }
+      );
+      if ( !closeAnyway ) return;
+    } catch {
+      // Dialog failed — fall through to quit
+    }
   }
 
   if ( !( await confirmDiscardChanges() ) ) return;
