@@ -38,7 +38,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
     demoActivate.addEventListener( 'click', () => {
       demoFrame.style.pointerEvents = 'auto';
       demoActivate.style.display = 'none';
-      try { demoFrame.contentWindow.focus(); } catch ( _ ) { /* cross-frame focus may be blocked */ }
+      try { demoFrame.contentWindow.focus(); } catch { /* cross-frame focus may be blocked */ }
     } );
     demoFrameWrap.addEventListener( 'mouseleave', () => {
       demoFrame.style.pointerEvents = 'none';
@@ -51,7 +51,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
     // styles.css defines the same 10 [data-theme] variants the app uses.
     demoFrame.addEventListener( 'load', () => {
       let innerDoc;
-      try { innerDoc = demoFrame.contentDocument; } catch ( _ ) { return; }
+      try { innerDoc = demoFrame.contentDocument; } catch { return; }
       if ( !innerDoc || !innerDoc.documentElement ) return;
       const mirror = () => {
         const theme = innerDoc.documentElement.getAttribute( 'data-theme' );
