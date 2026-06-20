@@ -8,6 +8,7 @@ export default [
       'dist/**',
       'src-tauri/**',
       'target/**',
+      'page/demo/**',
     ],
   },
   js.configs.recommended,
