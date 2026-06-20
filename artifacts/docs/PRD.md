@@ -1,7 +1,7 @@
 # PRD - Feather MD
 ### Lightweight Dual-Pane Markdown Editor for Windows & Linux
-**Version:** 1.10.1
-**Status:** Shipping (1.10.0 introduced the background auto-update flow; 1.10.1 current)
+**Version:** 1.10.5
+**Status:** Shipping (1.10.5 is the public background auto-update release; 1.10.0–1.10.4 were withdrawn test builds)
 **Last updated:** 2026-06-19
 
 ---
@@ -302,8 +302,8 @@ featherMD/
 │
 ├── scripts/
 │   ├── generate-report.js           Full audit: build + lint + tests + bench + sizes.
-│   └── version-bump.js              Sync version across package.json / Cargo.toml /
-│                                    tauri.conf.json / index.html.
+│   └── version-bump.js              Sync version from package.json into tauri.conf.json /
+│                                    Cargo.toml / Cargo.lock / index.html / page/ landing page.
 │
 ├── .github/                         Issue templates, PR template, CI + release workflows.
 │   └── workflows/                   GitHub Action workflows.
@@ -332,9 +332,9 @@ npm run lint            # ESLint
 npm run report          # build + lint + tests + bench + bundle sizes
 
 # Outputs:
-# Windows:  src-tauri/target/release/bundle/nsis/Feather MD_1.10.1_x64-setup.exe
-# Linux:    src-tauri/target/release/bundle/deb/Feather MD_1.10.1_amd64.deb
-#           src-tauri/target/release/bundle/appimage/Feather MD_1.10.1_amd64.AppImage
+# Windows:  src-tauri/target/release/bundle/nsis/Feather MD_1.10.5_x64-setup.exe
+# Linux:    src-tauri/target/release/bundle/deb/Feather MD_1.10.5_amd64.deb
+#           src-tauri/target/release/bundle/appimage/Feather MD_1.10.5_amd64.AppImage
 ```
 
 ---
@@ -524,4 +524,4 @@ Tauri 2 capabilities are explicitly enumerated:
 
 ---
 
-*End of PRD - Feather MD v1.10.1*
+*End of PRD - Feather MD v1.10.5*

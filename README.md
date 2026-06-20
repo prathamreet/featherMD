@@ -97,9 +97,11 @@ Release bundles land in:
 | **Unified Header** | A single 44 px bar combines title, menus, font-size slider, and corner-flush Win11-style window controls (close button turns red on hover). Active document title is absolutely centered with transparent pointer events. |
 | **Hover Dropdown Menus** | File / View / Style open on hover with a 180 ms grace timeout and diagonal pointer bridge to prevent accidental dismissals. The Style menu includes grouped themes, checkable fonts with an Editor Monospace toggle, and a nested horizontal segmented Tab Size selector (1 to 6 spaces). |
 | **Native dual-pane** | Editor on the left, live preview on the right. Resizable from 20% to 80%. Double-click the divider to reset to center. |
+| **Fullscreen preview** | `F11` hides the editor, toolbar, and status bar for a distraction-free rendered view. `Esc` or `F11` returns. |
 | **Bidirectional scroll sync** | Scroll either pane, the other follows. Ratio-based, no jitter on long documents. Toggle with `Alt + X`. |
 | **CodeMirror 6 editor** | Markdown syntax styling, code folding, bracket and quote auto-pair, active-line highlight, find and replace. |
 | **Highlight.js code blocks** | On-demand language loading for fenced blocks. Hundreds of languages, no startup penalty. |
+| **Math & diagrams** | Inline/display LaTeX via lazy-loaded **KaTeX**, and **Mermaid** diagrams (`mermaid` / `mmd` fences) that re-theme with light/dark. The heavy engines load only when a document actually uses them. |
 | **10 built-in themes** | Five light, five dark. Switches in under 1 ms via a single `data-theme` attribute. All consolidated into one stylesheet, zero JS overhead. |
 | **Advanced Printing Engine** | Bypasses browser native headers/footers (hostnames, local times, page URLs) and viewport-clipping limits to support clean multi-page document prints. |
 | **External-change watcher** | Event-driven OS file watcher (`ReadDirectoryChangesW` on Windows, `inotify` on Linux). Silently reloads unmodified files; prompts when your buffer is dirty. 0% idle CPU. |
@@ -108,6 +110,7 @@ Release bundles land in:
 | **CLI launch** | `feathermd <path>` opens a file directly. Useful from a terminal or a shell hotkey. |
 | **OS file associations** | `.md` and `.markdown` open in Feather MD on double-click. |
 | **Signed background auto-updates** | Ed25519-signed update check on startup that downloads and stages quietly in the background. Status shows in the status-bar version text (`Updating...` → `Restart App!`); restarting runs the unsaved-changes guard first. No banners. |
+| **System tray (Windows)** | Closing keeps Feather MD alive in the tray so in-progress prints and background downloads finish; right-click the tray icon to quit. Toggle from View > System Tray. |
 | **Persistent preferences** | Theme, font family, font size, tab size, line numbers, word wrap, scroll-sync, split ratio, window size, and maximized state are all restored on launch. |
 | **No startup flash** | Window stays hidden until persisted size is applied — no wrong-size flicker. |
 
@@ -293,7 +296,7 @@ featherMD/
 | Code highlight | highlight.js | Lazy-loaded per language. |
 | File watcher | `notify` crate | Event-driven OS hooks, 0% idle CPU. |
 | Bundler | Vite 6 | Main bundle plus on-demand chunks. |
-| Updater | Tauri updater + process plugins | Ed25519-signed, in-place relaunch. |
+| Updater | Tauri updater + process plugins | Ed25519-signed; background download, user-gated restart. |
 
 ## Quality checks
 
@@ -324,7 +327,7 @@ On Tauri builds, the OS config directory under `feathermd/config.json`. On Windo
 Releases are signed with Ed25519. The public key is embedded in the binary. The updater verifies the signature before writing anything. See [SECURITY.md](SECURITY.md).
 
 **How does the advanced printing engine work?**
-Pressing `Ctrl + P` (or selecting File -> Print) bypasses native browser headers and footers (local times, hostnames, page URLs) using page margin overrides. It also resolves viewport clipping issues, allowing you to print clean, multi-page documents seamlessly.
+Pressing `Ctrl + P` (or File -> Print) routes through a wrapped `window.print()` that forces the light **snow** theme (re-rendering Mermaid diagrams to match), then a dedicated `@media print` stylesheet strips the app chrome (header, status bar, editor) and releases the viewport pinning so content flows across pages instead of clipping to one screen. `<pb>` tags force page breaks, and tables, code blocks, and headings are protected from awkward page splits.
 
 **Why is there no plugin system?**
 A plugin system is a commitment to an API surface for a long time. Feather MD is small enough that a focused feature set is the point. If something is missing, open an issue. Frequent requests turn into core features.
