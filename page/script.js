@@ -81,53 +81,78 @@ document.addEventListener( 'DOMContentLoaded', () => {
   }
   requestAnimationFrame( raf );
 
-  // Intercept in-page anchor jumps for Lenis kinetic smoothness.
+  // ---- Full-section scroll snapping ----
+  // One wheel gesture moves to the next/previous section. A section taller than
+  // the viewport still scrolls freely until its edge, then snaps onward, so no
+  // content is skipped. Nav-link / CTA clicks share the same lock so they don't
+  // fight the wheel handler. Touch and keyboard fall back to normal scrolling.
+  const snapSections = [
+    document.querySelector( '.hero-section' ),
+    document.getElementById( 'editor-section' ),
+    document.getElementById( 'features' ),
+    document.getElementById( 'metrics' ),
+    document.getElementById( 'techstack' ),
+    document.getElementById( 'downloads' ),
+    document.querySelector( '.site-footer' )
+  ].filter( Boolean );
+
+  let snapLock = false;
+  let snapUnlockTimer = null;
+
+  function scrollToTarget( target ) {
+    snapLock = true;
+    lenis.scrollTo( target, {
+      duration: 0.6,
+      lock: true, // ignore user wheel mid-snap so Lenis doesn't cancel the scroll
+      easing: ( t ) => 1 - Math.pow( 1 - t, 3 ), // easeOutCubic: quick start, smooth settle
+      onComplete: () => { snapLock = false; }
+    } );
+    // Fallback: always release the lock, even if onComplete never fires (e.g. an
+    // interrupted scrollTo). Without this the snap would work only once.
+    clearTimeout( snapUnlockTimer );
+    snapUnlockTimer = setTimeout( () => { snapLock = false; }, 700 );
+  }
+
+  function sectionIndexAtCenter() {
+    const mid = window.scrollY + window.innerHeight / 2;
+    let idx = 0;
+    for ( let i = 0; i < snapSections.length; i++ ) {
+      const top = snapSections[ i ].getBoundingClientRect().top + window.scrollY;
+      if ( top <= mid ) idx = i;
+    }
+    return idx;
+  }
+
+  // Intercept in-page anchor jumps (nav links + CTAs) for Lenis smoothness.
   document.querySelectorAll( 'a[href^="#"]' ).forEach( ( anchor ) => {
     anchor.addEventListener( 'click', function ( e ) {
       e.preventDefault();
       const targetId = this.getAttribute( 'href' );
       if ( targetId === '#' ) return;
-      lenis.scrollTo( targetId, { duration: 1.2 } );
+      const target = document.querySelector( targetId );
+      if ( target ) scrollToTarget( target );
     } );
   } );
 
-  // Velocity-controlled hero -> demo scrolljacking.
-  let isScrollJacking = false;
-
+  // One wheel gesture = one section.
   window.addEventListener( 'wheel', ( e ) => {
-    const scrollY = window.scrollY;
-    const heroSection = document.querySelector( '.hero-section' );
-    if ( !heroSection ) return;
-    const heroHeight = heroSection.offsetHeight;
+    if ( snapLock ) { e.preventDefault(); return; }
+    if ( e.deltaY === 0 ) return;
 
-    // Scroll Down from Hero to Editor
-    if ( scrollY < 20 && e.deltaY > 0 && !isScrollJacking ) {
-      e.preventDefault();
-      isScrollJacking = true;
-      lenis.scrollTo( '#editor-section', {
-        duration: 1.4,
-        onComplete: () => {
-          setTimeout( () => { isScrollJacking = false; }, 200 );
-        }
-      } );
-    }
-    // Scroll Up from Editor to Hero
-    else if ( scrollY > 20 && scrollY < heroHeight + 80 && e.deltaY < 0 && !isScrollJacking ) {
-      const editorSection = document.getElementById( 'editor-section' );
-      if ( editorSection ) {
-        const rect = editorSection.getBoundingClientRect();
-        if ( rect.top >= -20 && rect.top <= 120 ) {
-          e.preventDefault();
-          isScrollJacking = true;
-          lenis.scrollTo( 0, {
-            duration: 1.4,
-            onComplete: () => {
-              setTimeout( () => { isScrollJacking = false; }, 200 );
-            }
-          } );
-        }
-      }
-    }
+    const idx = sectionIndexAtCenter();
+    const section = snapSections[ idx ];
+    const top = section.getBoundingClientRect().top + window.scrollY;
+    const goingDown = e.deltaY > 0;
+    const bottomGap = ( top + section.offsetHeight ) - ( window.scrollY + window.innerHeight );
+    const topGap = window.scrollY - top;
+
+    // Let a section taller than the viewport scroll freely until its edge.
+    if ( goingDown && bottomGap > 4 ) return;
+    if ( !goingDown && topGap > 4 ) return;
+
+    e.preventDefault();
+    const nextIdx = Math.max( 0, Math.min( snapSections.length - 1, idx + ( goingDown ? 1 : -1 ) ) );
+    if ( nextIdx !== idx ) scrollToTarget( snapSections[ nextIdx ] );
   }, { passive: false } );
 
   // ---- Dynamic live fetch for the latest GitHub release assets ----
