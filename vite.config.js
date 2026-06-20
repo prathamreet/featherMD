@@ -1,6 +1,11 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  // Relative asset paths so the SAME build works both in the Tauri webview
+  // (served at the root) and when embedded on GitHub Pages at a subpath
+  // (/featherMD/demo/ — the landing page's live-demo iframe). Absolute '/'
+  // paths would 404 under the subpath.
+  base: './',
   clearScreen: false,
   server: {
     port: 1420,
