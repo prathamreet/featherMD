@@ -481,6 +481,18 @@ function applyEditorFont() {
 async function pingAnalytics() {
     if (navigator.onLine === false) return; // Silent exit if completely offline
 
+    // Only the real desktop app reports analytics. The landing page embeds this
+    // same frontend in a plain browser as its live demo, and our own isTauri()
+    // (state.js) is unreliable there because the @tauri-apps/api import still
+    // succeeds. Tauri's runtime detector checks window.isTauri, which is injected
+    // only inside the Tauri webview — so this is false in the web demo.
+    try {
+        const { isTauri: isTauriRuntime } = await import('@tauri-apps/api/core');
+        if (!isTauriRuntime()) return;
+    } catch {
+        return; // Can't confirm a Tauri context — don't ping.
+    }
+
     try {
         const versionEl = document.getElementById('status-version');
         const version = versionEl ? versionEl.textContent.trim().replace(/^v/, '') : '0.0.0';

@@ -14,6 +14,10 @@ dist-ssr/
 coverage/
 *.local
 
+# Local-only build of the live-demo app embedded by the landing page.
+# CI (deploy-pages.yml) regenerates this into the Pages artifact; never commit it.
+page/demo
+
 # Rust / Tauri build artifacts
 target/
 src-tauri/gen/schemas/*.json

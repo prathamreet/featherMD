@@ -13,6 +13,7 @@
     "bench": "vitest bench",
     "lint": "eslint .",
     "report": "node scripts/generate-report.js",
+    "sync-page": "npm run build && node scripts/sync-page.js",
     "rm-dist": "rimraf dist",
     "rm-target": "cd src-tauri && cargo clean",
     "rm-nm": "rimraf node_modules",

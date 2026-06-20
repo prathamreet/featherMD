@@ -99,331 +99,23 @@
       </div>
 
       <div class="editor-outer-container">
-        <!-- Editor Title Bar -->
-        <div class="editor-titlebar">
-          <div class="editor-titlebar-left">
-            <div class="editor-titlebar-icon">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
-                <line x1="16" y1="8" x2="2" y2="22"></line>
-              </svg>
-            </div>
+        <!-- The real Feather MD app, built from /src and served at ./demo/ by the
+             Pages deploy workflow. It runs in browser mode (localStorage config;
+             Tauri-only actions such as Open/Save and the window controls no-op),
+             so this is the actual editor, preview, and theme engine - not a mock.
 
-            <!-- File Dropdown -->
-            <div class="editor-menu-dropdown">
-              <button class="editor-menu-btn" id="demo-menu-file">File</button>
-              <div class="editor-menu-panel" id="panel-file" hidden>
-                <button class="editor-menu-item" id="btn-demo-new">
-                  <span>New File</span><kbd>Ctrl+N</kbd>
-                </button>
-                <button class="editor-menu-item" id="btn-demo-open">
-                  <span>Open</span><kbd>Ctrl+O</kbd>
-                </button>
-                <button class="editor-menu-item" id="btn-demo-save">
-                  <span>Save</span><kbd>Ctrl+S</kbd>
-                </button>
-                <button class="editor-menu-item" id="btn-demo-save-as">
-                  <span>Save As</span><kbd>Ctrl+Shift+S</kbd>
-                </button>
-                <div class="editor-menu-separator"></div>
-                <!-- Recent Files Submenu -->
-                <div class="editor-menu-item has-submenu">
-                  <span class="menu-item-label">Recent Files</span>
-                  <svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <polyline points="3,2 7,5 3,8" />
-                  </svg>
-                  <div class="editor-submenu-panel" style="width: 140px;">
-                    <div
-                      style="font-size: 0.72rem; color: var(--page-text-muted); padding: 6px 8px; text-align: center;">
-                      No recent files</div>
-                  </div>
-                </div>
-                <button class="editor-menu-item" id="btn-demo-reset">
-                  <span>Reset Demo</span><kbd>Ctrl+R</kbd>
-                </button>
-                <div class="editor-menu-separator"></div>
-                <button class="editor-menu-item" id="btn-demo-print">
-                  <span>Print Document</span><kbd>Ctrl+P</kbd>
-                </button>
-              </div>
-            </div>
-
-            <!-- View Dropdown -->
-            <div class="editor-menu-dropdown">
-              <button class="editor-menu-btn" id="demo-menu-view">View</button>
-              <div class="editor-menu-panel" id="panel-view" hidden>
-                <button class="editor-menu-item checkable checked" id="btn-toggle-sync">
-                  <span class="check-icon">✓</span><span>Sync Scroll</span><kbd>Alt+S</kbd>
-                </button>
-                <button class="editor-menu-item checkable checked" id="btn-toggle-lines">
-                  <span class="check-icon">✓</span><span>Line Numbers</span><kbd>Ctrl+L</kbd>
-                </button>
-                <button class="editor-menu-item checkable checked" id="btn-toggle-wrap">
-                  <span class="check-icon">✓</span><span>Word Wrap</span><kbd>Alt+Z</kbd>
-                </button>
-              </div>
-            </div>
-
-            <!-- Style Dropdown -->
-            <div class="editor-menu-dropdown">
-              <button class="editor-menu-btn" id="demo-menu-style">Style</button>
-              <div class="editor-menu-panel" id="panel-style" hidden>
-
-                <!-- Theme Submenu -->
-                <div class="editor-menu-item has-submenu">
-                  <span class="menu-item-label">Theme</span>
-                  <svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <polyline points="3,2 7,5 3,8" />
-                  </svg>
-                  <div class="editor-submenu-panel theme-submenu-panel">
-                    <div class="menu-group-label">Theme — Light</div>
-                    <button class="editor-submenu-item theme-select-btn" data-theme="snow">
-                      <span class="check-icon"></span><span>Snow</span>
-                    </button>
-                    <button class="editor-submenu-item theme-select-btn" data-theme="solarized-light">
-                      <span class="check-icon"></span><span>Solarized Light</span>
-                    </button>
-                    <button class="editor-submenu-item theme-select-btn" data-theme="github-light">
-                      <span class="check-icon"></span><span>GitHub Light</span>
-                    </button>
-                    <button class="editor-submenu-item theme-select-btn" data-theme="sepia">
-                      <span class="check-icon"></span><span>Sepia</span>
-                    </button>
-                    <button class="editor-submenu-item theme-select-btn" data-theme="gruvbox-light">
-                      <span class="check-icon"></span><span>Gruvbox Light</span>
-                    </button>
-
-                    <div class="editor-menu-separator"></div>
-                    <div class="menu-group-label">Theme — Dark</div>
-                    <button class="editor-submenu-item theme-select-btn checked" data-theme="onyx">
-                      <span class="check-icon">✓</span><span>Onyx</span>
-                    </button>
-                    <button class="editor-submenu-item theme-select-btn" data-theme="solarized-dark">
-                      <span class="check-icon"></span><span>Solarized Dark</span>
-                    </button>
-                    <button class="editor-submenu-item theme-select-btn" data-theme="github-dark">
-                      <span class="check-icon"></span><span>GitHub Dark</span>
-                    </button>
-                    <button class="editor-submenu-item theme-select-btn" data-theme="monokai">
-                      <span class="check-icon"></span><span>Monokai</span>
-                    </button>
-                    <button class="editor-submenu-item theme-select-btn" data-theme="gruvbox-dark">
-                      <span class="check-icon"></span><span>Gruvbox Dark</span>
-                    </button>
-                  </div>
-                </div>
-
-                <!-- Font Submenu -->
-                <div class="editor-menu-item has-submenu">
-                  <span class="menu-item-label">Font</span>
-                  <svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <polyline points="3,2 7,5 3,8" />
-                  </svg>
-                  <div class="editor-submenu-panel">
-                    <button class="editor-submenu-item checkable checked" id="btn-font-mono">
-                      <span class="check-icon">✓</span><span>JetBrains Mono</span>
-                    </button>
-                    <button class="editor-submenu-item checkable" id="btn-font-sans">
-                      <span class="check-icon"></span><span>System Monospace</span>
-                    </button>
-                  </div>
-                </div>
-
-                <!-- Tab Size Submenu -->
-                <div class="editor-menu-item has-submenu">
-                  <span class="menu-item-label">Tab Size</span>
-                  <svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <polyline points="3,2 7,5 3,8" />
-                  </svg>
-                  <div class="editor-submenu-panel">
-                    <button class="editor-submenu-item checkable" id="btn-tab-2">
-                      <span class="check-icon"></span><span>2 spaces</span>
-                    </button>
-                    <button class="editor-submenu-item checkable checked" id="btn-tab-4">
-                      <span class="check-icon">✓</span><span>4 spaces</span>
-                    </button>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            <div class="editor-header-separator"></div>
-
-            <!-- Font Size range slider -->
-            <div class="editor-font-slider">
-              <span class="font-slider-val" id="lbl-font-size">14px</span>
-              <input type="range" id="slider-font-size" min="12" max="20" value="14" />
-            </div>
-          </div>
-
-          <div class="editor-titlebar-center">
-            feathermd — getting-started.md
-          </div>
-
-          <div class="editor-titlebar-right">
-            <span class="win-btn win-minimize">
-              <svg width="10" height="10" viewBox="0 0 12 12">
-                <line x1="2" y1="6" x2="10" y2="6" stroke="currentColor" stroke-width="1.5" />
-              </svg>
-            </span>
-            <span class="win-btn win-maximize">
-              <svg width="10" height="10" viewBox="0 0 12 12">
-                <rect x="2" y="2" width="8" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="1.5" />
-              </svg>
-            </span>
-            <span class="win-btn win-close">
-              <svg width="10" height="10" viewBox="0 0 12 12">
-                <line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.5" />
-                <line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.5" />
-              </svg>
-            </span>
-          </div>
-        </div>
-
-        <!-- Main Interactive Work Space -->
-        <div class="editor-workspace" id="editor-workspace" data-lenis-prevent>
-
-          <!-- Left Editor Pane -->
-          <div class="editor-pane-left" id="demo-editor-pane">
-            <!-- Line Numbers Container -->
-            <div class="line-numbers-col" id="line-numbers-col"></div>
-            <!-- Text Area -->
-            <textarea class="editor-textarea" id="demo-editor" spellcheck="false" wrap="soft"></textarea>
-          </div>
-
-          <!-- Draggable Divider -->
-          <div class="editor-workspace-divider" id="demo-divider">
-            <div class="divider-line"></div>
-          </div>
-
-          <!-- Right Preview Pane -->
-          <div class="editor-pane-right" id="demo-preview-pane">
-            <div class="preview-content-rendered" id="demo-preview"></div>
-          </div>
-
-        </div>
-
-        <!-- Editor Status Bar -->
-        <div class="editor-statusbar">
-          <span class="status-left" id="status-path">C:\Users\feathermd\documents\getting-started.md</span>
-          <div class="status-right">
-            <span id="status-words">0 words</span>
-            <span class="status-sep">|</span>
-            <span id="status-cursor">Ln 1, Col 1</span>
-            <span class="status-sep">|</span>
-            <span>UTF-8</span>
-            <span class="status-sep">|</span>
-            <span>LF</span>
-          </div>
-        </div>
-
-        <!-- Keyboard Shortcuts Modal -->
-        <div id="shortcuts-modal" class="editor-modal-overlay" hidden>
-          <div class="editor-modal-content">
-            <div class="editor-modal-header">
-              <h3>Keyboard Shortcuts</h3>
-              <button id="btn-close-shortcuts" class="editor-modal-close" aria-label="Close shortcuts">
-                <svg width="12" height="12" viewBox="0 0 12 12">
-                  <line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.5" />
-                  <line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.5" />
-                </svg>
-              </button>
-            </div>
-            <div class="editor-modal-body">
-              <table class="editor-shortcuts-table">
-                <tbody>
-                  <tr>
-                    <td><kbd>Ctrl</kbd>+<kbd>N</kbd></td>
-                    <td>New File</td>
-                  </tr>
-                  <tr>
-                    <td><kbd>Ctrl</kbd>+<kbd>R</kbd></td>
-                    <td>Reset Demo</td>
-                  </tr>
-                  <tr>
-                    <td><kbd>Ctrl</kbd>+<kbd>P</kbd></td>
-                    <td>Print Document</td>
-                  </tr>
-                  <tr>
-                    <td><kbd>Ctrl</kbd>+<kbd>L</kbd></td>
-                    <td>Toggle Line Numbers</td>
-                  </tr>
-                  <tr>
-                    <td><kbd>Alt</kbd>+<kbd>Z</kbd></td>
-                    <td>Toggle Word Wrap</td>
-                  </tr>
-                  <tr>
-                    <td><kbd>Alt</kbd>+<kbd>S</kbd></td>
-                    <td>Toggle Sync Scroll</td>
-                  </tr>
-                  <tr>
-                    <td><kbd>Ctrl</kbd>+<kbd>?</kbd></td>
-                    <td>Keyboard Shortcuts Help</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- Unsaved Changes Dialog -->
-        <div id="unsaved-dialog" class="editor-modal-overlay" hidden>
-          <div class="editor-modal-content editor-unsaved-content">
-            <div class="editor-modal-header">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--page-accent)" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
-                </path>
-                <line x1="12" y1="9" x2="12" y2="13"></line>
-                <line x1="12" y1="17" x2="12.01" y2="17"></line>
-              </svg>
-              <h3>Unsaved Changes</h3>
-            </div>
-            <div class="editor-modal-body">
-              <p>You have made changes to the current document. Resetting or creating a new document will lose these
-                edits.</p>
-            </div>
-            <div class="editor-modal-footer">
-              <button id="unsaved-btn-cancel" class="editor-dialog-btn editor-btn-secondary">Cancel</button>
-              <button id="unsaved-btn-discard" class="editor-dialog-btn editor-btn-danger">Don't Save</button>
-              <button id="unsaved-btn-save" class="editor-dialog-btn editor-btn-primary">Save Changes</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- About Dialog -->
-        <div id="about-dialog" class="editor-modal-overlay" hidden>
-          <div class="editor-modal-content editor-about-content">
-            <div class="editor-modal-header">
-              <h3>About Feather MD</h3>
-              <button id="btn-close-about" class="editor-modal-close" aria-label="Close about">
-                <svg width="12" height="12" viewBox="0 0 12 12">
-                  <line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.5" />
-                  <line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.5" />
-                </svg>
-              </button>
-            </div>
-            <div class="editor-modal-body" style="text-align: center; padding: 20px 10px;">
-              <div class="closed-state-icon" style="margin-bottom: 12px; display: inline-block;">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--page-accent)"
-                  stroke-width="2">
-                  <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
-                  <line x1="16" y1="8" x2="2" y2="22"></line>
-                </svg>
-              </div>
-              <h4
-                style="font-family: 'Outfit', sans-serif; font-size: 1.1rem; margin-bottom: 4px; color: var(--page-text); font-weight: 600;">
-                Feather MD v1.10.5</h4>
-              <p style="font-size: 0.8rem; color: var(--page-text-muted); margin-bottom: 16px;">Pure Performance
-                Markdown Editor</p>
-              <div
-                style="font-size: 0.75rem; color: var(--page-text-muted); line-height: 1.5; background: var(--titlebar-bg); border: 1px solid var(--page-border); border-radius: 6px; padding: 10px; font-family: 'JetBrains Mono', monospace; text-align: left;">
-                Built with Tauri + Rust + Vanilla JS<br>
-                Memory: &lt; 60MB RAM<br>
-                Cold Start: &lt; 100ms
-              </div>
-            </div>
+             The iframe starts pointer-events:none so wheel scrolling passes
+             through to the page (a tall scrollable iframe otherwise traps the
+             scroll). Clicking the overlay activates interaction; moving the
+             pointer out of the demo re-arms it. Wired in script.js. -->
+        <div id="demo-frame-wrap" style="position: relative; flex: 1 1 auto; display: flex; min-height: 0;">
+          <iframe id="demo-frame" src="./demo/" loading="lazy"
+            title="Feather MD live demo - the real app running in your browser"
+            style="flex: 1 1 auto; width: 100%; height: 100%; border: 0; display: block; background: var(--editor-bg); pointer-events: none;"></iframe>
+          <div id="demo-activate"
+            style="position: absolute; inset: 0; cursor: pointer; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 20px;">
+            <span
+              style="background: rgba(0,0,0,0.62); color: #fff; font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 500; padding: 7px 16px; border-radius: 999px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); box-shadow: 0 4px 16px rgba(0,0,0,0.3);">Click to try the live editor</span>
           </div>
         </div>
       </div>
@@ -462,9 +154,9 @@
             <div class="feature-item">
               <div class="feature-number">03</div>
               <div class="feature-body">
-                <h3 class="feature-heading">Signed Auto-Updates</h3>
-                <p class="feature-text">Release packages are cryptographically signed with Ed25519 for absolute
-                  security, updating seamlessly on launch.</p>
+                <h3 class="feature-heading">Signed Background Updates</h3>
+                <p class="feature-text">Release packages are cryptographically signed with Ed25519 and download
+                  quietly in the background. The status bar tells you when it's ready &mdash; you restart on your own terms.</p>
               </div>
             </div>
 
@@ -503,8 +195,8 @@
               <div class="feature-number">07</div>
               <div class="feature-body">
                 <h3 class="feature-heading">External File Watcher</h3>
-                <p class="feature-text">Monitors active files in the background using tokio async channels. Prompting
-                  you instantly on external alterations.</p>
+                <p class="feature-text">Monitors the open file through event-driven OS hooks (the Rust notify crate)
+                  for 0% idle CPU, prompting you instantly when another program changes it on disk.</p>
               </div>
             </div>
 
@@ -512,8 +204,8 @@
               <div class="feature-number">08</div>
               <div class="feature-body">
                 <h3 class="feature-heading">Keyboard-First Workflows</h3>
-                <p class="feature-text">Full command panel shortcuts for fast toggles of line numbering, word wraps,
-                  active-line highlights, and find/replace.</p>
+                <p class="feature-text">Fast keyboard toggles for line numbers, word wrap, and scroll sync, plus
+                  Alt-leader chords to cycle themes, fonts, and tab size &mdash; and find/replace.</p>
               </div>
             </div>
 
@@ -632,7 +324,7 @@
               <span class="techstack-item-tag">Editing Area</span>
               <h3 class="techstack-heading">CodeMirror 6</h3>
               <p class="techstack-text">Modular, tree-shaken editor core supporting active-line highlighting, quote
-                auto-pairing, folding, and custom Vim keys.</p>
+                auto-pairing, code folding, and find &amp; replace.</p>
             </div>
           </div>
 
@@ -641,8 +333,8 @@
             <div class="techstack-body">
               <span class="techstack-item-tag">Compilation Pipeline</span>
               <h3 class="techstack-heading">Marked + DOMPurify</h3>
-              <p class="techstack-text">Synchronous Markdown compiler coupled with DOMPurify XSS protection and
-                Highlight.js on-demand syntax loading.</p>
+              <p class="techstack-text">Synchronous Markdown compiler with DOMPurify XSS protection, on-demand
+                Highlight.js syntax loading, and lazy-loaded KaTeX math and Mermaid diagrams.</p>
             </div>
           </div>
 

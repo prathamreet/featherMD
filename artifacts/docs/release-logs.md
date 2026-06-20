@@ -1,20 +1,25 @@
 # Feather MD Release Logs
 
-## Feather MD v1.10.0
-This update introducing a streamlined, silent background application update experience and enhanced safety guards during app relaunch.
+## Feather MD v1.10.5
+This is a minor feature release delivering fully background, user-controlled auto-updates. It supersedes the withdrawn v1.10.0–v1.10.4 test iterations, so the public update path goes straight from v1.9.x to v1.10.5.
 
 ### Summary:
-- Quiet Updates: The application now checks for, downloads, and prepares updates silently in the background, removing the top banner pop-ups.
-- Status Indicators: You can track the update status directly in the bottom-right corner of the window. The version number will change to "Updating..." during download, and "Restart App!" when ready.
-- Smart Relaunch: Clicking "Restart App!" will restart the application to apply the update. If you have unsaved documents open, you will be prompted to save your work before the restart proceeds.
-- Exit Safeguard: If you attempt to quit the application while an update is actively downloading in the background, the app will warn you to prevent the download from being aborted.
+- Silent Background Updates: New versions are checked for, downloaded, and prepared quietly in the background. The old slide-in update banner is gone — no pop-ups interrupting your writing.
+- Status-Bar Indicator: Update progress now lives in the bottom-right version text. It reads "Updating..." while downloading and turns into an accent-coloured "Restart App!" once the update is ready.
+- You Decide When to Restart: The app never restarts on its own. You click "Restart App!" when you are ready; if you have unsaved work, the usual Save / Don't Save / Cancel prompt runs first.
+- No Installer Wizard: On Windows the update installs silently — no NSIS Setup window or progress wizard appears.
+- Close-While-Downloading Safeguard: Quitting mid-download warns you first (Close Anyway / Wait for Update) so an in-progress download is not aborted by accident. If the system tray is active, closing simply hides to the tray and the download continues.
 
 ### Details:
-- State Machine Integration: Implemented a new updater state module (src/platform/updater.js) utilizing three states: idle (opens repository homepage), updating (disables interactions, changes styles), and ready (invokes relaunch after file guard check).
-- Graceful Failure Fallbacks: Implemented error boundaries during update check and download phases. If downloading fails, the version element silently reverts back to the original version and link behavior.
-- Clean Event Listener Replacement: Employed cloneNode(true) and replaceWith on the version element to swap click handlers from default URL opening to update relaunch sequence.
-- Centralized Exit Guard: Extended requestQuit() in src/platform/window.js (a unified entry point for close-to-tray, tray-quit, and keyboard shortcuts) to run a synchronous status check isUpdateInProgress() and prompt utilizing @tauri-apps/plugin-dialog if true.
-- Style Optimization: Cleaned up unused banner-related rules in src/styles/base.css and added .update-in-progress (deactivated events, opacity) and .update-ready (accent color, font weight) classes.
+- State Machine: Reworked src/platform/updater.js into a three-phase state machine — idle (version text links to the GitHub repo), updating (download only, interactions disabled, restyled), and ready ("Restart App!" call-to-action).
+- Deferred Install (key fix): The updating phase calls update.download() ONLY. The install (update.install()) and relaunch() are deferred to the "Restart App!" click. On Windows the NSIS install step closes and restarts the app, so installing eagerly via downloadAndInstall() would have restarted the user without consent — splitting download from install keeps the restart explicit.
+- Quiet Install Mode: Added plugins.updater.windows.installMode = "quiet" in tauri.conf.json so the NSIS updater installs without any window, compatible with the currentUser install scope (no admin elevation required).
+- Unsaved-Changes Guard: The Restart App! click runs the existing confirmDiscardChanges() guard before install/relaunch; Cancel safely leaves the app at "Restart App!" for a later retry.
+- Centralized Exit Guard: requestQuit() in src/platform/window.js (the single full-quit entry point for the close button, tray Quit, and Ctrl+Q) checks isUpdateInProgress() and shows an "Update in Progress" warning via @tauri-apps/plugin-dialog before quitting.
+- Graceful Failure: Update-check and download errors fail silently; on download failure the version element reverts to its original text, link, and styling so the user never sees an error.
+- Style: Added .update-in-progress (disabled pointer events, reduced opacity) and .update-ready (accent colour, heavier weight) classes in src/styles/base.css; removed the old banner rules.
+
+> Note: v1.10.0–v1.10.4 were internal test builds used to validate the updater end-to-end and have been withdrawn. They are not part of the public release history.
 
 ---
 

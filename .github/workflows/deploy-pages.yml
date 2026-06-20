@@ -5,7 +5,14 @@ on:
     branches:
       - main
     paths:
+      # Landing page itself
       - 'page/**'
+      # The app embedded as the live demo (built into page/demo by this workflow)
+      - 'src/**'
+      - 'index.html'
+      - 'vite.config.js'
+      - 'package.json'
+      - 'package-lock.json'
       - '.github/workflows/deploy-pages.yml'
   workflow_dispatch:
 
@@ -28,13 +35,38 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Builds the real app (frontend only — no Rust) into dist/. base: './' in
+      # vite.config.js makes the asset paths relative so it runs at /demo/.
+      - name: Build live-demo app
+        run: npm run build
+
+      # Assemble the Pages artifact: the landing page at the root, with the built
+      # app nested at /demo/ so index.html's <iframe src="./demo/"> resolves.
+      - name: Assemble site (landing page + /demo app)
+        run: |
+          rm -rf _site
+          mkdir -p _site
+          cp -r page/. _site/
+          rm -rf _site/demo
+          mkdir -p _site/demo
+          cp -r dist/. _site/demo/
+
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
 
       - name: Upload Website Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './page'
+          path: './_site'
 
       - name: Deploy to GitHub Pages
         id: deployment
